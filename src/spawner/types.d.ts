@@ -2,7 +2,9 @@ import Body from "./body";
 
 declare global {
     interface StructureSpawn {
-        creepsByRole: Record<string, Creep[]>;
+        creepsByRole: {
+            [role in CreepRole]?: Creep[];
+        };
 
         automate(): void;
 

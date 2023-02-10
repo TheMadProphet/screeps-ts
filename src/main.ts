@@ -18,13 +18,6 @@ declare global {
         log: any;
     }
 
-    interface CreepMemory {
-        role: string;
-        room?: string;
-        working?: boolean;
-        assignedSource?: Id<Source>;
-    }
-
     interface RoomMemory {
         sources: Record<Id<Source>, SourceMemory>;
         room?: string;

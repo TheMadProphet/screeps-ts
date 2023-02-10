@@ -8,7 +8,7 @@ const harvesterSpawner: RoleSpawner = {
             source.assignedWorkers = [];
         });
 
-        _.forEach(spawner.creepsByRole["harvester"], harvester => {
+        _.forEach(spawner.creepsByRole[HARVESTER] ?? [], harvester => {
             const assignedSource = harvester.memory.assignedSource;
 
             if (assignedSource && sources[assignedSource]) {
@@ -20,7 +20,7 @@ const harvesterSpawner: RoleSpawner = {
             const sourceMemory = sources[sourceId as Id<Source>];
             if (sourceMemory.assignedWorkers.length < sourceMemory.maxWorkerCount) {
                 const body = new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 6);
-                return spawner.spawn(body, {role: "harvester", assignedSource: sourceId as Id<Source>});
+                return spawner.spawn(body, {role: HARVESTER, assignedSource: sourceId as Id<Source>});
             }
         }
 
