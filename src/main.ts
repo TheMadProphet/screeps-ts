@@ -22,6 +22,20 @@ declare global {
         role: string;
         room?: string;
         working?: boolean;
+        assignedSource?: Id<Source>;
+    }
+
+    interface RoomMemory {
+        sources: Record<Id<Source>, SourceMemory>;
+        room?: string;
+        working?: boolean;
+    }
+
+    interface SourceMemory {
+        hasRoad: boolean;
+        maxWorkerCount: number;
+        distanceToSpawn: number;
+        assignedWorkers: Id<Creep>[];
     }
 
     // Syntax for adding proprties to `global` (ex "global.log")

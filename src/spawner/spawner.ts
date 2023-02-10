@@ -1,18 +1,21 @@
 import Body from "./body";
 import harvesterSpawner from "./roles/harvester";
 import builderSpawner from "./roles/builder";
+import fillerSpawner from "./roles/filler";
+import handymanSpawner from "./roles/handyman";
+import upgraderSpawner from "./roles/upgrader";
 
-const roles: Record<CreepRole, RoleSpawner> = {
+const roleSpawners: Record<CreepRole, RoleSpawner> = {
     Harvester: harvesterSpawner,
     Builder: builderSpawner,
-    Upgrader: harvesterSpawner,
-    Handyman: harvesterSpawner,
-    Filler: harvesterSpawner
+    Upgrader: upgraderSpawner,
+    Handyman: handymanSpawner,
+    Filler: fillerSpawner
 };
 
 (function (this: typeof StructureSpawn.prototype) {
     this.automate = function () {
-        this.creepsByRole = {}; // todo: is it needed?
+        this.creepsByRole = {};
 
         for (const name in Memory.creeps) {
             const creep = Game.creeps[name];
@@ -24,8 +27,8 @@ const roles: Record<CreepRole, RoleSpawner> = {
             }
         }
 
-        _.forEach(roles, creepSpawner => {
-            creepSpawner.spawn(this);
+        _.forEach(roleSpawners, roleSpawner => {
+            roleSpawner.spawn(this);
         });
 
         this.displayVisuals();
