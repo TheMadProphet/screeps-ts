@@ -1,9 +1,15 @@
+import harvesterBehavior from "./roles/harvester";
+import builderBehavior from "./roles/builder";
+import upgraderBehavior from "./roles/upgrader";
+import handymanBehavior from "./roles/handyman";
+import fillerBehavior from "./roles/filler";
+
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
-    Harvester: {},
-    Builder: {},
-    Upgrader: {},
-    Handyman: {},
-    Filler: {}
+    [HARVESTER]: harvesterBehavior,
+    [BUILDER]: builderBehavior,
+    [UPGRADER]: upgraderBehavior,
+    [HANDYMAN]: handymanBehavior,
+    [FILLER]: fillerBehavior
 };
 
 (function (this: typeof Creep.prototype) {

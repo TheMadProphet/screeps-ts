@@ -6,11 +6,11 @@ import handymanSpawner from "./roles/handyman";
 import upgraderSpawner from "./roles/upgrader";
 
 const roleSpawners: Record<CreepRole, RoleSpawner> = {
-    Harvester: harvesterSpawner,
-    Builder: builderSpawner,
-    Upgrader: upgraderSpawner,
-    Handyman: handymanSpawner,
-    Filler: fillerSpawner
+    [HARVESTER]: harvesterSpawner,
+    [BUILDER]: builderSpawner,
+    [UPGRADER]: upgraderSpawner,
+    [HANDYMAN]: handymanSpawner,
+    [FILLER]: fillerSpawner
 };
 
 (function (this: typeof StructureSpawn.prototype) {
