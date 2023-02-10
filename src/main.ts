@@ -1,4 +1,5 @@
 import "spawner/spawner";
+import "creep/creep";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/Console";
 
