@@ -3,6 +3,7 @@ import builderBehavior from "./roles/builder";
 import upgraderBehavior from "./roles/upgrader";
 import handymanBehavior from "./roles/handyman";
 import fillerBehavior from "./roles/filler";
+import {BUILDER, FILLER, HANDYMAN, HARVESTER, UPGRADER} from "../constants";
 
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [HARVESTER]: harvesterBehavior,

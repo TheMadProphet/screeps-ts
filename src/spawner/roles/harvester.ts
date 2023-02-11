@@ -1,4 +1,5 @@
 import Body from "../body";
+import {HARVESTER} from "../../constants";
 
 const harvesterSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {

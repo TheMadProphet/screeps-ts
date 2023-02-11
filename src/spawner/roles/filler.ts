@@ -1,4 +1,5 @@
 import Body from "../body";
+import {FILLER} from "../../constants";
 
 const fillerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {

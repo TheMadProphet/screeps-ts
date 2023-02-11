@@ -1,4 +1,5 @@
 import Body from "../body";
+import {HANDYMAN} from "../../constants";
 
 const handymanSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
