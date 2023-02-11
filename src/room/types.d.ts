@@ -16,10 +16,6 @@ declare global {
         fillersAreEnabled(): boolean;
 
         hasEnergyEmergency(): boolean;
-
-        drawVisuals(): void;
-
-        drawRoleStats(x: number, y: number, role: CreepRole): void;
     }
 
     interface RoomMemory {

@@ -5,11 +5,10 @@ import RoomStructures from "./constructor/structures";
     this.automate = function () {
         new RoomInfrastructure(this).build();
         new RoomStructures(this).build();
+        new RoomVisuals(this).visualize();
 
         this.spawn.automate();
         // todo other structures i.e. tower
-
-        this.drawVisuals();
     };
 
     this.buildRoad = function (from, to) {
@@ -54,65 +53,6 @@ import RoomStructures from "./constructor/structures";
         if (!this.storage) return false;
 
         return this.storage.store.getUsedCapacity(RESOURCE_ENERGY) <= this.energyCapacityAvailable * 2;
-    };
-
-    this.drawVisuals = function () {
-        const uiFlag = Game.flags["UI"];
-        if (uiFlag && this.controller) {
-            const x = uiFlag.pos.x + 1;
-            let y = uiFlag.pos.y;
-
-            const progress = Math.trunc((this.controller.progress / this.controller.progressTotal) * 100);
-            this.visual.text(`Controller[${this.controller.level}]: ${progress}%`, x, y++, {
-                align: "left",
-                color: "#5a37cc",
-                stroke: "#000000",
-                strokeWidth: 0.1
-            });
-            this.drawRoleStats(x, y++, UPGRADER);
-
-            y++;
-            this.visual.text(`Spawn: ${this.energyAvailable}/${this.energyCapacityAvailable}`, x, y++, {
-                align: "left",
-                color: "#e09107",
-                stroke: "#000000",
-                strokeWidth: 0.1
-            });
-            const usedStorage = this.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0;
-            this.visual.text(`Storage: ${(usedStorage / 1000).toFixed(2)}K`, x, y++, {
-                align: "left",
-                color: "#e09107",
-                stroke: "#000000",
-                strokeWidth: 0.1
-            });
-            if (this.hasEnergyEmergency()) {
-                this.visual.text(`Emergency: ${this.hasEnergyEmergency()}`, x, y++, {
-                    align: "left",
-                    color: "#e09107",
-                    stroke: "#000000",
-                    strokeWidth: 0.1
-                });
-            }
-            this.drawRoleStats(x, y++, HARVESTER);
-
-            y++;
-            this.drawRoleStats(x, y++, BUILDER);
-            this.drawRoleStats(x, y++, HANDYMAN);
-        }
-    };
-
-    this.drawRoleStats = function (x, y, role) {
-        let count = 0;
-        if (this.spawn.creepsByRole[role]) {
-            count = this.spawn.creepsByRole[role]?.length ?? 0;
-        }
-
-        this.visual.text(`${role}: ${count}`, x, y, {
-            align: "left",
-            color: "#a6a6a6",
-            stroke: "#000000",
-            strokeWidth: 0.05
-        });
     };
 }).call(Room.prototype);
 
@@ -177,18 +117,7 @@ function getAvailableStructure(room: Room, structureType: BuildableStructureCons
         filter: structure => structure.structureType === structureType
     }).length;
 
-    const maxAvailable = getMaxStructureForController(structureType, room.controller.level);
+    const maxAvailable = CONTROLLER_STRUCTURES[structureType][room.controller.level];
 
     return maxAvailable - currentlyBuilt;
 }
-
-const getMaxStructureForController = (structureType: BuildableStructureConstant, controllerLevel: number) => {
-    switch (structureType) {
-        case STRUCTURE_EXTENSION:
-            if (controllerLevel <= 1) return 0;
-            if (controllerLevel === 2) return 5;
-            return (controllerLevel - 2) * 10;
-    }
-
-    return 0;
-};
