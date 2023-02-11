@@ -14,7 +14,7 @@ declare global {
 
         withdrawEnergy(includeSpawn?: boolean): void;
 
-        findEnergyRepository(includeSpawn?: boolean): Structure;
+        findEnergyRepository(includeSpawn?: boolean): Structure | null;
 
         withdrawFrom(target: Structure, resource?: ResourceConstant): void;
 

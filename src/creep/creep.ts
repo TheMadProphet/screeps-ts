@@ -37,7 +37,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     };
 
     this.findEnergyRepository = function (includeSpawn = true) {
-        if (this.room.fillersAreEnabled()) return this.room.storage;
+        if (this.room.fillersAreEnabled() && this.room.storage) return this.room.storage;
 
         const closestContainerWithEnergy = this.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: structure =>
