@@ -54,7 +54,7 @@ function buildRoadForSource(spawn: StructureSpawn, source: Source) {
 
 function buildSourceInfrastructure(spawn: StructureSpawn, source: Source) {
     const roomMemory = spawn.room.memory;
-    if (!roomMemory.sources[source.id]) roomMemory.sources[source.id] = {};
+    if (!roomMemory.sources[source.id]) roomMemory.sources[source.id] = {assignedWorkers: []};
     const sourceMemory = roomMemory.sources[source.id];
 
     if (!sourceMemory.hasRoad) {

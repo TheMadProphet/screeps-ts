@@ -1,5 +1,6 @@
 import RoomInfrastructure from "./constructor/infrastructure";
 import RoomStructures from "./constructor/structures";
+import RoomVisuals from "./visuals";
 
 (function (this: typeof Room.prototype) {
     this.automate = function () {

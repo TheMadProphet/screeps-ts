@@ -1,3 +1,5 @@
+import {BUILDER, HANDYMAN, HARVESTER, UPGRADER} from "../constants";
+
 class RoomVisuals {
     room: Room;
 
@@ -64,3 +66,5 @@ class RoomVisuals {
         });
     }
 }
+
+export default RoomVisuals;

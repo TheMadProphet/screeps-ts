@@ -1,5 +1,6 @@
 import "creep/creep";
 import "spawner/spawner";
+import "room/room";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/Console";
 
