@@ -18,7 +18,7 @@ const harvesterSpawner: RoleSpawner = {
 
         for (let sourceId in sources) {
             const sourceMemory = sources[sourceId as Id<Source>];
-            if (sourceMemory.assignedWorkers.length < sourceMemory.maxWorkerCount) {
+            if (sourceMemory.maxWorkerCount && sourceMemory.assignedWorkers.length < sourceMemory.maxWorkerCount) {
                 const body = new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 6);
                 return spawner.spawn(body, {role: HARVESTER, assignedSource: sourceId as Id<Source>});
             }

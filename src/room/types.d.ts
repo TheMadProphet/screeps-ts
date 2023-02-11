@@ -29,6 +29,6 @@ declare global {
         hasRoad?: boolean;
         maxWorkerCount?: number;
         distanceToSpawn?: number;
-        assignedWorkers?: Id<Creep>[];
+        assignedWorkers: Id<Creep>[];
     }
 }

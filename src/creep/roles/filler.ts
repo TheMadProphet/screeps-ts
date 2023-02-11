@@ -19,7 +19,7 @@ const fillerBehavior: RoleBehavior = {
 
 function gatherEnergy(creep: Creep) {
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
-        creep.withdrawFrom(creep.room.storage);
+        creep.withdrawFrom(creep.room.storage!);
     } else {
         const containersWithEnergy = creep.room.find(FIND_STRUCTURES, {
             filter: structure =>
