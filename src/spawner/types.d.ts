@@ -1,14 +1,17 @@
-import Body from "./body";
+export {};
 
 declare global {
     interface StructureSpawn {
+        spawnQueue: CreepSpawnRequest[];
         creepsByRole: {
-            [role in CreepRole]?: Creep[];
+            [role in CreepRole]: Creep[];
         };
 
         automate(): void;
 
-        spawn(body: Body, memory: CreepMemory): ScreepsReturnCode;
+        spawn(request: CreepSpawnRequest): ScreepsReturnCode;
+
+        addQueue(request: CreepSpawnRequest, count?: number): void;
 
         displayVisuals(): void;
 
@@ -18,9 +21,15 @@ declare global {
     interface SpawnMemory {
         hasEnoughEnergy: boolean;
         wantsToSpawn: string;
+        spawnQueue: CreepSpawnRequest[];
+    }
+
+    interface CreepSpawnRequest {
+        parts: BodyPartConstant[];
+        memory: CreepMemory;
     }
 
     interface RoleSpawner {
-        spawn: (spawner: StructureSpawn) => ScreepsReturnCode;
+        spawn: (spawner: StructureSpawn) => void;
     }
 }

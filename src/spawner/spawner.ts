@@ -1,10 +1,9 @@
-import Body from "./body";
 import harvesterSpawner from "./roles/harvester";
 import builderSpawner from "./roles/builder";
 import fillerSpawner from "./roles/filler";
 import handymanSpawner from "./roles/handyman";
 import upgraderSpawner from "./roles/upgrader";
-import {BUILDER, FILLER, HANDYMAN, HARVESTER, UPGRADER} from "../constants";
+import {BUILDER, FILLER, HANDYMAN, HARVESTER, roles, UPGRADER} from "../constants";
 
 const roleSpawners: Record<CreepRole, RoleSpawner> = {
     [HARVESTER]: harvesterSpawner,
@@ -16,28 +15,32 @@ const roleSpawners: Record<CreepRole, RoleSpawner> = {
 
 (function (this: typeof StructureSpawn.prototype) {
     this.automate = function () {
-        this.creepsByRole = {};
+        if (!this.memory.spawnQueue) {
+            this.memory.spawnQueue = [];
+        }
 
+        this.creepsByRole = roles.reduce((acc, role) => {
+            return {...acc, [role]: []};
+        }, {} as {[role in CreepRole]: Creep[]});
         for (const name in Memory.creeps) {
             const creep = Game.creeps[name];
-            const creeps = this.creepsByRole[creep.memory.role];
-            if (!creeps) {
-                this.creepsByRole[creep.memory.role] = [creep];
-            } else {
-                creeps.push(creep);
-            }
+            this.creepsByRole[creep.memory.role].push(creep);
         }
 
         _.forEach(roleSpawners, roleSpawner => {
             roleSpawner.spawn(this);
         });
 
+        if (!this.spawning && this.memory.spawnQueue.length > 0) {
+            this.spawn(this.memory.spawnQueue.shift()!);
+        }
+
         this.displayVisuals();
     };
 
-    this.spawn = function (body: Body, memory: CreepMemory) {
-        const creepName = `${memory.role}[${body.cost()}]`;
-        const spawnStatus = this.spawnCreep(body.getParts(), creepName + `(${Game.time})`, {memory});
+    this.spawn = function ({parts, memory}) {
+        const creepName = `${memory.role}`;
+        const spawnStatus = this.spawnCreep(parts, creepName + `(${Game.time})`, {memory});
 
         if (spawnStatus === ERR_NOT_ENOUGH_ENERGY) {
             this.memory.hasEnoughEnergy = false;
@@ -45,6 +48,10 @@ const roleSpawners: Record<CreepRole, RoleSpawner> = {
         }
 
         return spawnStatus;
+    };
+
+    this.addQueue = function (request, count = 1) {
+        _.times(count, () => this.memory.spawnQueue?.push(request));
     };
 
     this.displayVisuals = function () {

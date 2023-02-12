@@ -11,10 +11,6 @@ class Body {
         return this.parts.sort();
     }
 
-    cost() {
-        return this.calculateCost(this.getParts());
-    }
-
     addParts(parts: BodyPartConstant[], amount = 1) {
         const maxAmount = Math.trunc(this.totalEnergy / this.calculateCost(parts));
         const partsToAdd = Math.min(amount, maxAmount);
