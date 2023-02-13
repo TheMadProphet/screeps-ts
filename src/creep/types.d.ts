@@ -1,4 +1,4 @@
-import {BUILDER, FILLER, HANDYMAN, HARVESTER, MINER, UPGRADER} from "../constants";
+import {BUILDER, FILLER, HANDYMAN, HARVESTER, HAULER, MINER, UPGRADER} from "../constants";
 
 declare global {
     interface Creep {
@@ -33,6 +33,7 @@ declare global {
     export type CreepRole =
         | typeof HARVESTER
         | typeof MINER
+        | typeof HAULER
         | typeof UPGRADER
         | typeof BUILDER
         | typeof HANDYMAN

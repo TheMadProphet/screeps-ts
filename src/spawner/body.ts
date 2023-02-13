@@ -24,6 +24,14 @@ class Body {
         return this;
     }
 
+    getPartCount(partType: BodyPartConstant) {
+        return this.parts.filter(part => part === partType).length;
+    }
+
+    getCapacity() {
+        return CARRY_CAPACITY* this.getPartCount(CARRY);
+    }
+
     calculateCost(parts: BodyPartConstant[]) {
         let cost = 0;
 
