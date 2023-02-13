@@ -1,4 +1,4 @@
-import {BUILDER, HANDYMAN, HARVESTER, UPGRADER} from "../constants";
+import {BUILDER, CreepRole, HANDYMAN, HARVESTER, UPGRADER} from "../constants";
 
 class RoomVisuals {
     room: Room;

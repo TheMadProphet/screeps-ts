@@ -3,7 +3,7 @@ import builderBehavior from "./roles/builder";
 import upgraderBehavior from "./roles/upgrader";
 import handymanBehavior from "./roles/handyman";
 import fillerBehavior from "./roles/filler";
-import {BUILDER, FILLER, HANDYMAN, HARVESTER, HAULER, MINER, UPGRADER} from "../constants";
+import {BUILDER, CreepRole, FILLER, HANDYMAN, HARVESTER, HAULER, MINER, UPGRADER} from "../constants";
 import minerBehavior from "./roles/miner";
 import haulerBehavior from "./roles/hauler";
 
