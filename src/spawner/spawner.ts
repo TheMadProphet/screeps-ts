@@ -3,10 +3,12 @@ import builderSpawner from "./roles/builder";
 import fillerSpawner from "./roles/filler";
 import handymanSpawner from "./roles/handyman";
 import upgraderSpawner from "./roles/upgrader";
-import {BUILDER, FILLER, HANDYMAN, HARVESTER, roles, UPGRADER} from "../constants";
+import minerSpawner from "./roles/miner";
+import {BUILDER, FILLER, HANDYMAN, HARVESTER, MINER, roles, UPGRADER} from "../constants";
 
 const roleSpawners: Record<CreepRole, RoleSpawner> = {
     [HARVESTER]: harvesterSpawner,
+    [MINER]: minerSpawner,
     [BUILDER]: builderSpawner,
     [UPGRADER]: upgraderSpawner,
     [HANDYMAN]: handymanSpawner,
