@@ -1,3 +1,5 @@
+import {CreepRole} from "../constants";
+
 export {};
 
 declare global {

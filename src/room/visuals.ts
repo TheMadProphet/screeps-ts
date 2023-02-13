@@ -1,4 +1,4 @@
-import {BUILDER, CreepRole, HANDYMAN, HARVESTER, UPGRADER} from "../constants";
+import {BUILDER, CreepRole, HANDYMAN, HAULER, MINER, UPGRADER} from "../constants";
 
 class RoomVisuals {
     room: Room;
@@ -44,7 +44,8 @@ class RoomVisuals {
                     strokeWidth: 0.1
                 });
             }
-            this.drawRoleStats(x, y++, HARVESTER);
+            this.drawRoleStats(x, y++, MINER);
+            this.drawRoleStats(x, y++, HAULER);
 
             y++;
             this.drawRoleStats(x, y++, BUILDER);

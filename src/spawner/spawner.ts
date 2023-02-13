@@ -1,16 +1,14 @@
-import harvesterSpawner from "./roles/harvester";
 import builderSpawner from "./roles/builder";
 import fillerSpawner from "./roles/filler";
 import handymanSpawner from "./roles/handyman";
 import upgraderSpawner from "./roles/upgrader";
 import minerSpawner from "./roles/miner";
-import {BUILDER, CreepRole, FILLER, HANDYMAN, HARVESTER, HAULER, MINER, roles, UPGRADER} from "../constants";
+import {BUILDER, CreepRole, FILLER, HANDYMAN, HAULER, MINER, roles, UPGRADER} from "../constants";
 import haulerSpawner from "./roles/hauler";
 
-const roleSpawners: Record<CreepRole, RoleSpawner> = {
-    [HARVESTER]: harvesterSpawner,
-    [MINER]: minerSpawner,
+const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [HAULER]: haulerSpawner,
+    [MINER]: minerSpawner,
     [BUILDER]: builderSpawner,
     [UPGRADER]: upgraderSpawner,
     [HANDYMAN]: handymanSpawner,
