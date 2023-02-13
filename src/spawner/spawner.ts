@@ -15,10 +15,6 @@ const roleSpawners: Record<CreepRole, RoleSpawner> = {
 
 (function (this: typeof StructureSpawn.prototype) {
     this.automate = function () {
-        if (!this.memory.spawnQueue) {
-            this.memory.spawnQueue = [];
-        }
-
         this.creepsByRole = roles.reduce((acc, role) => {
             return {...acc, [role]: []};
         }, {} as {[role in CreepRole]: Creep[]});
@@ -29,12 +25,8 @@ const roleSpawners: Record<CreepRole, RoleSpawner> = {
         this.memory.hasEnoughEnergy = true;
 
         _.forEach(roleSpawners, roleSpawner => {
-            roleSpawner.spawn(this);
+            return !roleSpawner.spawn(this);
         });
-
-        if (!this.spawning && this.memory.spawnQueue.length > 0) {
-            this.spawn(this.memory.spawnQueue.shift()!);
-        }
 
         this.displayVisuals();
     };
@@ -49,10 +41,6 @@ const roleSpawners: Record<CreepRole, RoleSpawner> = {
         }
 
         return spawnStatus;
-    };
-
-    this.addQueue = function (request, count = 1) {
-        _.times(count, () => this.memory.spawnQueue?.push(request));
     };
 
     this.displayVisuals = function () {

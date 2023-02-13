@@ -10,7 +10,7 @@ function extraCreepCountForDistance(start: RoomPosition, end: RoomPosition) {
 const upgraderSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         const controller = spawner.room.controller;
-        if (!controller) return;
+        if (!controller) return false;
 
         const upgraders = spawner.creepsByRole[UPGRADER];
         let maxUpgraders = 3 + extraCreepCountForDistance(spawner.pos, controller.pos);
@@ -29,11 +29,15 @@ const upgraderSpawner: RoleSpawner = {
                 .addParts([WORK, WORK, WORK, CARRY, MOVE, MOVE], 2)
                 .addParts([WORK, CARRY, MOVE], 2);
 
-            spawner.addQueue({
+            spawner.spawn({
                 parts: body.getParts(),
                 memory: {role: UPGRADER}
             });
+
+            return true;
         }
+
+        return false;
     }
 };
 

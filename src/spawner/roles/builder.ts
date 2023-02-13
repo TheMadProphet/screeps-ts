@@ -9,14 +9,18 @@ const builderSpawner: RoleSpawner = {
             if (!builders || !builders.length || builders.length < maxBuilders) {
                 const body = new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 5);
 
-                spawner.addQueue({
+                spawner.spawn({
                     parts: body.getParts(),
                     memory: {
                         role: BUILDER
                     }
                 });
+
+                return true;
             }
         }
+
+        return false;
     }
 };
 

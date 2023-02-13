@@ -2,7 +2,6 @@ export {};
 
 declare global {
     interface StructureSpawn {
-        spawnQueue: CreepSpawnRequest[];
         creepsByRole: {
             [role in CreepRole]: Creep[];
         };
@@ -10,8 +9,6 @@ declare global {
         automate(): void;
 
         spawn(request: CreepSpawnRequest): ScreepsReturnCode;
-
-        addQueue(request: CreepSpawnRequest, count?: number): void;
 
         displayVisuals(): void;
 
@@ -21,7 +18,6 @@ declare global {
     interface SpawnMemory {
         hasEnoughEnergy: boolean;
         wantsToSpawn: string;
-        spawnQueue: CreepSpawnRequest[];
     }
 
     interface CreepSpawnRequest {
@@ -30,6 +26,6 @@ declare global {
     }
 
     interface RoleSpawner {
-        spawn: (spawner: StructureSpawn) => void;
+        spawn: (spawner: StructureSpawn) => boolean;
     }
 }
