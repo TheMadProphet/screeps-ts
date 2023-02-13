@@ -22,7 +22,7 @@ const haulerSpawner: RoleSpawner = {
         if (spawner.creepsByRole[HAULER].length < requiredHaulerCount) {
             spawner.spawn({
                 parts: body.getParts(),
-                memory: {role: HARVESTER}
+                memory: {role: HAULER}
             });
 
             return true;
