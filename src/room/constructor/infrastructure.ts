@@ -1,11 +1,5 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
 
-function extraCreepCountForDistance(start: RoomPosition, end: RoomPosition) {
-    const distance = start.findPathTo(end).length;
-
-    return Math.trunc(distance / 15);
-}
-
 function getSpaceAroundSource(source: Source) {
     const room = source.room;
     const pos = source.pos;
@@ -62,15 +56,11 @@ function buildSourceInfrastructure(spawn: StructureSpawn, source: Source) {
         roomMemory.sources[source.id].hasRoad = true;
     }
 
-    if (!sourceMemory.maxWorkerCount) {
-        const spaceAroundSource = getSpaceAroundSource(source);
+    if (!sourceMemory.spaceAvailable) {
+        roomMemory.sources[source.id].spaceAvailable = getSpaceAroundSource(source);
+    }
 
-        let maxWorkerCount = 1 + extraCreepCountForDistance(spawn.pos, source.pos);
-        if (spaceAroundSource > 2) {
-            maxWorkerCount += 2;
-        }
-
-        roomMemory.sources[source.id].maxWorkerCount = maxWorkerCount;
+    if (!sourceMemory.distanceToSpawn) {
         roomMemory.sources[source.id].distanceToSpawn = spawn.pos.findPathTo(source).length;
     }
 }
@@ -93,7 +83,7 @@ function buildEnergyInfrastructure(room: Room) {
         } else {
             _.forEach(room.memory.sources, (it, sourceId) => {
                 const id = sourceId as Id<Source>;
-                if (!it.hasRoad || !it.maxWorkerCount) {
+                if (!it.hasRoad || !it.spaceAvailable || !it.distanceToSpawn) {
                     source = Game.getObjectById(id);
                 }
             });

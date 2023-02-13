@@ -18,8 +18,17 @@ const minerSpawner: RoleSpawner = {
         });
 
         for (let sourceId in sources) {
-            const sourceMemory = sources[sourceId as Id<Source>];
-            if (sourceMemory.maxWorkerCount && sourceMemory.assignedWorkers.length < sourceMemory.maxWorkerCount) {
+            const sourceMemory = sources[sourceId as Id<Source>] as Required<SourceMemory>;
+
+            let workParts = 0;
+            _.forEach(spawner.creepsByRole[MINER], worker => {
+                if (worker.memory.assignedSource === sourceId) {
+                    workParts += worker.getActiveBodyparts(WORK);
+                }
+            });
+
+            const hasSpaceForMore = sourceMemory.spaceAvailable > sourceMemory.assignedWorkers.length;
+            if (hasSpaceForMore && workParts < 6) {
                 const body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
 
                 spawner.spawn({
