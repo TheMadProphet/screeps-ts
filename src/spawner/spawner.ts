@@ -26,6 +26,7 @@ const roleSpawners: Record<CreepRole, RoleSpawner> = {
             const creep = Game.creeps[name];
             this.creepsByRole[creep.memory.role].push(creep);
         }
+        this.memory.hasEnoughEnergy = true;
 
         _.forEach(roleSpawners, roleSpawner => {
             roleSpawner.spawn(this);
