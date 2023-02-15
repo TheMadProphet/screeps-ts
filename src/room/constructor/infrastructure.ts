@@ -21,78 +21,21 @@ function getSpaceAroundSource(source: Source) {
     return space;
 }
 
-function buildRoadAroundSource(source: Source) {
-    const room = source.room;
-    const pos = source.pos;
-
-    const area = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1);
-    _.forEach(area, (y: number) => {
-        _.forEach(area[y], (objects, x: any) => {
-            for (const i in objects) {
-                const object = objects[i];
-                const position = room.getPositionAt(x, y);
-                if (object.type === LOOK_TERRAIN && object.terrain !== "wall" && position) {
-                    room.createConstructionSite(position, STRUCTURE_ROAD);
-                }
-            }
-        });
-    });
-}
-
-function buildRoadForSource(spawn: StructureSpawn, source: Source) {
-    console.log("building road for", source.id);
-    buildRoadAroundSource(source);
-    source.room.buildBiDirectionalRoad(spawn.pos, source.pos);
-    console.log("built road for", source.id);
-}
-
-function buildSourceInfrastructure(spawn: StructureSpawn, source: Source) {
-    const roomMemory = spawn.room.memory;
-    if (!roomMemory.sources[source.id]) roomMemory.sources[source.id] = {assignedWorkers: []};
-    const sourceMemory = roomMemory.sources[source.id];
-
-    if (!sourceMemory.hasRoad) {
-        // buildRoadForSource(spawn, source);
-        roomMemory.sources[source.id].hasRoad = true;
-    }
-
-    if (!sourceMemory.spaceAvailable) {
-        roomMemory.sources[source.id].spaceAvailable = getSpaceAroundSource(source);
-    }
-
-    if (!sourceMemory.distanceToSpawn) {
-        roomMemory.sources[source.id].distanceToSpawn = spawn.pos.findPathTo(source).length;
-    }
-}
-
 function buildEnergyInfrastructure(room: Room) {
-    if (_.size(room.memory.sources) !== _.size(room.rawSources)) {
-        if (!room.memory.sources) {
-            room.memory.sources = {};
-        }
+    if (room.memory.sources || !room.spawn) return;
 
-        let source;
-        if (_.size(room.memory.sources) === 0) {
-            source = room.spawn.pos.findClosestByPath(FIND_SOURCES, {
-                filter: source => getSpaceAroundSource(source) > 0
-            });
-        } else if (_.size(room.memory.sources) === 1) {
-            source = room.spawn.pos.findClosestByPath(FIND_SOURCES, {
-                filter: source => source.id !== _.findLastKey(room.memory.sources) && getSpaceAroundSource(source) > 0
-            });
-        } else {
-            _.forEach(room.memory.sources, (it, sourceId) => {
-                const id = sourceId as Id<Source>;
-                if (!it.hasRoad || !it.spaceAvailable || !it.distanceToSpawn) {
-                    source = Game.getObjectById(id);
-                }
-            });
-        }
-
-        if (source) {
-            buildSourceInfrastructure(room.spawn, source);
-        }
-    }
+    room.memory.sources = room.rawSources
+        .filter(it => getSpaceAroundSource(it) > 0)
+        .map(it => ({
+            id: it.id,
+            spaceAvailable: getSpaceAroundSource(it),
+            distanceToSpawn: room.spawn.pos.findPathTo(it).length,
+            assignedWorkers: []
+        }))
+        .sort((a, b) => a.distanceToSpawn - b.distanceToSpawn)
+        .reduce((acc, sourceMemory) => {
+            return {...acc, [sourceMemory.id]: sourceMemory};
+        }, {} as Record<Id<Source>, SourceMemory>);
 }
 
 function buildControllerInfrastructure(room: Room) {
@@ -122,11 +65,9 @@ class RoomInfrastructure {
     build() {
         if (!this.room.controller) return;
 
-        if (!this.room.constructionSites.length) {
-            buildEnergyInfrastructure(this.room);
-            buildControllerInfrastructure(this.room);
-            buildSpawnInfrastructure(this.room);
-        }
+        buildEnergyInfrastructure(this.room);
+        buildControllerInfrastructure(this.room);
+        buildSpawnInfrastructure(this.room);
     }
 }
 

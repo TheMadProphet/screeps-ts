@@ -26,9 +26,9 @@ declare global {
     }
 
     interface SourceMemory {
-        hasRoad?: boolean;
-        spaceAvailable?: number;
-        distanceToSpawn?: number;
+        id: Id<Source>;
+        spaceAvailable: number;
+        distanceToSpawn: number;
         assignedWorkers: Id<Creep>[];
     }
 }
