@@ -1,4 +1,8 @@
-const builderBehavior: RoleBehavior = {
+interface BuilderBehavior extends RoleBehavior {
+    buildConstructions(creep: Creep): void;
+}
+
+const builderBehavior: BuilderBehavior = {
     run: function (creep: Creep) {
         if (!creep.room.constructionSites.length) {
             creep.idle();
@@ -15,18 +19,18 @@ const builderBehavior: RoleBehavior = {
         }
 
         if (creep.memory.working) {
-            buildConstruction(creep);
+            this.buildConstructions(creep);
         } else {
             creep.withdrawEnergy();
         }
+    },
+
+    buildConstructions(creep: Creep): void {
+        const closestConstruction = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES)!;
+        if (creep.build(closestConstruction) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(closestConstruction, {visualizePathStyle: {stroke: "#ffffff"}});
+        }
     }
 };
-
-function buildConstruction(creep: Creep) {
-    const closestConstruction = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES)!;
-    if (creep.build(closestConstruction) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(closestConstruction, {visualizePathStyle: {stroke: "#ffffff"}});
-    }
-}
 
 export default builderBehavior;
