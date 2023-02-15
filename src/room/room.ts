@@ -4,8 +4,8 @@ import RoomVisuals from "./visuals";
 
 (function (this: typeof Room.prototype) {
     this.automate = function () {
-        new RoomInfrastructure(this).build();
         new RoomStructures(this).build();
+        new RoomInfrastructure(this).build();
         new RoomVisuals(this).visualize();
 
         this.spawn.automate();

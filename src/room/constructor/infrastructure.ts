@@ -122,9 +122,11 @@ class RoomInfrastructure {
     build() {
         if (!this.room.controller) return;
 
-        buildEnergyInfrastructure(this.room);
-        buildControllerInfrastructure(this.room);
-        buildSpawnInfrastructure(this.room);
+        if (!this.room.constructionSites.length) {
+            buildEnergyInfrastructure(this.room);
+            buildControllerInfrastructure(this.room);
+            buildSpawnInfrastructure(this.room);
+        }
     }
 }
 
