@@ -1,5 +1,5 @@
-import builderBehavior from "./builder";
-import upgraderBehavior from "./upgrader";
+import builderBehavior from "./builderBehavior";
+import upgraderBehavior from "./upgraderBehavior";
 
 const workerBehavior: RoleBehavior = {
     run(creep: Creep) {
