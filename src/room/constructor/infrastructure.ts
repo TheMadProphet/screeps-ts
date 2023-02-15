@@ -52,7 +52,7 @@ function buildSourceInfrastructure(spawn: StructureSpawn, source: Source) {
     const sourceMemory = roomMemory.sources[source.id];
 
     if (!sourceMemory.hasRoad) {
-        buildRoadForSource(spawn, source);
+        // buildRoadForSource(spawn, source);
         roomMemory.sources[source.id].hasRoad = true;
     }
 
