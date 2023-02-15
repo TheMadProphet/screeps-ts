@@ -16,7 +16,10 @@ const haulerSpawner: RoleSpawner = {
         const energyStoredByHaulerPerLifetime = body.getCapacity() * biRoutePerLifetime;
         const requiredHaulerCount = energyGeneratedByWorkerPerLifetime / energyStoredByHaulerPerLifetime;
 
-        if (spawner.creepsByRole[HAULER].length < requiredHaulerCount) {
+        if (
+            spawner.creepsByRole[HAULER].length === 0 ||
+            spawner.creepsByRole[HAULER].length < Math.floor(requiredHaulerCount)
+        ) {
             spawner.spawn({
                 parts: body.getParts(),
                 memory: {role: HAULER}
