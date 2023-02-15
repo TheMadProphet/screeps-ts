@@ -5,6 +5,8 @@ const DISTANCE_TEMP = 15;
 
 const haulerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
+        if (spawner.creepsByRole[MINER].length === 0) return false;
+
         const totalWorkParts = spawner.creepsByRole[MINER].reduce(
             (acc, miner) => acc + miner.getActiveBodyparts(WORK),
             0
