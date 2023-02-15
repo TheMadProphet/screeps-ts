@@ -46,12 +46,14 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     };
 
     this.displayVisuals = function () {
-        if (!this.memory.hasEnoughEnergy) {
-            this.room.visual.text(`🪫`, this.pos.x, this.pos.y - 1);
-        }
-
         if (this.spawning) {
             this.room.visual.text(`🛠 ${this.spawning.name}`, this.pos.x + 1, this.pos.y, {align: "left"});
+
+            if (!this.memory.hasEnoughEnergy) {
+                this.room.visual.text(`🪫`, this.pos.x, this.pos.y - 1);
+            }
+        } else if (!this.memory.hasEnoughEnergy) {
+            this.room.visual.text(`🪫 ${this.memory.wantsToSpawn}`, this.pos.x + 1, this.pos.y, {align: "left"});
         }
     };
 
