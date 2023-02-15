@@ -3,6 +3,7 @@ import "spawner/spawner";
 import "room/room";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/Console";
+import workerOrganizer from "./creep/workerOrganizer";
 
 declare global {
     namespace NodeJS {
@@ -21,6 +22,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
     }
 
-    _.forEach(Game.rooms, room => room.automate());
+    _.forEach(Game.rooms, room => {
+        room.automate();
+        workerOrganizer.organizeWorkersIn(room);
+    });
+
     _.forEach(Game.creeps, creep => creep.runRole());
 });
