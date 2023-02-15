@@ -21,6 +21,7 @@ declare global {
 
     interface CreepMemory {
         role: CreepRole;
+        task?: string;
         room?: string;
         working?: boolean;
         assignedSource?: Id<Source>;

@@ -1,16 +1,16 @@
-import builderSpawner from "./roles/builder";
 import fillerSpawner from "./roles/filler";
 import handymanSpawner from "./roles/handyman";
-import upgraderSpawner from "./roles/upgrader";
 import minerSpawner from "./roles/miner";
-import {BUILDER, CreepRole, FILLER, HANDYMAN, HAULER, MINER, roles, UPGRADER} from "../constants";
+import {CreepRole, FILLER, HANDYMAN, HAULER, MINER, roles, WORKER} from "../constants";
 import haulerSpawner from "./roles/hauler";
+import workerSpawner from "./roles/worker";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,
-    [BUILDER]: builderSpawner,
-    [UPGRADER]: upgraderSpawner,
+    [WORKER]: workerSpawner,
+    // [BUILDER]: builderSpawner,
+    // [UPGRADER]: upgraderSpawner,
     [HANDYMAN]: handymanSpawner,
     [FILLER]: fillerSpawner
 };
