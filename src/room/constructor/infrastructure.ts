@@ -96,14 +96,14 @@ function buildEnergyInfrastructure(room: Room) {
 }
 
 function buildControllerInfrastructure(room: Room) {
-    if (!room.memory.hasRoadToController && room.controller!.level >= 2) {
+    if (!room.memory.hasRoadToController && room.controller!.level >= 3) {
         room.buildRoad(room.spawn.pos, room.controller!.pos);
         room.memory.hasRoadToController = true;
     }
 }
 
 function buildSpawnInfrastructure(room: Room) {
-    if (!room.memory.hasRoadAroundSpawn && room.controller!.level >= 2) {
+    if (!room.memory.hasRoadAroundSpawn && room.controller!.level >= 3) {
         const positions = getPositionsAround(room.spawn.pos, 1);
         positions.push(...getPositionsAround(room.spawn.pos, 2));
         buildRoadAtPositions(room, positions);
