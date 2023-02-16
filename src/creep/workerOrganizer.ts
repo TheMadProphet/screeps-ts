@@ -5,17 +5,18 @@ const workerOrganizer = {
         if (!room.spawn) return;
 
         const workers = room.spawn.creepsByRole[WORKER];
-
-        const upgraders = _.filter(workers, worker => worker.memory.task === "upgrader");
+        if (workers.length === 0) return;
 
         if (room.constructionSites.length > 0) {
+            const upgraders = _.filter(workers, worker => worker.memory.task === "upgrader");
             if (upgraders.length > 1) {
-                const onlyUpgrader = upgraders[0];
-                _.forEach(upgraders, upgrader => {
-                    upgrader.memory.task = "builder";
+                _.forEach(upgraders, (upgrader, t) => {
+                    if (t != 0) {
+                        upgrader.memory.task = "builder";
+                    }
                 });
-
-                onlyUpgrader.memory.task = "upgrader";
+            } else if (upgraders.length === 0) {
+                workers[0].memory.task = "upgrader";
             }
         } else {
             _.forEach(workers, worker => {
