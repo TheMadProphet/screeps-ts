@@ -29,6 +29,7 @@ declare global {
         id: Id<Source>;
         spaceAvailable: number;
         pathFromSpawn: PathStep[];
+        pathToSpawn: PathStep[];
         assignedMiners: Id<Creep>[];
     }
 }

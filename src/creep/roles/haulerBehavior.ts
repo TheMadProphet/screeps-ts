@@ -19,7 +19,10 @@ const haulerBehavior: HaulerBehavior = {
 
     pickupEnergyNearSource(creep: Creep, source: Source) {
         if (!creep.pos.inRangeTo(source, 2)) {
-            creep.moveByPath(creep.room.memory!.sources[source.id].pathFromSpawn)
+            const pathFromSpawn = creep.room.memory!.sources[source.id].pathFromSpawn;
+            if (creep.moveByPath(pathFromSpawn) === ERR_NOT_FOUND) {
+                creep.moveTo(pathFromSpawn[0].x, pathFromSpawn[0].y);
+            }
         } else {
             const droppedEnergies = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 5, {
                 filter: resource =>

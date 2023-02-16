@@ -31,6 +31,7 @@ function buildEnergyInfrastructure(room: Room) {
                 id: it.id,
                 spaceAvailable: getSpaceAroundSource(it),
                 pathFromSpawn: room.spawn.pos.findPathTo(it),
+                pathToSpawn: it.pos.findPathTo(room.spawn),
                 assignedMiners: []
             } as SourceMemory;
         })
