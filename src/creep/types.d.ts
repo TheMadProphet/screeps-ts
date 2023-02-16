@@ -17,10 +17,13 @@ declare global {
         fillSpawnsWithEnergy(): ScreepsReturnCode;
 
         fillContainersWithEnergy(): ScreepsReturnCode;
+
+        movedLastTick(): boolean;
     }
 
     interface CreepMemory {
         role: CreepRole;
+        previousPos?: RoomPosition;
         task?: string;
         room?: string;
         working?: boolean;
