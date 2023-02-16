@@ -26,13 +26,15 @@ function buildEnergyInfrastructure(room: Room) {
 
     room.memory.sources = room.rawSources
         .filter(it => getSpaceAroundSource(it) > 0)
-        .map(it => ({
-            id: it.id,
-            spaceAvailable: getSpaceAroundSource(it),
-            distanceToSpawn: room.spawn.pos.findPathTo(it).length,
-            assignedWorkers: []
-        }))
-        .sort((a, b) => a.distanceToSpawn - b.distanceToSpawn)
+        .map(it => {
+            return {
+                id: it.id,
+                spaceAvailable: getSpaceAroundSource(it),
+                pathFromSpawn: room.spawn.pos.findPathTo(it),
+                assignedMiners: []
+            } as SourceMemory;
+        })
+        .sort((a, b) => a.pathFromSpawn.length - b.pathFromSpawn.length)
         .reduce((acc, sourceMemory) => {
             return {...acc, [sourceMemory.id]: sourceMemory};
         }, {} as Record<Id<Source>, SourceMemory>);

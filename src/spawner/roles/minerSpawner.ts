@@ -6,14 +6,14 @@ const minerSpawner: RoleSpawner = {
         const sources = {...spawner.room.memory.sources};
 
         _.forEach(sources, source => {
-            source.assignedWorkers = [];
+            source.assignedMiners = [];
         });
 
         _.forEach(spawner.creepsByRole[MINER] ?? [], miner => {
             const assignedSource = miner.memory.assignedSource;
 
             if (assignedSource && sources[assignedSource]) {
-                sources[assignedSource].assignedWorkers.push(miner.id);
+                sources[assignedSource].assignedMiners.push(miner.id);
             }
         });
 
@@ -27,7 +27,7 @@ const minerSpawner: RoleSpawner = {
                 }
             });
 
-            const hasSpaceForMore = sourceMemory.spaceAvailable > sourceMemory.assignedWorkers.length;
+            const hasSpaceForMore = sourceMemory.spaceAvailable > sourceMemory.assignedMiners.length;
             if (hasSpaceForMore && workParts < 6) {
                 const body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
 

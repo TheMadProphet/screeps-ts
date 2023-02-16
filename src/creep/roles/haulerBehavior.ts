@@ -1,16 +1,34 @@
-const haulerBehavior: RoleBehavior = {
+interface HaulerBehavior extends RoleBehavior {
+    pickupEnergyNearSource(creep: Creep, source: Source): void;
+}
+
+const haulerBehavior: HaulerBehavior = {
     run: function (creep: Creep) {
+        const source = Game.getObjectById(creep.memory.assignedSource ?? ("" as Id<Source>)) as Source;
+        if (!source) {
+            creep.say("⚠");
+            return;
+        }
+
         if (creep.store.getUsedCapacity() > 0) {
             creep.fillSpawnsWithEnergy();
         } else {
-            const closestDroppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+            this.pickupEnergyNearSource(creep, source);
+        }
+    },
+
+    pickupEnergyNearSource(creep: Creep, source: Source) {
+        if (!creep.pos.inRangeTo(source, 2)) {
+            creep.moveByPath(creep.room.memory!.sources[source.id].pathFromSpawn)
+        } else {
+            const droppedEnergies = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 5, {
                 filter: resource =>
                     resource.resourceType === RESOURCE_ENERGY &&
-                    resource.amount >= creep.getActiveBodyparts(CARRY) * CARRY_CAPACITY * 0.8
+                    resource.amount >= creep.getActiveBodyparts(CARRY) * CARRY_CAPACITY * 0.9
             });
 
-            if (closestDroppedEnergy && creep.pickup(closestDroppedEnergy) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(closestDroppedEnergy, {visualizePathStyle: {stroke: "#ffaa00"}});
+            if (droppedEnergies[0] && creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(droppedEnergies[0], {visualizePathStyle: {stroke: "#ffaa00"}});
             }
         }
     }

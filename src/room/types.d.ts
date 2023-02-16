@@ -28,7 +28,7 @@ declare global {
     interface SourceMemory {
         id: Id<Source>;
         spaceAvailable: number;
-        distanceToSpawn: number;
-        assignedWorkers: Id<Creep>[];
+        pathFromSpawn: PathStep[];
+        assignedMiners: Id<Creep>[];
     }
 }
