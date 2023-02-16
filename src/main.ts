@@ -1,20 +1,23 @@
+import "utils/excuseMe";
 import "creep/creep";
 import "spawner/spawner";
 import "room/room";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/Console";
 import workerOrganizer from "./creep/workerOrganizer";
+import {clearNudges} from "./utils/excuseMe";
 
-declare global {
-    namespace NodeJS {
-        interface Global {
-            log: any;
-        }
-    }
-}
 
+/**
+ * TODO:
+ * better source memory access
+ * remote mining
+ *
+ * handyman redesign
+ */
 export const loop = ErrorMapper.wrapLoop(() => {
     improveLog();
+    clearNudges();
 
     for (const name in Memory.creeps) {
         if (!(name in Game.creeps)) {

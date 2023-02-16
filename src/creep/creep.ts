@@ -20,6 +20,8 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
 (function (this: typeof Creep.prototype) {
     this.runRole = function () {
         roleBehaviors[this.memory.role].run(this);
+        this.memory.previousPos = this.pos;
+        this.giveWay();
     };
 
     this.idle = function () {
@@ -79,12 +81,16 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
                         structure.structureType === STRUCTURE_TOWER) &&
                     structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                 );
-            }
+            },
+            ignoreCreeps: true
         });
 
         if (closestStructure) {
             if (this.transfer(closestStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(closestStructure, {visualizePathStyle: {stroke: "#ffffff"}});
+                this.moveTo(closestStructure, {
+                    visualizePathStyle: {stroke: "#ffffff"},
+                    ignoreCreeps: true
+                });
             }
 
             return OK;
@@ -113,5 +119,11 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         }
 
         return ERR_FULL;
+    };
+
+    this.movedLastTick = function () {
+        if (!this.memory.previousPos) return true;
+
+        return this.pos.x !== this.memory.previousPos.x || this.pos.y !== this.memory.previousPos.y;
     };
 }).call(Creep.prototype);
