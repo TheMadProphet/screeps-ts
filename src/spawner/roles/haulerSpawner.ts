@@ -22,6 +22,9 @@ const haulerSpawner: RoleSpawner = {
 
         for (let sourceId in sources) {
             const source = sources[sourceId as Id<Source>];
+            const assignedHaulers = spawner.creepsByRole[HAULER].filter(
+                hauler => hauler.memory.assignedSource === sourceId
+            );
             const totalWorkParts = source.assignedMiners.reduce(
                 (acc, miner) => acc + Game.getObjectById(miner)!.getActiveBodyparts(WORK),
                 0
@@ -33,7 +36,7 @@ const haulerSpawner: RoleSpawner = {
             const energyStoredByHaulerPerLifetime = body.getCapacity() * biRoutePerLifetime;
             const requiredHaulerCount = energyGeneratedByWorkerPerLifetime / energyStoredByHaulerPerLifetime;
 
-            if (spawner.creepsByRole[HAULER].length < requiredHaulerCount) {
+            if (assignedHaulers.length < requiredHaulerCount) {
                 spawner.spawn({
                     parts: body.getParts(),
                     memory: {role: HAULER, assignedSource: sourceId as Id<Source>}
