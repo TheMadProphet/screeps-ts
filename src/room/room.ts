@@ -1,6 +1,7 @@
 import RoomInfrastructure from "./constructor/infrastructure";
 import RoomStructures from "./constructor/structures";
 import RoomVisuals from "./visuals";
+import workerOrganizer from "../creep/workerOrganizer";
 
 (function (this: typeof Room.prototype) {
     this.automate = function () {
@@ -10,6 +11,8 @@ import RoomVisuals from "./visuals";
 
         this.spawn.automate();
         // todo other structures i.e. tower
+
+        workerOrganizer.organizeWorkersIn(this);
     };
 
     this.buildRoad = function (from, to) {
