@@ -1,4 +1,3 @@
-import {getSpaceAroundSource} from "../room/constructor/infrastructure";
 import {SCOUT} from "../constants";
 
 declare global {
@@ -16,6 +15,27 @@ interface RoomScanInfo {
     room: string;
     vacant: boolean;
     sources: SourceMemory[];
+}
+
+function getSpaceAroundSource(source: Source) {
+    const room = source.room;
+    const pos = source.pos;
+
+    let space = 0;
+    const area = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1);
+    for (const y in area) {
+        for (const x in area[y]) {
+            const objects = area[y][x];
+            for (const i in objects) {
+                const object = objects[i];
+                if (object.type === LOOK_TERRAIN && object.terrain !== "wall") {
+                    space++;
+                }
+            }
+        }
+    }
+
+    return space;
 }
 
 function isVacant(room: Room) {
