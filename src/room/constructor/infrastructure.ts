@@ -1,6 +1,6 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
 
-function getSpaceAroundSource(source: Source) {
+export function getSpaceAroundSource(source: Source) {
     const room = source.room;
     const pos = source.pos;
 
@@ -66,8 +66,6 @@ class RoomInfrastructure {
     }
 
     build() {
-        if (!this.room.controller) return;
-
         buildEnergyInfrastructure(this.room);
         buildControllerInfrastructure(this.room);
         buildSpawnInfrastructure(this.room);

@@ -5,6 +5,8 @@ import workerOrganizer from "../creep/workerOrganizer";
 
 (function (this: typeof Room.prototype) {
     this.automate = function () {
+        if (!this.controller?.my) return;
+
         new RoomStructures(this).build();
         new RoomInfrastructure(this).build();
         new RoomVisuals(this).visualize();

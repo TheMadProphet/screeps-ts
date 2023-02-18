@@ -65,8 +65,6 @@ class RoomStructures {
     }
 
     build() {
-        if (!this.room.controller) return;
-
         if (!this.room.constructionSites.length) {
             if (this.room.availableExtension > 0) {
                 buildExtensions(this.room);
