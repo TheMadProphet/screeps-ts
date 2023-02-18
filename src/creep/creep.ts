@@ -2,10 +2,11 @@ import builderBehavior from "./roles/builderBehavior";
 import upgraderBehavior from "./roles/upgraderBehavior";
 import handymanBehavior from "./roles/handymanBehavior";
 import fillerBehavior from "./roles/fillerBehavior";
-import {BUILDER, CreepRole, FILLER, HANDYMAN, HAULER, MINER, UPGRADER, WORKER} from "../constants";
+import {BUILDER, CreepRole, FILLER, HANDYMAN, HAULER, MINER, SCOUT, UPGRADER, WORKER} from "../constants";
 import minerBehavior from "./roles/minerBehavior";
 import haulerBehavior from "./roles/haulerBehavior";
 import workerBehavior from "./roles/workerBehavior";
+import scoutBehavior from "./roles/scoutBehavior";
 
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [MINER]: minerBehavior,
@@ -14,7 +15,8 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [BUILDER]: builderBehavior,
     [UPGRADER]: upgraderBehavior,
     [HANDYMAN]: handymanBehavior,
-    [FILLER]: fillerBehavior
+    [FILLER]: fillerBehavior,
+    [SCOUT]: scoutBehavior,
 };
 
 (function (this: typeof Creep.prototype) {

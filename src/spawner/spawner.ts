@@ -1,18 +1,18 @@
 import fillerSpawner from "./roles/fillerSpawner";
 import handymanSpawner from "./roles/handymanSpawner";
 import minerSpawner from "./roles/minerSpawner";
-import {CreepRole, FILLER, HANDYMAN, HAULER, MINER, roles, WORKER} from "../constants";
+import {CreepRole, FILLER, HANDYMAN, HAULER, MINER, roles, SCOUT, WORKER} from "../constants";
 import haulerSpawner from "./roles/haulerSpawner";
 import workerSpawner from "./roles/workerSpawner";
+import scoutSpawner from "./roles/scoutSpawner";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,
     [WORKER]: workerSpawner,
-    // [BUILDER]: builderSpawner,
-    // [UPGRADER]: upgraderSpawner,
     [HANDYMAN]: handymanSpawner,
-    [FILLER]: fillerSpawner
+    [FILLER]: fillerSpawner,
+    [SCOUT]: scoutSpawner,
 };
 
 (function (this: typeof StructureSpawn.prototype) {
@@ -35,7 +35,8 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
 
     this.spawn = function ({parts, memory}) {
         const creepName = `${memory.role}`;
-        const spawnStatus = this.spawnCreep(parts, creepName + `(${Game.time})`, {memory});
+        const creepMemory = {home: this.room.name, ...memory};
+        const spawnStatus = this.spawnCreep(parts, creepName + `(${Game.time})`, {memory: creepMemory});
 
         if (spawnStatus === ERR_NOT_ENOUGH_ENERGY) {
             this.memory.hasEnoughEnergy = false;

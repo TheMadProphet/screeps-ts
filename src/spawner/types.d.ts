@@ -24,7 +24,7 @@ declare global {
 
     interface CreepSpawnRequest {
         parts: BodyPartConstant[];
-        memory: CreepMemory;
+        memory: Omit<CreepMemory, "home">;
     }
 
     interface RoleSpawner {
