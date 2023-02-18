@@ -35,7 +35,7 @@ const roomExplorer = {
 
         const neighborRooms = _.map(Game.map.describeExits(room.name), value => value);
         if (!room.memory.neighborRooms) {
-            room.memory.neighborRooms = {}
+            room.memory.neighborRooms = {};
         } else if (_.size(neighborRooms) === _.size(room.memory.neighborRooms)) {
             room.memory.neighborsScanned = true;
             console.log(`${room.name} Neighbors Scan Finished: `, room.memory.neighborRooms);
@@ -47,7 +47,6 @@ const roomExplorer = {
             if (scout.memory.assignedRoom == null) {
                 for (const i in neighborRooms) {
                     const neighbor = neighborRooms[i];
-                    console.log(neighbor);
                     if (!room.memory.neighborRooms[neighbor]) {
                         scout.memory.assignedRoom = neighbor;
                         return;
@@ -70,23 +69,30 @@ const roomExplorer = {
         const roomInfo: RoomScanInfo = {
             room: roomToScan.name,
             vacant: isVacant(roomToScan),
-            sources: roomToScan
-                .find(FIND_SOURCES)
-                .map(it => {
-                    return {
-                        id: it.id,
-                        spaceAvailable: getSpaceAroundSource(it),
-                        pathFromSpawn: home.spawn.pos.findPathTo(it, {maxOps: 100, maxRooms: 2}),
-                        pathToSpawn: it.pos.findPathTo(home.spawn, {maxOps: 100, maxRooms: 2})
-                    } as SourceMemory;
-                })
-                .filter(it => it.spaceAvailable > 0)
+            sources: this.scanSources(roomToScan, home.spawn)
         };
 
         home.memory.neighborRooms[roomToScan.name] = roomInfo;
 
         const usedCpu = Game.cpu.getUsed() - cpuStart;
         console.log(`Scanned ${roomToScan.name}[${roomInfo.sources.length}], CPU used: `, usedCpu);
+    },
+
+    scanSources(room: Room, spawn: StructureSpawn) {
+        return room
+            .find(FIND_SOURCES)
+            .filter(it => getSpaceAroundSource(it) > 0)
+            .map(it => {
+                const pathFromSpawn = spawn.pos.findPathTo(it, {maxOps: 100, maxRooms: 2});
+                const sourceMemory: SourceMemory = {
+                    id: it.id,
+                    spaceAvailable: getSpaceAroundSource(it),
+                    pathFromSpawn: pathFromSpawn,
+                    pathToSpawn: pathFromSpawn.reverse(),
+                    assignedMiners: []
+                };
+                return sourceMemory;
+            });
     }
 };
 

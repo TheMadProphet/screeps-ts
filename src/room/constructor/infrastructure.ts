@@ -1,4 +1,5 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
+import roomExplorer from "../../creep/roomExplorer";
 
 export function getSpaceAroundSource(source: Source) {
     const room = source.room;
@@ -24,17 +25,8 @@ export function getSpaceAroundSource(source: Source) {
 function buildEnergyInfrastructure(room: Room) {
     if (room.memory.sources || !room.spawn) return;
 
-    room.memory.sources = room.rawSources
-        .filter(it => getSpaceAroundSource(it) > 0)
-        .map(it => {
-            return {
-                id: it.id,
-                spaceAvailable: getSpaceAroundSource(it),
-                pathFromSpawn: room.spawn.pos.findPathTo(it),
-                pathToSpawn: it.pos.findPathTo(room.spawn),
-                assignedMiners: []
-            } as SourceMemory;
-        })
+    room.memory.sources = roomExplorer
+        .scanSources(room, room.spawn)
         .sort((a, b) => a.pathFromSpawn.length - b.pathFromSpawn.length)
         .reduce((acc, sourceMemory) => {
             return {...acc, [sourceMemory.id]: sourceMemory};
