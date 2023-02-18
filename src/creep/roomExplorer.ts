@@ -58,6 +58,7 @@ const roomExplorer = {
             room.memory.neighborRooms = {};
         } else if (_.size(neighborRooms) === _.size(room.memory.neighborRooms)) {
             room.memory.neighborsScanned = true;
+            room.spawn.creepsByRole[SCOUT].forEach(scout => scout.suicide());
             console.log(`${room.name} Neighbors Scan Finished: `, room.memory.neighborRooms);
             return;
         }
@@ -72,7 +73,6 @@ const roomExplorer = {
                         return;
                     }
                 }
-                scout.suicide();
             }
         }
     },
