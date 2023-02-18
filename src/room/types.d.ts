@@ -18,8 +18,11 @@ declare global {
         hasEnergyEmergency(): boolean;
     }
 
+    type Sources = Record<Id<Source>, SourceMemory>;
+
     interface RoomMemory {
-        sources: Record<Id<Source>, SourceMemory>;
+        sources: Sources;
+        remoteSources?: Record<string, Sources>;
         hasRoadAroundSpawn?: boolean;
         hasRoadToController?: boolean;
         ringsize?: number;

@@ -29,6 +29,25 @@ function buildSpawnInfrastructure(room: Room) {
     }
 }
 
+function setupRemoteMines(room: Room) {
+    if (room.memory.remoteSources) return;
+    if (room.controller!.level < 2) return;
+    if (!roomExplorer.finishedExplorationAround(room)) return;
+
+    const neighbors = Object.values(room.memory.neighborRooms)
+        .filter(it => it.vacant)
+        .sort((a, b) => {
+            return _.sum(b.sources, it => it.pathFromSpawn.length) - _.sum(a.sources, it => it.pathFromSpawn.length);
+        });
+
+    room.memory.remoteSources = {};
+    _.forEach(neighbors, neighbor => {
+        room.memory.remoteSources![neighbor.room] = neighbor.sources.reduce((acc, sourceMemory) => {
+            return {...acc, [sourceMemory.id]: sourceMemory};
+        }, {} as Record<Id<Source>, SourceMemory>);
+    });
+}
+
 class RoomInfrastructure {
     room: Room;
 
@@ -40,6 +59,7 @@ class RoomInfrastructure {
         buildEnergyInfrastructure(this.room);
         buildControllerInfrastructure(this.room);
         buildSpawnInfrastructure(this.room);
+        setupRemoteMines(this.room);
     }
 }
 

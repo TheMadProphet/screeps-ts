@@ -77,8 +77,12 @@ const roomExplorer = {
         }
     },
 
+    finishedExplorationAround(room: Room) {
+        return Boolean(room.memory.neighborsScanned);
+    },
+
     needsScout(room: Room) {
-        if (room.memory.neighborsScanned) return false;
+        if (this.finishedExplorationAround(room)) return false;
 
         return room.spawn.creepsByRole[SCOUT].length < 1;
     },
