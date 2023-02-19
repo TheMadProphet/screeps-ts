@@ -32,6 +32,7 @@ const haulerBehavior: HaulerBehavior = {
                 creep.say("➡");
             } else {
                 const currentStepIndex = pathFromSpawn.findIndex(it => it.x === creep.pos.x && it.y === creep.pos.y);
+                if (currentStepIndex === pathFromSpawn.length - 1) return;
                 const nextStep = pathFromSpawn[currentStepIndex + 1];
                 if (stepIsNotWalkable(nextStep, creep.room)) {
                     creep.room.memory.sources[source.id].pathFromSpawn = creep.room.spawn.pos.findPathTo(source, {

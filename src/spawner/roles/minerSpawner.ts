@@ -3,7 +3,18 @@ import {MINER} from "../../constants";
 
 const minerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
-        const sources = {...spawner.room.memory.sources};
+        let sources: Sources = spawner.room.memory.sources;
+        if (spawner.room.memory.remoteSources) {
+            const remoteSources = Object.values(spawner.room.memory.remoteSources).reduce((acc, sources) => {
+                return {
+                    ...acc,
+                    ...Object.values(sources).reduce((acc2, sourceMemory) => {
+                        return {...acc2, [sourceMemory.id]: sourceMemory};
+                    }, {})
+                };
+            }, {} as Sources);
+            sources = {...sources, ...remoteSources};
+        }
 
         _.forEach(sources, source => {
             source.assignedMiners = [];
