@@ -34,7 +34,7 @@ function setupRemoteMines(room: Room) {
     if (room.controller!.level < 2) return;
     if (!roomScanner.finishedScanningAround(room)) return;
 
-    const neighbors = Object.values(room.memory.neighbors.scannedRooms)
+    const neighbors = Object.values(room.memory.neighbors!.scannedRooms)
         .filter(it => it.isVacant)
         .sort((a, b) => {
             return _.sum(b.sources, it => it.pathFromSpawn.length) - _.sum(a.sources, it => it.pathFromSpawn.length);

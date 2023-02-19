@@ -2,7 +2,7 @@ import {SCOUT} from "../constants";
 
 declare global {
     interface RoomMemory {
-        neighbors: {
+        neighbors?: {
             roomNames: string[];
             scannedRooms: Record<string, RoomScanInfo>;
             vacantRooms: string[];
@@ -55,17 +55,29 @@ function isVacant(room: Room) {
 
 const roomScanner = {
     finishedScanningAround(room: Room) {
-        return Boolean(room.memory.neighbors.scanned);
+        return Boolean(room.memory.neighbors?.scanned);
     },
 
     needsMoreScouts(room: Room) {
-        return room.spawn.creepsByRole[SCOUT].length < room.memory.neighbors.roomNames.length;
+        return !room.memory.neighbors || room.spawn.creepsByRole[SCOUT].length < room.memory.neighbors.roomNames.length;
     },
 
     getUnscoutedRoomAround(room: Room) {
+        if (!room.memory.neighbors) {
+            room.memory.neighbors = {
+                roomNames: _.map(Game.map.describeExits(room.name), value => value),
+                scannedRooms: {},
+                vacantRooms: []
+            };
+        }
+
         const scoutedNeighbors = room.spawn.creepsByRole[SCOUT].map(it => it.memory.assignedRoom);
 
-        for (const roomName in room.memory.neighbors.vacantRooms) {
+        let roomsToScout = room.memory.neighbors.vacantRooms;
+        if (!room.memory.neighbors.scanned) roomsToScout = room.memory.neighbors.roomNames;
+
+        for (const i in roomsToScout) {
+            const roomName = roomsToScout[i];
             if (!scoutedNeighbors.includes(roomName)) {
                 return roomName;
             }
@@ -75,15 +87,7 @@ const roomScanner = {
     },
 
     scanRoom(roomToScan: Room, home: Room) {
-        if (!home.memory.neighbors) {
-            home.memory.neighbors = {
-                roomNames: _.map(Game.map.describeExits(home.name), value => value),
-                scannedRooms: {},
-                vacantRooms: []
-            };
-        }
-
-        const neighbors = home.memory.neighbors;
+        const neighbors = home.memory.neighbors!;
         if (neighbors.scannedRooms[roomToScan.name]) return;
 
         const cpuStart = Game.cpu.getUsed();
