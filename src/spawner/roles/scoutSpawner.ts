@@ -1,15 +1,16 @@
 import Body from "../body";
 import {SCOUT} from "../../constants";
-import roomExplorer from "../../creep/roomExplorer";
+import roomScanner from "../../creep/roomScanner";
 
 const scoutSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
-        if (roomExplorer.needsScout(spawner.room)) {
+        if (roomScanner.needsMoreScouts(spawner.room)) {
             const body = new Body(spawner).addParts([MOVE]);
             spawner.spawn({
                 parts: body.getParts(),
                 memory: {
-                    role: SCOUT
+                    role: SCOUT,
+                    assignedRoom: roomScanner.getUnscoutedRoomAround(spawner.room)
                 }
             });
 

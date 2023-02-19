@@ -1,4 +1,4 @@
-import roomExplorer from "../roomExplorer";
+import roomScanner from "../roomScanner";
 
 class ScoutBehavior implements ScoutBehavior {
     run(creep: Creep) {
@@ -8,8 +8,8 @@ class ScoutBehavior implements ScoutBehavior {
         }
 
         if (this.isInAssignedRoom(creep)) {
-            roomExplorer.scan(creep.room, Game.rooms[creep.memory.home]);
-            creep.memory.assignedRoom = null;
+            roomScanner.scanRoom(creep.room, Game.rooms[creep.memory.home]);
+            creep.getOffExit();
         } else {
             this.moveToAssignedRoom(creep);
         }
