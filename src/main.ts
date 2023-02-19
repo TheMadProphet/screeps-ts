@@ -4,7 +4,7 @@ import "creep/creep";
 import "spawner/spawner";
 import "room/room";
 import {ErrorMapper} from "utils/ErrorMapper";
-import {improveLog} from "utils/Console";
+import {improveLog} from "utils/console";
 import {clearNudges} from "./utils/excuseMe";
 
 /**
@@ -12,7 +12,7 @@ import {clearNudges} from "./utils/excuseMe";
  * better source memory access
  * remote mining
  *
- * handyman redesign
+ * handyman redesign (worker)
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     improveLog();
