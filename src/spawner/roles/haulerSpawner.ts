@@ -6,7 +6,18 @@ const haulerSpawner: RoleSpawner = {
         if (spawner.creepsByRole[MINER].length === 0) return false;
 
         // todo
-        const sources = {...spawner.room.memory.sources};
+        let sources: Sources = spawner.room.memory.sources;
+        if (spawner.room.memory.remoteSources) {
+            const remoteSources = Object.values(spawner.room.memory.remoteSources).reduce((acc, sources) => {
+                return {
+                    ...acc,
+                    ...Object.values(sources).reduce((acc2, sourceMemory) => {
+                        return {...acc2, [sourceMemory.id]: sourceMemory};
+                    }, {})
+                };
+            }, {} as Sources);
+            sources = {...sources, ...remoteSources};
+        }
 
         _.forEach(sources, source => {
             source.assignedMiners = [];
@@ -39,7 +50,7 @@ const haulerSpawner: RoleSpawner = {
             if (assignedHaulers.length < requiredHaulerCount) {
                 spawner.spawn({
                     parts: body.getParts(),
-                    memory: {role: HAULER, assignedSource: sourceId as Id<Source>}
+                    memory: {role: HAULER, assignedSource: sourceId as Id<Source>, assignedRoom: source.roomName}
                 });
 
                 return true;

@@ -1,51 +1,52 @@
-interface HaulerBehavior extends RoleBehavior {
-    moveNearSource(creep: Creep, source: Source): void;
+import roomScanner from "../roomScanner";
 
-    pickupEnergyNearSource(creep: Creep, source: Source): void;
-}
-
-const haulerBehavior: HaulerBehavior = {
-    run: function (creep: Creep) {
-        const source = Game.getObjectById(creep.memory.assignedSource ?? ("" as Id<Source>)) as Source;
-        if (!source) {
+class HaulerBehavior implements RoleBehavior {
+    run(creep: Creep) {
+        const source = Game.getObjectById(creep.memory.assignedSource ?? ("" as Id<Source>));
+        const sourceMemory = this.getSourceMemory(creep, source);
+        if (!source || !sourceMemory) {
             creep.say("⚠");
             return;
         }
 
-        if (creep.store.getUsedCapacity() > 0) {
-            creep.fillSpawnsWithEnergy();
+        if (creep.memory.working && creep.store.getUsedCapacity() === 0) creep.memory.working = false
+        if (!creep.memory.working && creep.store.getFreeCapacity() === 0) creep.memory.working = true
+
+        if (creep.memory.working) {
+            if (creep.memory.home !== creep.room.name) {
+                this.moveAlongSourceRoute(creep, sourceMemory, sourceMemory.pathToSpawn)
+            } else {
+                creep.fillSpawnsWithEnergy();
+            }
         } else {
-            if (!creep.pos.inRangeTo(source, 2)) {
-                this.moveNearSource(creep, source);
-            } else {
+            if (creep.pos.inRangeTo(source, 2)) {
                 this.pickupEnergyNearSource(creep, source);
-            }
-        }
-    },
-
-    moveNearSource(creep: Creep, source: Source) {
-        const pathFromSpawn = creep.room.memory!.sources[source.id].pathFromSpawn;
-
-        const moveByPathStatus = creep.moveByPath(pathFromSpawn);
-        if (moveByPathStatus === OK) {
-            if (creep.movedLastTick()) {
-                creep.say("➡");
             } else {
-                const currentStepIndex = pathFromSpawn.findIndex(it => it.x === creep.pos.x && it.y === creep.pos.y);
-                if (currentStepIndex === pathFromSpawn.length - 1) return;
-                const nextStep = pathFromSpawn[currentStepIndex + 1];
-                if (stepIsNotWalkable(nextStep, creep.room)) {
-                    creep.room.memory.sources[source.id].pathFromSpawn = creep.room.spawn.pos.findPathTo(source, {
-                        ignoreCreeps: true
-                    });
-                    creep.say("⛔");
-                }
+                this.moveAlongSourceRoute(creep, sourceMemory, sourceMemory.pathFromSpawn);
             }
-        } else if (moveByPathStatus === ERR_NOT_FOUND) {
-            creep.say("↪️");
-            creep.moveTo(pathFromSpawn[0].x, pathFromSpawn[0].y);
         }
-    },
+    }
+
+    moveAlongSourceRoute(creep: Creep, source: SourceMemory, route: PathStep[] | RoomPosition[]) {
+        const home = Game.rooms[creep.memory.home];
+        const currentStepIndex = route.findIndex(it => it.x === creep.pos.x && it.y === creep.pos.y);
+        if (currentStepIndex === -1) {
+            creep.say("↪️");
+            creep.moveTo(route[0].x, route[0].y);
+        } else {
+            const nextStep = route[currentStepIndex + 1];
+            if (stepIsNotWalkable(nextStep, creep.room)) {
+                roomScanner.generateNewPathToSpawn(source, home);
+                creep.say("⛔");
+            } else {
+                const direction = isPathStep(nextStep)
+                    ? nextStep.direction
+                    : creep.pos.getDirectionTo(new RoomPosition(nextStep.x, nextStep.y, creep.room.name));
+                const moveStatus = creep.move(direction);
+                creep.say(`➡ ${moveStatus}`);
+            }
+        }
+    }
 
     pickupEnergyNearSource(creep: Creep, source: Source) {
         const droppedEnergies = source.pos.findInRange(FIND_DROPPED_RESOURCES, 1, {
@@ -56,9 +57,25 @@ const haulerBehavior: HaulerBehavior = {
             creep.moveTo(droppedEnergies[0], {visualizePathStyle: {stroke: "#ffaa00"}});
         }
     }
-};
 
-function stepIsNotWalkable(step: PathStep, room: Room) {
+    private getSourceMemory(creep: Creep, source: Source| null) {
+        if (!source) return null;
+
+        const home = Game.rooms[creep.memory.home];
+
+        const sourceMemory = home.memory!.sources[source.id];
+        if (sourceMemory) return sourceMemory;
+
+        if (!home.memory.remoteSources) return null;
+
+        const remoteSourceMemory = home.memory.remoteSources[source.room.name][source.id];
+        if (remoteSourceMemory) return remoteSourceMemory;
+
+        return null;
+    }
+}
+
+function stepIsNotWalkable(step: PathStep | RoomPosition, room: Room) {
     const objectsAtNextStep = room.lookForAt(LOOK_STRUCTURES, step.x, step.y);
     const structureOnNextStep = objectsAtNextStep.some(
         obj => obj.structureType !== STRUCTURE_ROAD && obj.structureType !== STRUCTURE_CONTAINER
@@ -68,4 +85,10 @@ function stepIsNotWalkable(step: PathStep, room: Room) {
     return structureOnNextStep || constructionsAtNextStep.length;
 }
 
+function isPathStep(variable: RoomPosition | PathStep): variable is PathStep {
+    const step = variable as PathStep;
+    return Boolean(step.dx && step.dy);
+}
+
+const haulerBehavior = new HaulerBehavior();
 export default haulerBehavior;

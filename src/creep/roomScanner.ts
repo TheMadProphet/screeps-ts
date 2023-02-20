@@ -116,18 +116,30 @@ const roomScanner = {
             .find(FIND_SOURCES)
             .filter(it => getSpaceAroundSource(it) > 0)
             .map(it => {
-                // TODO: what if findPathTo fails due to maxOps/maxRooms?
-                const pathFromSpawn = spawn.pos.findPathTo(it, {maxOps: 100, maxRooms: 2});
+                let pathFromSpawn: PathStep[] | RoomPosition[] = PathFinder.search(spawn.pos, it.pos).path;
+                if (it.room.name !== room.name) {
+                    pathFromSpawn = PathFinder.search(spawn.pos, it.pos).path;
+                }
+
                 const sourceMemory: SourceMemory = {
                     id: it.id,
+                    roomName: room.name,
                     spaceAvailable: getSpaceAroundSource(it),
                     pathFromSpawn: pathFromSpawn,
-                    pathToSpawn: pathFromSpawn.reverse(),
+                    pathToSpawn: [...pathFromSpawn].reverse(),
                     assignedMiners: []
                 };
 
                 return sourceMemory;
             });
+    },
+
+    generateNewPathToSpawn(sourceMemory: SourceMemory, home: Room) {
+        const it = Game.getObjectById(sourceMemory.id)!;
+        const pathFromSpawn: RoomPosition[] = PathFinder.search(home.spawn.pos, it.pos).path;
+
+        sourceMemory.pathFromSpawn = pathFromSpawn;
+        sourceMemory.pathToSpawn = [...pathFromSpawn].reverse();
     }
 };
 

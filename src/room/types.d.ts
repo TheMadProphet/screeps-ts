@@ -30,9 +30,10 @@ declare global {
 
     interface SourceMemory {
         id: Id<Source>;
+        roomName: string;
         spaceAvailable: number;
-        pathFromSpawn: PathStep[];
-        pathToSpawn: PathStep[];
+        pathFromSpawn: PathStep[] | RoomPosition[];
+        pathToSpawn: PathStep[] | RoomPosition[];
         assignedMiners: Id<Creep>[];
     }
 }
