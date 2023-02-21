@@ -158,7 +158,14 @@ const roomScanner = {
                 });
 
                 room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct) {
-                    costs.set(struct.pos.x, struct.pos.y, 0xff);
+                    if (struct.structureType === STRUCTURE_ROAD) {
+                        costs.set(struct.pos.x, struct.pos.y, 1);
+                    } else if (
+                        struct.structureType !== STRUCTURE_CONTAINER &&
+                        (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
+                    ) {
+                        costs.set(struct.pos.x, struct.pos.y, 0xff);
+                    }
                 });
 
                 return costs;
