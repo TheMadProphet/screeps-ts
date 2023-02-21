@@ -10,7 +10,9 @@ import {clearNudges} from "./utils/excuseMe";
 /**
  * TODO:
  * better source memory access
- * remote mining
+ * hauler waiting line in source
+ * limit hauler formula based on source energy capacity as well
+ * emergency spawns
  *
  * handyman redesign (worker)
  */
