@@ -19,6 +19,8 @@ declare global {
         fillContainersWithEnergy(): ScreepsReturnCode;
 
         movedLastTick(): boolean;
+
+        moveToAssignedRoom(): void;
     }
 
     interface CreepMemory {

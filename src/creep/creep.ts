@@ -132,4 +132,16 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
 
         return this.pos.x !== this.memory.previousPos.x || this.pos.y !== this.memory.previousPos.y;
     };
+
+    this.moveToAssignedRoom = function () {
+        const routingErrorMessage = `Can't find path to room ${this.memory.assignedRoom}! I'm at x: ${this.pos.x} y: ${this.pos.y} room: ${this.room.name}`;
+        const route = Game.map.findRoute(this.room, this.memory.assignedRoom!);
+        if (route == ERR_NO_PATH) {
+            console.log(routingErrorMessage);
+        } else {
+            const exit = this.pos.findClosestByRange(route[0].exit);
+            if (!exit) return console.log(routingErrorMessage);
+            this.moveTo(exit);
+        }
+    };
 }).call(Creep.prototype);

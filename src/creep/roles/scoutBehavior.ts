@@ -11,19 +11,7 @@ class ScoutBehavior implements ScoutBehavior {
             roomScanner.scanRoom(creep.room, Game.rooms[creep.memory.home]);
             creep.getOffExit();
         } else {
-            this.moveToAssignedRoom(creep);
-        }
-    }
-
-    private moveToAssignedRoom(creep: Creep) {
-        const routingErrorMessage = `Can't find path to room ${creep.memory.assignedRoom}! I'm at x: ${creep.pos.x} y: ${creep.pos.y} room: ${creep.room.name}`;
-        const route = Game.map.findRoute(creep.room, creep.memory.assignedRoom!);
-        if (route == ERR_NO_PATH) {
-            console.log(routingErrorMessage);
-        } else {
-            const exit = creep.pos.findClosestByRange(route[0].exit);
-            if (!exit) return console.log(routingErrorMessage);
-            creep.moveTo(exit);
+            creep.moveToAssignedRoom();
         }
     }
 
