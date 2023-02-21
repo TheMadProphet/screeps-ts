@@ -42,10 +42,10 @@ const haulerSpawner: RoleSpawner = {
             );
 
             const body = new Body(spawner).addParts([CARRY, MOVE], 10);
-            const energyGeneratedByWorkerPerLifetime = totalWorkParts * 2 * CREEP_LIFE_TIME;
+            const energyGeneratedByWorkersPerLifetime = Math.min(totalWorkParts, 5) * 2 * CREEP_LIFE_TIME;
             const biRoutePerLifetime = CREEP_LIFE_TIME / source.pathFromSpawn.length / 2;
             const energyStoredByHaulerPerLifetime = body.getCapacity() * biRoutePerLifetime;
-            const requiredHaulerCount = energyGeneratedByWorkerPerLifetime / energyStoredByHaulerPerLifetime;
+            const requiredHaulerCount = energyGeneratedByWorkersPerLifetime / energyStoredByHaulerPerLifetime;
 
             if (assignedHaulers.length < requiredHaulerCount) {
                 spawner.spawn({
