@@ -40,7 +40,13 @@ const minerSpawner: RoleSpawner = {
 
             const hasSpaceForMore = sourceMemory.spaceAvailable > sourceMemory.assignedMiners.length;
             if (hasSpaceForMore && workParts < 6) {
-                const body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
+                let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
+                if (sourceMemory.roomName !== spawner.room.name) {
+                    if (spawner.room.energyCapacityAvailable < 650) {
+                        if (workParts >= 3) continue;
+                        body = new Body(spawner).addParts([WORK, WORK, MOVE]).addParts([WORK, MOVE]);
+                    }
+                }
 
                 spawner.spawn({
                     parts: body.getParts(),
