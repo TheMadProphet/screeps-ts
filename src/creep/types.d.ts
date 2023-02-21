@@ -24,6 +24,7 @@ declare global {
     interface CreepMemory {
         role: CreepRole;
         previousPos?: RoomPosition;
+        previousFatigue?: number;
         task?: string;
         home: string;
         working?: boolean;

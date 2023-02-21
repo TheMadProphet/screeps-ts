@@ -22,8 +22,12 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
 (function (this: typeof Creep.prototype) {
     this.runRole = function () {
         roleBehaviors[this.memory.role].run(this);
+        if (!this.movedLastTick() && this.memory.previousFatigue === 0) {
+            this.giveWay();
+        }
+
         this.memory.previousPos = this.pos;
-        this.giveWay();
+        this.memory.previousFatigue = this.fatigue;
     };
 
     this.idle = function () {
