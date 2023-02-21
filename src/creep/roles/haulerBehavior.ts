@@ -9,12 +9,12 @@ class HaulerBehavior implements RoleBehavior {
             return;
         }
 
-        if (creep.memory.working && creep.store.getUsedCapacity() === 0) creep.memory.working = false
-        if (!creep.memory.working && creep.store.getFreeCapacity() === 0) creep.memory.working = true
+        if (creep.memory.working && creep.store.getUsedCapacity() === 0) creep.memory.working = false;
+        if (!creep.memory.working && creep.store.getFreeCapacity() === 0) creep.memory.working = true;
 
         if (creep.memory.working) {
             if (creep.memory.home !== creep.room.name) {
-                this.moveAlongSourceRoute(creep, sourceMemory, sourceMemory.pathToSpawn)
+                this.moveAlongSourceRoute(creep, sourceMemory, sourceMemory.pathToSpawn);
             } else {
                 creep.fillSpawnsWithEnergy();
             }
@@ -53,12 +53,14 @@ class HaulerBehavior implements RoleBehavior {
             filter: resource => resource.resourceType === RESOURCE_ENERGY
         });
 
-        if (droppedEnergies[0] && creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
+        if (!droppedEnergies?.length) {
+            creep.giveWay();
+        } else if (creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
             creep.moveTo(droppedEnergies[0], {visualizePathStyle: {stroke: "#ffaa00"}});
         }
     }
 
-    private getSourceMemory(creep: Creep, source: Source| null) {
+    private getSourceMemory(creep: Creep, source: Source | null) {
         if (!source) return null;
 
         const home = Game.rooms[creep.memory.home];
