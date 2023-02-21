@@ -9,10 +9,10 @@ import scoutSpawner from "./roles/scoutSpawner";
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,
+    [SCOUT]: scoutSpawner,
     [WORKER]: workerSpawner,
     [HANDYMAN]: handymanSpawner,
     [FILLER]: fillerSpawner,
-    [SCOUT]: scoutSpawner,
 };
 
 (function (this: typeof StructureSpawn.prototype) {
