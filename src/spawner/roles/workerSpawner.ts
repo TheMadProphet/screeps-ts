@@ -1,6 +1,10 @@
 import Body from "../body";
 import {WORKER} from "../../constants";
 
+const ENERGY_PER_SOURCE = 10;
+const ENERGY_EFFICIENCY = 0.8;
+const REMOTE_ENERGY_EFFICIENCY = 0.6;
+
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         const controller = spawner.room.controller;
@@ -17,8 +21,12 @@ const workerSpawner: RoleSpawner = {
         const upgraderEnergyPerTick = upgraderWorkPartCount;
         const builderEnergyPerTick = builderWorkPartCount * 5;
 
-        const sourceCount = _.size(spawner.room.memory.sources);
-        const availableEnergyPerTick = sourceCount * 10 * 0.8;
+        let sourceCount = _.size(spawner.room.memory.sources);
+        let availableEnergyPerTick = sourceCount * ENERGY_PER_SOURCE * ENERGY_EFFICIENCY;
+        if (spawner.room.memory.remoteSources) {
+            const remoteSourceCount = _.sum(Object.values(spawner.room.memory.remoteSources), sources => _.size(sources));
+            availableEnergyPerTick += remoteSourceCount * ENERGY_PER_SOURCE * REMOTE_ENERGY_EFFICIENCY;
+        }
 
         if (availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick) {
             const body = new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 5);
