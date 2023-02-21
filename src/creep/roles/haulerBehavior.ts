@@ -27,21 +27,35 @@ class HaulerBehavior implements RoleBehavior {
         }
     }
 
-    moveAlongSourceRoute(creep: Creep, source: SourceMemory, route: PathStep[] | RoomPosition[]) {
+    moveAlongSourceRoute(creep: Creep, source: SourceMemory, route: RoomPosition[]) {
         const home = Game.rooms[creep.memory.home];
+        if (route.length === 0) {
+            roomScanner.generateNewPathToSpawn(source, home);
+        }
+
         const currentStepIndex = route.findIndex(it => it.x === creep.pos.x && it.y === creep.pos.y);
         if (currentStepIndex === -1) {
-            creep.say("↪️");
-            creep.moveTo(route[0].x, route[0].y);
+            const routeStart = route[0];
+            const routeEnd = route[route.length - 1];
+
+            let moveStatus: string | number = "?";
+            if (routeStart.roomName === creep.room.name) {
+                moveStatus = creep.moveTo(routeStart.x, routeStart.y);
+            } else if (routeEnd.roomName === creep.room.name) {
+                moveStatus = creep.moveTo(routeEnd.x, routeEnd.y);
+            }
+
+            if (moveStatus === ERR_NO_PATH) {
+                roomScanner.generateNewPathToSpawn(source, home);
+            }
+
+            creep.say(`↪️${moveStatus}`);
         } else {
             const nextStep = route[currentStepIndex + 1];
             if (stepIsNotWalkable(nextStep, creep.room)) {
                 roomScanner.generateNewPathToSpawn(source, home);
-                creep.say("⛔");
             } else {
-                const direction = isPathStep(nextStep)
-                    ? nextStep.direction
-                    : creep.pos.getDirectionTo(new RoomPosition(nextStep.x, nextStep.y, creep.room.name));
+                const direction = creep.pos.getDirectionTo(new RoomPosition(nextStep.x, nextStep.y, creep.room.name));
                 const moveStatus = creep.move(direction);
                 creep.say(`➡ ${moveStatus}`);
             }
@@ -77,19 +91,20 @@ class HaulerBehavior implements RoleBehavior {
     }
 }
 
+const walkableStructures: StructureConstant[] = [STRUCTURE_ROAD, STRUCTURE_CONTAINER, STRUCTURE_RAMPART];
+
 function stepIsNotWalkable(step: PathStep | RoomPosition, room: Room) {
-    const objectsAtNextStep = room.lookForAt(LOOK_STRUCTURES, step.x, step.y);
-    const structureOnNextStep = objectsAtNextStep.some(
-        obj => obj.structureType !== STRUCTURE_ROAD && obj.structureType !== STRUCTURE_CONTAINER
-    );
-    const constructionsAtNextStep = room.lookForAt(LOOK_CONSTRUCTION_SITES, step.x, step.y);
+    let isNotWalkable = room
+        .lookForAt(LOOK_STRUCTURES, step.x, step.y)
+        .some(it => !walkableStructures.includes(it.structureType));
 
-    return structureOnNextStep || constructionsAtNextStep.length;
-}
+    if (isNotWalkable) return true;
 
-function isPathStep(variable: RoomPosition | PathStep): variable is PathStep {
-    const step = variable as PathStep;
-    return Boolean(step.dx && step.dy);
+    isNotWalkable = room
+        .lookForAt(LOOK_CONSTRUCTION_SITES, step.x, step.y)
+        .some(it => !walkableStructures.includes(it.structureType));
+
+    return isNotWalkable;
 }
 
 const haulerBehavior = new HaulerBehavior();
