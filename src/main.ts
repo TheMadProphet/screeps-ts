@@ -1,3 +1,4 @@
+import "utils/traveler/traveler";
 import "utils/getOffExit";
 import "utils/excuseMe";
 import "creep/creep";
