@@ -7,7 +7,7 @@ import "room/room";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/console";
 import {clearNudges} from "./utils/excuseMe";
-import {Statistics} from "./stats/stats";
+import {Statistics} from "./stats/statistics";
 
 /**
  * TODO:

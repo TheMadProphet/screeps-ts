@@ -12,8 +12,9 @@ declare global {
     }
 
     interface UserStatistics {
+        time: number;
         cpu: number;
-        cpuForStats: number;
+        cpuForStats?: number;
         bucket: number;
         memory: number;
         gcl: number;
@@ -94,11 +95,12 @@ export class Statistics {
     }
 
     public static exportUserStatistics() {
-        const userStats = Memory.stats.userStats;
-
-        userStats.gcl = Game.gcl.level;
-        userStats.memory = RawMemory.get().length;
-        userStats.bucket = Game.cpu.bucket;
-        userStats.cpu = Game.cpu.getUsed();
+        Memory.stats.userStats = {
+            time: Game.time,
+            cpu: Game.cpu.getUsed(),
+            bucket: Game.cpu.bucket,
+            memory: RawMemory.get().length,
+            gcl: Game.gcl.level
+        };
     }
 }
