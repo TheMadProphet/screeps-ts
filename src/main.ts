@@ -8,6 +8,7 @@ import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/console";
 import {clearNudges} from "./utils/excuseMe";
 import {Statistics} from "./stats/statistics";
+import "stats/intentMonitor";
 
 /**
  * TODO:

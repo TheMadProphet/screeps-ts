@@ -14,6 +14,7 @@ declare global {
     interface UserStatistics {
         time: number;
         cpu: number;
+        cpuForIntents?: number;
         cpuForStats?: number;
         bucket: number;
         memory: number;
@@ -41,6 +42,8 @@ declare global {
 }
 
 export class Statistics {
+    private static lastCreepIntentTick = 0;
+
     public static exportAll() {
         const cpuStart = Game.cpu.getUsed();
 
@@ -55,7 +58,7 @@ export class Statistics {
         Memory.stats.userStats.cpuForStats = Game.cpu.getUsed() - cpuStart;
     }
 
-    public static exportRoomStatistics(room: Room) {
+    private static exportRoomStatistics(room: Room) {
         if (!room.controller || !room.controller.my) return;
 
         const containers = room.find(FIND_STRUCTURES, {
@@ -83,24 +86,36 @@ export class Statistics {
         };
     }
 
-    public static exportCreepStatistics() {
+    private static exportCreepStatistics() {
         Memory.stats.creepStats = this.generateCreepStatistics(Game.creeps);
     }
 
-    public static generateCreepStatistics(creeps: Creep[] | typeof Game.creeps): CreepStatistics {
+    private static generateCreepStatistics(creeps: Creep[] | typeof Game.creeps): CreepStatistics {
         return {
             totalCreeps: _.size(creeps),
             creepsByRole: _.countBy(creeps, c => c.memory.role)
         };
     }
 
-    public static exportUserStatistics() {
+    private static exportUserStatistics() {
         Memory.stats.userStats = {
+            ...Memory.stats.userStats,
             time: Game.time,
             cpu: Game.cpu.getUsed(),
             bucket: Game.cpu.bucket,
             memory: RawMemory.get().length,
             gcl: Game.gcl.level
         };
+    }
+
+    public static registerCreepIntent() {
+        let intentCpu = Memory.stats.userStats.cpuForIntents ?? 0;
+
+        if (Game.time != Statistics.lastCreepIntentTick) {
+            intentCpu = 0;
+            Statistics.lastCreepIntentTick = Game.time;
+        }
+
+        Memory.stats.userStats.cpuForIntents = intentCpu + 0.2;
     }
 }
