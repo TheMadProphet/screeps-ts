@@ -1,12 +1,14 @@
 import fillerSpawner from "./roles/fillerSpawner";
 import minerSpawner from "./roles/minerSpawner";
-import {CreepRole, FILLER, HAULER, MINER, RESERVER, roles, SCOUT, WORKER} from "../constants";
+import {CreepRole, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, roles, SCOUT, WORKER} from "../constants";
 import haulerSpawner from "./roles/haulerSpawner";
 import workerSpawner from "./roles/workerSpawner";
 import scoutSpawner from "./roles/scoutSpawner";
 import reserverSpawner from "./roles/reserverSpawner";
+import emergencyUnitSpawner from "./roles/emergencyUnitSpawner";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
+    [EMERGENCY_UNIT]: emergencyUnitSpawner,
     [RESERVER]: reserverSpawner,
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,

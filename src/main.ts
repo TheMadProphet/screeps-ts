@@ -14,7 +14,6 @@ import {Statistics} from "./stats/stats";
  * better source memory access
  * hauler waiting line in source
  * limit hauler formula based on source energy capacity as well
- * emergency spawns
  *
  * repairer assignment
  */

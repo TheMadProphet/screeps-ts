@@ -1,12 +1,14 @@
 import fillerBehavior from "./roles/fillerBehavior";
-import {CreepRole, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
+import {CreepRole, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
 import minerBehavior from "./roles/minerBehavior";
 import haulerBehavior from "./roles/haulerBehavior";
 import workerBehavior from "./roles/workerBehavior";
 import scoutBehavior from "./roles/scoutBehavior";
 import reserverBehavior from "./roles/reserverBehavior";
+import emergencyUnitBehavior from "./roles/emergencyUnitBehavior";
 
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
+    [EMERGENCY_UNIT]: emergencyUnitBehavior,
     [MINER]: minerBehavior,
     [HAULER]: haulerBehavior,
     [WORKER]: workerBehavior,

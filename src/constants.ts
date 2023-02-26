@@ -4,7 +4,8 @@ export const WORKER = "Worker";
 export const FILLER = "Filler";
 export const SCOUT = "Scout";
 export const RESERVER = "Reserver";
+export const EMERGENCY_UNIT = "Emergency";
 
-export const roles = [MINER, HAULER, WORKER, FILLER, SCOUT, RESERVER] as const;
+export const roles = [MINER, HAULER, WORKER, FILLER, SCOUT, RESERVER, EMERGENCY_UNIT] as const;
 
 export type CreepRole = (typeof roles)[number];
