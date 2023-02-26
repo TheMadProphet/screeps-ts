@@ -55,7 +55,7 @@ export class Statistics {
     }
 
     public static exportRoomStatistics(room: Room) {
-        if (!room.controller) return;
+        if (!room.controller || !room.controller.my) return;
 
         const containers = room.find(FIND_STRUCTURES, {
             filter: s => s.structureType == STRUCTURE_CONTAINER
