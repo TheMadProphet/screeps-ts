@@ -2,10 +2,10 @@ import {CreepRole} from "../constants";
 
 declare global {
     interface Memory {
-        stats: Statistics;
+        stats: Stats;
     }
 
-    interface Statistics {
+    interface Stats {
         userStats: UserStatistics;
         roomStats: RoomStatistics;
         creepStats: CreepStatistics;
@@ -40,14 +40,18 @@ declare global {
 }
 
 export class Statistics {
-    public static generate() {
+    public static exportAll() {
         const cpuStart = Game.cpu.getUsed();
+
+        if (!Memory.stats) {
+            Memory.stats = {roomStats: {}, creepStats: {}, userStats: {}} as Stats;
+        }
 
         _.forEach(Game.rooms, room => this.exportRoomStatistics(room));
         this.exportCreepStatistics();
         this.exportUserStatistics();
 
-        Memory.stats.userStats.cpuForStats = cpuStart - Game.cpu.getUsed();
+        Memory.stats.userStats.cpuForStats = Game.cpu.getUsed() - cpuStart;
     }
 
     public static exportRoomStatistics(room: Room) {
