@@ -11,6 +11,7 @@ const roomReserver = {
         for (const roomToReserve of roomsToReserve) {
             const reserver = reservers.find(it => it.memory.assignedRoom === roomToReserve);
             if (!reserver) return roomToReserve;
+            if (!reserver.spawning && reserver.ticksToLive! < 100) return roomToReserve;
         }
 
         return null;

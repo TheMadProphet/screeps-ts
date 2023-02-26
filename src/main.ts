@@ -16,7 +16,7 @@ import {Statistics} from "./stats/stats";
  * limit hauler formula based on source energy capacity as well
  * emergency spawns
  *
- * handyman redesign (worker)
+ * repairer assignment
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     improveLog();
