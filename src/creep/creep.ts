@@ -18,7 +18,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [HANDYMAN]: handymanBehavior,
     [FILLER]: fillerBehavior,
     [SCOUT]: scoutBehavior,
-    [RESERVER]: reserverBehavior,
+    [RESERVER]: reserverBehavior
 };
 
 (function (this: typeof Creep.prototype) {
@@ -70,13 +70,13 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
 
     this.withdrawFrom = function (target, resource = RESOURCE_ENERGY) {
         if (this.withdraw(target, resource) === ERR_NOT_IN_RANGE) {
-            this.moveTo(target, {visualizePathStyle: {stroke: "#ffaa00"}});
+            this.travelTo(target);
         }
     };
 
     this.transferTo = function (target, resource = RESOURCE_ENERGY) {
         if (this.transfer(target, resource) === ERR_NOT_IN_RANGE) {
-            this.moveTo(target, {visualizePathStyle: {stroke: "#ffaa00"}});
+            this.travelTo(target);
         }
     };
 
@@ -95,10 +95,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
 
         if (closestStructure) {
             if (this.transfer(closestStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(closestStructure, {
-                    visualizePathStyle: {stroke: "#ffffff"},
-                    ignoreCreeps: true
-                });
+                this.travelTo(closestStructure);
             }
 
             return OK;
@@ -120,7 +117,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
 
         if (closestContainer) {
             if (this.transfer(closestContainer, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(closestContainer, {visualizePathStyle: {stroke: "#ffffff"}});
+                this.travelTo(closestContainer);
             }
 
             return OK;
@@ -143,7 +140,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         } else {
             const exit = this.pos.findClosestByRange(route[0].exit);
             if (!exit) return console.log(routingErrorMessage);
-            this.moveTo(exit);
+            this.travelTo(exit);
         }
     };
 }).call(Creep.prototype);
