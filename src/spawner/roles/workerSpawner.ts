@@ -1,5 +1,6 @@
 import Body from "../body";
 import {WORKER} from "../../constants";
+import {WorkerTask} from "../../creep/roles/workerBehavior";
 
 const ENERGY_PER_SOURCE = 10;
 const ENERGY_EFFICIENCY = 0.8;
@@ -12,8 +13,8 @@ const workerSpawner: RoleSpawner = {
 
         const workers = spawner.creepsByRole[WORKER];
 
-        const upgraders = _.filter(workers, worker => worker.memory.task === "upgrader") ?? [];
-        const builders = _.filter(workers, worker => worker.memory.task === "builder") ?? [];
+        const upgraders = _.filter(workers, worker => worker.memory.task === WorkerTask.UPGRADER) ?? [];
+        const builders = _.filter(workers, worker => worker.memory.task === WorkerTask.BUILDER) ?? [];
 
         const upgraderWorkPartCount = (upgraders[0]?.getActiveBodyparts(WORK) ?? 0) * upgraders.length;
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
@@ -24,7 +25,9 @@ const workerSpawner: RoleSpawner = {
         let sourceCount = _.size(spawner.room.memory.sources);
         let availableEnergyPerTick = sourceCount * ENERGY_PER_SOURCE * ENERGY_EFFICIENCY;
         if (spawner.room.memory.remoteSources) {
-            const remoteSourceCount = _.sum(Object.values(spawner.room.memory.remoteSources), sources => _.size(sources));
+            const remoteSourceCount = _.sum(Object.values(spawner.room.memory.remoteSources), sources =>
+                _.size(sources)
+            );
             availableEnergyPerTick += remoteSourceCount * ENERGY_PER_SOURCE * REMOTE_ENERGY_EFFICIENCY;
         }
 
@@ -33,7 +36,7 @@ const workerSpawner: RoleSpawner = {
 
             spawner.spawn({
                 parts: body.getParts(),
-                memory: {role: WORKER, task: "builder"}
+                memory: {role: WORKER, task: WorkerTask.BUILDER}
             });
 
             return true;

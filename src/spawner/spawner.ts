@@ -1,7 +1,6 @@
 import fillerSpawner from "./roles/fillerSpawner";
-import handymanSpawner from "./roles/handymanSpawner";
 import minerSpawner from "./roles/minerSpawner";
-import {CreepRole, FILLER, HANDYMAN, HAULER, MINER, RESERVER, roles, SCOUT, WORKER} from "../constants";
+import {CreepRole, FILLER, HAULER, MINER, RESERVER, roles, SCOUT, WORKER} from "../constants";
 import haulerSpawner from "./roles/haulerSpawner";
 import workerSpawner from "./roles/workerSpawner";
 import scoutSpawner from "./roles/scoutSpawner";
@@ -13,8 +12,7 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [MINER]: minerSpawner,
     [SCOUT]: scoutSpawner,
     [WORKER]: workerSpawner,
-    [HANDYMAN]: handymanSpawner,
-    [FILLER]: fillerSpawner,
+    [FILLER]: fillerSpawner
 };
 
 (function (this: typeof StructureSpawn.prototype) {

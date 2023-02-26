@@ -1,8 +1,5 @@
-import builderBehavior from "./roles/builderBehavior";
-import upgraderBehavior from "./roles/upgraderBehavior";
-import handymanBehavior from "./roles/handymanBehavior";
 import fillerBehavior from "./roles/fillerBehavior";
-import {BUILDER, CreepRole, FILLER, HANDYMAN, HAULER, MINER, RESERVER, SCOUT, UPGRADER, WORKER} from "../constants";
+import {CreepRole, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
 import minerBehavior from "./roles/minerBehavior";
 import haulerBehavior from "./roles/haulerBehavior";
 import workerBehavior from "./roles/workerBehavior";
@@ -13,9 +10,6 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [MINER]: minerBehavior,
     [HAULER]: haulerBehavior,
     [WORKER]: workerBehavior,
-    [BUILDER]: builderBehavior,
-    [UPGRADER]: upgraderBehavior,
-    [HANDYMAN]: handymanBehavior,
     [FILLER]: fillerBehavior,
     [SCOUT]: scoutBehavior,
     [RESERVER]: reserverBehavior

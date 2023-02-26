@@ -27,7 +27,6 @@ declare global {
         role: CreepRole;
         previousPos?: RoomPosition;
         previousFatigue?: number;
-        task?: string;
         home: string;
         working?: boolean;
         assignedSource?: Id<Source>;
