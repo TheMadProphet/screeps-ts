@@ -28,7 +28,7 @@ const builderBehavior: BuilderBehavior = {
     buildConstructions(creep: Creep): void {
         const closestConstruction = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES)!;
         if (creep.build(closestConstruction) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(closestConstruction, {visualizePathStyle: {stroke: "#ffffff"}});
+            creep.travelTo(closestConstruction);
         }
     }
 };
