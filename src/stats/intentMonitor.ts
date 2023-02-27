@@ -31,10 +31,14 @@ function monitorFunctionsForIntent(functionNames: (keyof Creep)[]) {
 }
 
 function monitorFunctionForIntent(functionName: keyof Creep) {
-    const originalFunction = (Creep.prototype as any)[functionName];
+    const unmonitoredFunctionName = functionName + "Unmonitored";
+    if ((Creep.prototype as any)[unmonitoredFunctionName]) return;
 
-    (Creep.prototype as any)[functionName] = function (this: any, ...params: Parameters<typeof originalFunction>) {
-        const status = originalFunction.apply(this, params);
+    const unmonitoredFunction = (Creep.prototype as any)[functionName];
+    (Creep.prototype as any)[unmonitoredFunctionName] = unmonitoredFunction;
+
+    (Creep.prototype as any)[functionName] = function (this: any, ...params: any) {
+        const status = unmonitoredFunction.apply(this, params);
 
         if (status === OK) {
             Statistics.registerCreepIntent();
