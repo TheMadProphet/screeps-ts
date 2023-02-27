@@ -112,19 +112,15 @@ export class Statistics {
     }
 
     public static registerCreepIntent(creepName: string) {
-        let intentCpu = Memory.stats.userStats.cpuForIntents ?? 0;
-
         if (Game.time != Statistics.lastCreepIntentTick) {
-            intentCpu = 0;
+            Memory.stats.userStats.cpuForIntents = 0;
             Statistics.lastCreepIntentTick = Game.time;
             Statistics.creepIntentRegistry = new Set();
         }
 
-        if (Statistics.creepIntentRegistry.has(creepName)) {
-            return;
-        }
+        if (Statistics.creepIntentRegistry.has(creepName)) return;
 
-        Memory.stats.userStats.cpuForIntents = intentCpu + 0.2;
+        Memory.stats.userStats.cpuForIntents! += 0.2;
         Statistics.creepIntentRegistry.add(creepName);
     }
 
