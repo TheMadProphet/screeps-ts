@@ -18,6 +18,8 @@ class HaulerBehavior implements RoleBehavior {
         } else {
             this.pickupEnergyNearSource(creep, source);
         }
+
+        creep.giveWay();
     }
 
     pickupEnergyNearSource(creep: Creep, source: Source) {

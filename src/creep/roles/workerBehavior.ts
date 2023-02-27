@@ -25,6 +25,8 @@ class WorkerBehavior implements RoleBehavior {
                 this.runRepairerTask(creep);
                 break;
         }
+
+        creep.giveWay();
     }
 
     runBuilderTask(creep: Creep) {

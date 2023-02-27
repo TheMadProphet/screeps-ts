@@ -78,7 +78,9 @@ function giveWay(creep: Creep) {
 }
 
 Creep.prototype.giveWay = function () {
-    giveWay(this);
+    if (!this.movedLastTick() && this.memory.previousFatigue === 0) {
+        giveWay(this);
+    }
 };
 
 /*

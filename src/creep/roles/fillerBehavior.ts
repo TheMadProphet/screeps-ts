@@ -14,6 +14,8 @@ const fillerBehavior: RoleBehavior = {
         } else {
             fill(creep);
         }
+
+        creep.giveWay();
     }
 };
 
