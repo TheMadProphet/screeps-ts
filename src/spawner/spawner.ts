@@ -28,9 +28,11 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         }
         this.memory.hasEnoughEnergy = true;
 
-        _.forEach(roleSpawners, roleSpawner => {
-            return !roleSpawner.spawn(this);
-        });
+        if (!this.spawning) {
+            _.forEach(roleSpawners, roleSpawner => {
+                return !roleSpawner.spawn(this);
+            });
+        }
 
         this.displayVisuals();
     };
