@@ -15,6 +15,7 @@ declare global {
         time: number;
         cpu: number;
         cpuForIntents?: number;
+        cpuForPathfinding?: number;
         cpuForStats?: number;
         bucket: number;
         memory: number;
@@ -125,5 +126,16 @@ export class Statistics {
 
         Memory.stats.userStats.cpuForIntents = intentCpu + 0.2;
         Statistics.creepIntentRegistry.add(creepName);
+    }
+
+    public static registerPathfindingCpuUsage(cpuUsage: number) {
+        let pathfindingTotalCpuUsage = Memory.stats.userStats.cpuForPathfinding ?? 0;
+
+        if (Game.time != Statistics.lastPathfindingUsageTick) {
+            pathfindingTotalCpuUsage = 0;
+            Statistics.lastPathfindingUsageTick = Game.time;
+        }
+
+        Memory.stats.userStats.cpuForPathfinding = pathfindingTotalCpuUsage + cpuUsage;
     }
 }
