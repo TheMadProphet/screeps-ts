@@ -32,8 +32,7 @@ declare global {
         id: Id<Source>;
         roomName: string;
         spaceAvailable: number;
-        pathFromSpawn: RoomPosition[];
-        pathToSpawn: RoomPosition[];
+        distanceToSpawn: number;
         assignedMiners: Id<Creep>[];
     }
 }

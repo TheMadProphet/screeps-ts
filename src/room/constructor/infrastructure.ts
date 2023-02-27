@@ -6,7 +6,7 @@ function buildEnergyInfrastructure(room: Room) {
 
     room.memory.sources = roomScanner
         .scanSources(room, room.spawn)
-        .sort((a, b) => a.pathFromSpawn.length - b.pathFromSpawn.length)
+        .sort((a, b) => a.distanceToSpawn - b.distanceToSpawn)
         .reduce((acc, sourceMemory) => {
             return {...acc, [sourceMemory.id]: sourceMemory};
         }, {} as Record<Id<Source>, SourceMemory>);
@@ -37,7 +37,7 @@ function setupRemoteMines(room: Room) {
     const neighbors = Object.values(room.memory.neighbors!.scannedRooms)
         .filter(it => it.isVacant)
         .sort((a, b) => {
-            return _.sum(b.sources, it => it.pathFromSpawn.length) - _.sum(a.sources, it => it.pathFromSpawn.length);
+            return _.sum(b.sources, it => it.distanceToSpawn) - _.sum(a.sources, it => it.distanceToSpawn);
         });
 
     room.memory.remoteSources = {};
