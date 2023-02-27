@@ -43,6 +43,8 @@ declare global {
 
 export class Statistics {
     private static lastCreepIntentTick = 0;
+    private static creepIntentRegistry = new Set();
+    private static lastPathfindingUsageTick = 0;
 
     public static exportAll() {
         const cpuStart = Game.cpu.getUsed();
@@ -108,14 +110,20 @@ export class Statistics {
         };
     }
 
-    public static registerCreepIntent() {
+    public static registerCreepIntent(creepName: string) {
         let intentCpu = Memory.stats.userStats.cpuForIntents ?? 0;
 
         if (Game.time != Statistics.lastCreepIntentTick) {
             intentCpu = 0;
             Statistics.lastCreepIntentTick = Game.time;
+            Statistics.creepIntentRegistry = new Set();
+        }
+
+        if (Statistics.creepIntentRegistry.has(creepName)) {
+            return;
         }
 
         Memory.stats.userStats.cpuForIntents = intentCpu + 0.2;
+        Statistics.creepIntentRegistry.add(creepName);
     }
 }
