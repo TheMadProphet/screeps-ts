@@ -1,29 +1,28 @@
 import {Statistics} from "./statistics";
 
 monitorFunctionsForIntent([
-    "move",
-    "harvest",
     "attack",
-    "build",
-    "repair",
-    "dismantle",
-    "transfer",
-    "withdraw",
-    "drop",
-    "pickup",
-    "pull",
-    "suicide",
-    "say",
-    "rangedHeal",
-    "heal",
-    "rangedAttack",
-    "rangedMassAttack",
     "attackController",
-    "upgradeController",
+    "build",
     "claimController",
+    "dismantle",
+    "drop",
+    "generateSafeMode",
+    "harvest",
+    "heal",
+    "move",
+    "notifyWhenAttacked",
+    "pickup",
+    "rangedAttack",
+    "rangedHeal",
+    "rangedMassAttack",
+    "repair",
     "reserveController",
     "signController",
-    "generateSafeMode"
+    "suicide",
+    "transfer",
+    "upgradeController",
+    "withdraw"
 ]);
 
 function monitorFunctionsForIntent(functionNames: (keyof Creep)[]) {
