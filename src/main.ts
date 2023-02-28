@@ -14,10 +14,8 @@ import "stats/pathfindingMonitor";
 /**
  * TODO:
  * better source memory access
- * hauler waiting line in source
+ * intent detection for simultaneous actions
  * limit hauler formula based on source energy capacity as well
- *
- * repairer assignment
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     improveLog();

@@ -1,8 +1,4 @@
-export enum WorkerTask {
-    BUILDER,
-    UPGRADER,
-    REPAIRER
-}
+import {WorkerTask} from "../workerOrganizer";
 
 declare global {
     interface CreepMemory {
@@ -15,13 +11,13 @@ class WorkerBehavior implements RoleBehavior {
         if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
 
         switch (creep.memory.task) {
-            case WorkerTask.UPGRADER:
+            case WorkerTask.UPGRADE:
                 this.runUpgraderTask(creep);
                 break;
-            case WorkerTask.BUILDER:
+            case WorkerTask.BUILD:
                 this.runBuilderTask(creep);
                 break;
-            case WorkerTask.REPAIRER:
+            case WorkerTask.REPAIR:
                 this.runRepairerTask(creep);
                 break;
         }
@@ -30,7 +26,7 @@ class WorkerBehavior implements RoleBehavior {
     }
 
     runBuilderTask(creep: Creep) {
-        const closestConstruction = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES)!;
+        const closestConstruction = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)!;
 
         if (creep.build(closestConstruction) === ERR_NOT_IN_RANGE) {
             creep.travelTo(closestConstruction);
