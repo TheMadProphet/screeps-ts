@@ -87,33 +87,6 @@ Object.defineProperty(Room.prototype, "availableExtension", {
     configurable: true
 });
 
-Object.defineProperty(Room.prototype, "constructionSites", {
-    get: function () {
-        if (!this._constructionSites) {
-            this._constructionSites = this.find(FIND_MY_CONSTRUCTION_SITES);
-        }
-
-        return this._constructionSites;
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(Room.prototype, "rawSources", {
-    get: function () {
-        if (!this._rawSources) {
-            if (!this.memory.rawSourceIds) {
-                this.memory.rawSourceIds = this.find(FIND_SOURCES).map((source: Source) => source.id);
-            }
-            this._rawSources = this.memory.rawSourceIds.map((id: Id<Source>) => Game.getObjectById(id));
-        }
-
-        return this._rawSources;
-    },
-    enumerable: false,
-    configurable: true
-});
-
 function getAvailableStructure(room: Room, structureType: BuildableStructureConstant) {
     if (!room.controller) return 0;
 

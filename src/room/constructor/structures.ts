@@ -65,7 +65,7 @@ class RoomStructures {
     }
 
     build() {
-        if (!this.room.constructionSites.length) {
+        if (!this.room.find(FIND_MY_CONSTRUCTION_SITES).length) {
             if (this.room.availableExtension > 0) {
                 buildExtensions(this.room);
             }

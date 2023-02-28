@@ -4,8 +4,6 @@ declare global {
     interface Room {
         spawn: StructureSpawn;
         availableExtension: number;
-        constructionSites: ConstructionSite[];
-        rawSources: Source[];
 
         automate(): void;
 
