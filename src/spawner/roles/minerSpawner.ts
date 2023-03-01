@@ -3,47 +3,31 @@ import {MINER} from "../../constants";
 
 const minerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
-        let sources: Sources = spawner.room.memory.sources;
+        // todo
+        let sourceIds: Id<Source>[] = spawner.room.memory.sources;
         if (spawner.room.memory.remoteSources) {
-            const remoteSources = Object.values(spawner.room.memory.remoteSources).reduce((acc, sources) => {
-                return {
-                    ...acc,
-                    ...Object.values(sources).reduce((acc2, sourceMemory) => {
-                        return {...acc2, [sourceMemory.id]: sourceMemory};
-                    }, {})
-                };
-            }, {} as Sources);
-            sources = {...sources, ...remoteSources};
+            const remoteSourceIds = Object.values(spawner.room.memory.remoteSources).reduce((acc, sources) => {
+                return [...acc, ...sources];
+            }, [] as Id<Source>[]);
+            sourceIds = [...sourceIds, ...remoteSourceIds];
         }
 
-        _.forEach(sources, source => {
-            source.assignedMiners = [];
-        });
+        for (const sourceId of sourceIds) {
+            const source = Game.getObjectById(sourceId);
+            if (!source) continue;
 
-        _.forEach(spawner.creepsByRole[MINER] ?? [], miner => {
-            const assignedSource = miner.memory.assignedSource;
+            const assignedMiners = spawner.creepsByRole[MINER].filter(
+                miner => miner.memory.assignedSource === source.id
+            );
+            const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));
 
-            if (assignedSource && sources[assignedSource]) {
-                sources[assignedSource].assignedMiners.push(miner.id);
-            }
-        });
-
-        for (let sourceId in sources) {
-            const sourceMemory = sources[sourceId as Id<Source>] as Required<SourceMemory>;
-
-            let workParts = 0;
-            _.forEach(spawner.creepsByRole[MINER], worker => {
-                if (worker.memory.assignedSource === sourceId) {
-                    workParts += worker.getActiveBodyparts(WORK);
-                }
-            });
-
-            const hasSpaceForMore = sourceMemory.spaceAvailable > sourceMemory.assignedMiners.length;
-            if (hasSpaceForMore && workParts < 6) {
+            const hasSpaceForMore = source.memory.spaceAvailable > assignedMiners.length;
+            if (hasSpaceForMore && totalWorkParts < 6) {
                 let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
-                if (sourceMemory.roomName !== spawner.room.name) {
+
+                if (source.room.name !== spawner.room.name) {
                     if (spawner.room.energyCapacityAvailable < 650) {
-                        if (workParts >= 3) continue;
+                        if (totalWorkParts >= 3) continue;
                         body = new Body(spawner).addParts([WORK, WORK, MOVE]).addParts([WORK, MOVE]);
                     }
                 }

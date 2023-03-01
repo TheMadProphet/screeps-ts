@@ -19,10 +19,10 @@ declare global {
 interface RoomScanInfo {
     name: string;
     isVacant: boolean;
-    sources: SourceMemory[];
+    sources: Id<Source>[];
 }
 
-function getSpaceAroundSource(source: Source) {
+export function getSpaceAroundSource(source: Source) {
     const room = source.room;
     const pos = source.pos;
 
@@ -113,16 +113,13 @@ const roomScanner = {
     },
 
     scanSources(room: Room, spawn: StructureSpawn) {
-        return room
-            .find(FIND_SOURCES)
-            .filter(it => getSpaceAroundSource(it) > 0)
-            .map(it => ({
-                id: it.id,
-                roomName: room.name,
-                spaceAvailable: getSpaceAroundSource(it),
-                distanceToSpawn: Traveler.findTravelPath(spawn.pos, it.pos).path.length,
-                assignedMiners: []
-            }));
+        const sources = room.find(FIND_SOURCES).filter(it => getSpaceAroundSource(it) > 0);
+
+        sources.forEach(it => {
+            it.memory.distanceToSpawn = Traveler.findTravelPath(spawn.pos, it.pos).path.length; // todo: use cost
+        });
+
+        return sources.map(it => it.id);
     }
 };
 

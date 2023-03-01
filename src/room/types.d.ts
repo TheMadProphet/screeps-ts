@@ -16,21 +16,11 @@ declare global {
         hasEnergyEmergency(): boolean;
     }
 
-    type Sources = Record<Id<Source>, SourceMemory>;
-
     interface RoomMemory {
-        sources: Sources;
-        remoteSources?: Record<string, Sources>;
+        sources: Id<Source>[];
+        remoteSources?: Record<string, Id<Source>[]>;
         hasRoadAroundSpawn?: boolean;
         hasRoadToController?: boolean;
         ringsize?: number;
-    }
-
-    interface SourceMemory {
-        id: Id<Source>;
-        roomName: string;
-        spaceAvailable: number;
-        distanceToSpawn: number;
-        assignedMiners: Id<Creep>[];
     }
 }
