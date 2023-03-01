@@ -1,3 +1,13 @@
+export {};
+
+declare global {
+    interface StructureTower {
+        autoDefend(): void;
+
+        autoRepair(): void;
+    }
+}
+
 (function (this: typeof StructureTower.prototype) {
     this.autoDefend = function () {
         const closestHostile = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);

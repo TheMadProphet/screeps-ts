@@ -56,7 +56,7 @@ class WorkerOrganizer {
     }
 
     private applyAssignment(room: Room) {
-        const workers = room.spawn.workersByTask!;
+        const workers = room.spawn.workersByTask;
 
         let tasksMissingWorkers: WorkerTask[] = [];
         _.forEach(WorkerTask, it => {
