@@ -116,7 +116,7 @@ const roomScanner = {
         const sources = room.find(FIND_SOURCES).filter(it => getSpaceAroundSource(it) > 0);
 
         sources.forEach(it => {
-            it.memory.distanceToSpawn = Traveler.findTravelPath(spawn.pos, it.pos).path.length; // todo: use cost
+            it.memory.pathCost = Traveler.findTravelPath(spawn.pos, it.pos).cost;
         });
 
         return sources.map(it => it.id);

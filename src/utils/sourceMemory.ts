@@ -10,7 +10,7 @@ declare global {
     interface SourceMemory {
         id: Id<Source>;
         spaceAvailable: number;
-        distanceToSpawn: number;
+        pathCost: number;
     }
 
     interface Source {
@@ -24,7 +24,7 @@ Object.defineProperty(Source.prototype, "memory", {
             Memory.sources[this.id] = {
                 id: this.id,
                 spaceAvailable: getSpaceAroundSource(this),
-                distanceToSpawn: Infinity
+                pathCost: Infinity
             };
         }
 
