@@ -10,7 +10,11 @@ import workerOrganizer from "../creep/workerOrganizer";
         new RoomInfrastructure(this).build();
 
         this.spawn.automate();
-        // todo other structures i.e. tower
+
+        const towers: StructureTower[] = this.find(FIND_STRUCTURES, {
+            filter: structure => structure.structureType === STRUCTURE_TOWER
+        });
+        towers.forEach(it => it.autoDefend());
 
         workerOrganizer.organizeWorkersIn(this);
     };
