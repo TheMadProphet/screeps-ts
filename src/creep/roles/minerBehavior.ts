@@ -6,13 +6,8 @@ const minerBehavior: RoleBehavior = {
         }
 
         const source = Game.getObjectById(creep.memory.assignedSource!)!;
-        const harvestStatus = creep.harvest(source);
-        if (harvestStatus === ERR_NOT_IN_RANGE || harvestStatus === ERR_NOT_ENOUGH_RESOURCES) {
-            creep.travelTo(source);
-
-            if (harvestStatus === ERR_NOT_ENOUGH_RESOURCES) {
-                creep.say("🕑");
-            }
+        if (creep.harvestFrom(source) === ERR_NOT_ENOUGH_RESOURCES) {
+            creep.say("🕑");
         }
     }
 };

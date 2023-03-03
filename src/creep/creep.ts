@@ -61,10 +61,31 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         return null;
     };
 
-    this.withdrawFrom = function (target, resource = RESOURCE_ENERGY) {
-        if (this.withdraw(target, resource) === ERR_NOT_IN_RANGE) {
+    this.harvestFrom = function (target: Source) {
+        const harvestStatus = this.harvest(target);
+        if (harvestStatus === ERR_NOT_IN_RANGE) {
             this.travelTo(target);
         }
+
+        return harvestStatus;
+    };
+
+    this.withdrawFrom = function (target, resource = RESOURCE_ENERGY) {
+        const withdrawStatus = this.withdraw(target, resource);
+        if (withdrawStatus === ERR_NOT_IN_RANGE) {
+            this.travelTo(target);
+        }
+
+        return withdrawStatus;
+    };
+
+    this.pickupEnergy = function (resource: Resource) {
+        const pickupStatus = this.pickup(resource);
+        if (pickupStatus === ERR_NOT_IN_RANGE) {
+            this.travelTo(resource);
+        }
+
+        return pickupStatus;
     };
 
     this.transferTo = function (target, resource = RESOURCE_ENERGY) {

@@ -10,7 +10,11 @@ declare global {
 
         findEnergyRepository(includeSpawn?: boolean): Structure | null;
 
-        withdrawFrom(target: Structure, resource?: ResourceConstant): void;
+        harvestFrom(target: Source): ReturnType<typeof Creep.prototype.harvest>;
+
+        withdrawFrom(target: Structure, resource?: ResourceConstant): ReturnType<typeof Creep.prototype.withdraw>;
+
+        pickupEnergy(resource: Resource): ReturnType<typeof Creep.prototype.pickup>;
 
         transferTo(target: Structure, resource?: ResourceConstant): void;
 
