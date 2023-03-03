@@ -6,7 +6,7 @@ const scoutSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         if (roomScanner.needsMoreScouts(spawner.room)) {
             spawner.spawn({
-                parts: new Body(spawner).addParts([MOVE]).getParts(),
+                body: new Body(spawner).addParts([MOVE]),
                 memory: {
                     role: SCOUT,
                     assignedRoom: roomScanner.getUnscoutedRoomAround(spawner.room)

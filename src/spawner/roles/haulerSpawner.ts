@@ -9,7 +9,7 @@ class HaulerSpawner implements RoleSpawner {
         const source = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
         if (source) {
             spawner.spawn({
-                parts: body.getParts(),
+                body: body,
                 memory: {
                     role: HAULER,
                     assignedSource: source.id,
@@ -29,7 +29,7 @@ class HaulerSpawner implements RoleSpawner {
             const remoteSource = this.findSourceWithMissingHauler(spawner, colony.memory.sources, remoteHaulerBody);
             if (remoteSource) {
                 spawner.spawn({
-                    parts: remoteHaulerBody.getParts(),
+                    body: remoteHaulerBody,
                     memory: {
                         role: HAULER,
                         assignedSource: remoteSource.id,

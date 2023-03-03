@@ -8,10 +8,8 @@ class EmergencyUnitSpawner implements RoleSpawner {
         if (this.isEmergency(spawner)) {
             const emergencyUnitCount = spawner.creepsByRole[EMERGENCY_UNIT].length;
             if (emergencyUnitCount < this.EMERGENCY_UNIT_COUNT) {
-                const body = new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE]);
-
                 spawner.spawn({
-                    parts: body.getParts(),
+                    body: new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE]),
                     memory: {
                         role: EMERGENCY_UNIT
                     }

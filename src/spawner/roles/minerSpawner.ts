@@ -6,7 +6,7 @@ class MinerSpawner implements RoleSpawner {
         const source = this.findSourceWithMissingMiner(spawner.room.memory.sources, spawner);
         if (source) {
             spawner.spawn({
-                parts: new Body(spawner).addParts([WORK, WORK, MOVE], 3).getParts(),
+                body: new Body(spawner).addParts([WORK, WORK, MOVE], 3),
                 memory: {role: MINER, assignedSource: source.id as Id<Source>}
             });
 
@@ -22,7 +22,7 @@ class MinerSpawner implements RoleSpawner {
                 }
 
                 spawner.spawn({
-                    parts: body.getParts(),
+                    body: body,
                     memory: {role: MINER, assignedSource: source.id as Id<Source>}
                 });
             }

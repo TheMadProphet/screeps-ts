@@ -26,10 +26,8 @@ const workerSpawner: RoleSpawner = {
         }
 
         if (availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick) {
-            const body = new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 5);
-
             spawner.spawn({
-                parts: body.getParts(),
+                body: new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 5),
                 memory: {role: WORKER, task: WorkerTask.BUILD}
             });
         }

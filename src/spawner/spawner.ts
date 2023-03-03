@@ -39,10 +39,10 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         this.displayVisuals();
     };
 
-    this.spawn = function ({parts, memory}) {
+    this.spawn = function ({body, memory}) {
         const creepName = `${memory.role}`;
         const creepMemory = {home: this.room.name, ...memory};
-        const spawnStatus = this.spawnCreep(parts, creepName + `(${Game.time})`, {memory: creepMemory});
+        const spawnStatus = this.spawnCreep(body.getParts(), creepName + `(${Game.time})`, {memory: creepMemory});
 
         if (spawnStatus === OK) {
             spawnWasIssued = true;

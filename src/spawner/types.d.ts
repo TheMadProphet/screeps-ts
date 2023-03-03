@@ -1,5 +1,6 @@
 import {CreepRole} from "../constants";
 import {WorkerTask} from "../creep/workerOrganizer";
+import Body from "./body";
 
 export {};
 
@@ -28,7 +29,7 @@ declare global {
     }
 
     interface CreepSpawnRequest {
-        parts: BodyPartConstant[];
+        body: Body;
         memory: Omit<CreepMemory, "home">;
     }
 

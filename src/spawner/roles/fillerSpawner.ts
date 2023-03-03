@@ -8,10 +8,8 @@ const fillerSpawner: RoleSpawner = {
             const maxFillers = 1;
 
             if (!fillers || !fillers.length || fillers.length < maxFillers) {
-                const body = new Body(spawner).addParts([CARRY, CARRY, MOVE], 7);
-
                 spawner.spawn({
-                    parts: body.getParts(),
+                    body: new Body(spawner).addParts([CARRY, CARRY, MOVE], 7),
                     memory: {
                         role: FILLER
                     }

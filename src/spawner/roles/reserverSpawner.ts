@@ -6,9 +6,8 @@ const reserverSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         const roomToReserve = roomReserver.getUnreservedRoomAround(spawner.room);
         if (roomToReserve) {
-            const body = new Body(spawner).addParts([CLAIM, MOVE]);
             spawner.spawn({
-                parts: body.getParts(),
+                body: new Body(spawner).addParts([CLAIM, MOVE]),
                 memory: {
                     role: RESERVER,
                     assignedRoom: roomToReserve
