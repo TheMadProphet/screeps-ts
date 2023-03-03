@@ -20,8 +20,6 @@ declare global {
 
         fillSpawnsWithEnergy(): ScreepsReturnCode;
 
-        fillContainersWithEnergy(): ScreepsReturnCode;
-
         isHome(): boolean;
 
         isInAssignedRoom(): boolean;

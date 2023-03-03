@@ -118,28 +118,6 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         return ERR_FULL;
     };
 
-    this.fillContainersWithEnergy = function () {
-        const closestContainer = this.pos.findClosestByPath(FIND_STRUCTURES, {
-            filter: structure => {
-                return (
-                    (structure.structureType === STRUCTURE_CONTAINER ||
-                        structure.structureType === STRUCTURE_STORAGE) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                );
-            }
-        });
-
-        if (closestContainer) {
-            if (this.transfer(closestContainer, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.travelTo(closestContainer);
-            }
-
-            return OK;
-        }
-
-        return ERR_FULL;
-    };
-
     this.movedLastTick = function () {
         if (!this.memory.previousPos) return true;
 
