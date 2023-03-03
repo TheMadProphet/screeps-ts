@@ -32,11 +32,7 @@ const workerSpawner: RoleSpawner = {
                 parts: body.getParts(),
                 memory: {role: WORKER, task: WorkerTask.BUILD}
             });
-
-            return true;
         }
-
-        return false;
     }
 };
 

@@ -3,12 +3,8 @@ import {HAULER, MINER} from "../../constants";
 
 class HaulerSpawner implements RoleSpawner {
     public spawn(spawner: StructureSpawn) {
-        if (spawner.creepsByRole[MINER].length === 0) return false;
+        if (spawner.creepsByRole[MINER].length === 0) return;
 
-        return this.spawnLocalHaulers(spawner) || this.spawnRemoteHaulers(spawner);
-    }
-
-    private spawnLocalHaulers(spawner: StructureSpawn): boolean {
         const body = new Body(spawner).addParts([CARRY, MOVE], 10);
         const source = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
         if (source) {
@@ -21,15 +17,11 @@ class HaulerSpawner implements RoleSpawner {
                 }
             });
 
-            return true;
+            return;
         }
 
-        return false;
-    }
-
-    private spawnRemoteHaulers(spawner: StructureSpawn): boolean {
         for (const colony of spawner.room.getColonies()) {
-            let remoteHaulerBody = new Body(spawner).addParts([CARRY, MOVE], 10);
+            let remoteHaulerBody = body;
             if (spawner.room.controller!.level >= 3) {
                 remoteHaulerBody = new Body(spawner).addParts([WORK, MOVE]).addParts([CARRY, MOVE], 10);
             }
@@ -44,12 +36,8 @@ class HaulerSpawner implements RoleSpawner {
                         assignedRoom: remoteSource.room.name
                     }
                 });
-
-                return true;
             }
         }
-
-        return false;
     }
 
     private findSourceWithMissingHauler(

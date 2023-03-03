@@ -16,12 +16,8 @@ const fillerSpawner: RoleSpawner = {
                         role: FILLER
                     }
                 });
-
-                return true;
             }
         }
-
-        return false;
     }
 };
 

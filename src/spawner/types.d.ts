@@ -33,6 +33,6 @@ declare global {
     }
 
     interface RoleSpawner {
-        spawn: (spawner: StructureSpawn) => boolean;
+        spawn: (spawner: StructureSpawn) => void;
     }
 }

@@ -16,12 +16,8 @@ class EmergencyUnitSpawner implements RoleSpawner {
                         role: EMERGENCY_UNIT
                     }
                 });
-
-                return true;
             }
         }
-
-        return false;
     }
 
     isEmergency(spawner: StructureSpawn) {

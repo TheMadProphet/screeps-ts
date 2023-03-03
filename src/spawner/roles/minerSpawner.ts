@@ -5,14 +5,12 @@ class MinerSpawner implements RoleSpawner {
     spawn(spawner: StructureSpawn) {
         const source = this.findSourceWithMissingMiner(spawner.room.memory.sources, spawner);
         if (source) {
-            let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
-
             spawner.spawn({
-                parts: body.getParts(),
+                parts: new Body(spawner).addParts([WORK, WORK, MOVE], 3).getParts(),
                 memory: {role: MINER, assignedSource: source.id as Id<Source>}
             });
 
-            return true;
+            return;
         }
 
         for (const colony of spawner.room.getColonies()) {
@@ -27,12 +25,8 @@ class MinerSpawner implements RoleSpawner {
                     parts: body.getParts(),
                     memory: {role: MINER, assignedSource: source.id as Id<Source>}
                 });
-
-                return true;
             }
         }
-
-        return false;
     }
 
     findSourceWithMissingMiner(sourceIds: Id<Source>[], spawner: StructureSpawn): Source | undefined {

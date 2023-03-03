@@ -19,14 +19,21 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
 };
 
 (function (this: typeof StructureSpawn.prototype) {
+    let spawnWasIssued = false;
+
     this.automate = function () {
         initializeCreepsData(this);
         this.memory.hasEnoughEnergy = true;
+        spawnWasIssued = false;
 
         if (!this.spawning) {
-            _.forEach(roleSpawners, roleSpawner => {
-                return !roleSpawner.spawn(this);
-            });
+            for (const roleSpawner of Object.values(roleSpawners)) {
+                roleSpawner.spawn(this);
+
+                if (spawnWasIssued) {
+                    break;
+                }
+            }
         }
 
         this.displayVisuals();
@@ -37,7 +44,9 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         const creepMemory = {home: this.room.name, ...memory};
         const spawnStatus = this.spawnCreep(parts, creepName + `(${Game.time})`, {memory: creepMemory});
 
-        if (spawnStatus === ERR_NOT_ENOUGH_ENERGY) {
+        if (spawnStatus === OK) {
+            spawnWasIssued = true;
+        } else if (spawnStatus === ERR_NOT_ENOUGH_ENERGY) {
             this.memory.hasEnoughEnergy = false;
             this.memory.wantsToSpawn = creepName;
         }
