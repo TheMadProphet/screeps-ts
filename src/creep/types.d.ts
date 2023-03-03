@@ -14,7 +14,7 @@ declare global {
 
         withdrawFrom(target: Structure, resource?: ResourceConstant): ReturnType<typeof Creep.prototype.withdraw>;
 
-        pickupEnergy(resource: Resource): ReturnType<typeof Creep.prototype.pickup>;
+        pickupResource(resource: Resource): ReturnType<typeof Creep.prototype.pickup>;
 
         transferTo(target: Structure, resource?: ResourceConstant): void;
 

@@ -10,10 +10,11 @@ class EmergencyUnitBehavior implements RoleBehavior {
         }
     }
 
+    // TODO: take from containers
     private gatherEnergy(creep: Creep) {
         const resources = creep.room.find(FIND_DROPPED_RESOURCES);
         if (resources.length) {
-            creep.pickupEnergy(resources[0]);
+            creep.pickupResource(resources[0]);
         } else {
             this.mineSources(creep);
         }

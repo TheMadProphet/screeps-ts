@@ -40,18 +40,22 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         if (energyRepository && !this.room.hasEnergyEmergency()) {
             this.withdrawFrom(energyRepository);
         } else {
-            this.idle();
+            const closestDroppedResource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+            if (closestDroppedResource) {
+                this.pickupResource(closestDroppedResource);
+            } else {
+                this.idle();
+            }
         }
     };
 
     this.findEnergyRepository = function (includeSpawn = true) {
         if (this.room.fillersAreEnabled() && this.room.storage) return this.room.storage;
 
-        const closestContainerWithEnergy = this.pos.findClosestByPath(FIND_STRUCTURES, {
+        const closestContainerWithEnergy = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
                 structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 50
         });
-
         if (closestContainerWithEnergy) return closestContainerWithEnergy;
 
         if (includeSpawn && this.room.spawn.canBeUsedAsStorage()) {
@@ -79,7 +83,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         return withdrawStatus;
     };
 
-    this.pickupEnergy = function (resource: Resource) {
+    this.pickupResource = function (resource: Resource) {
         const pickupStatus = this.pickup(resource);
         if (pickupStatus === ERR_NOT_IN_RANGE) {
             this.travelTo(resource);
