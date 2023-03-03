@@ -14,11 +14,14 @@ declare global {
         fillersAreEnabled(): boolean;
 
         hasEnergyEmergency(): boolean;
+
+        getColonies(): Room[];
+
+        isBeingReserved(): boolean;
     }
 
     interface RoomMemory {
         sources: Id<Source>[];
-        remoteSources?: Record<string, Id<Source>[]>;
         hasRoadAroundSpawn?: boolean;
         hasRoadToController?: boolean;
         ringsize?: number;

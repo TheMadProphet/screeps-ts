@@ -1,19 +1,62 @@
 import Body from "../body";
 import {HAULER, MINER} from "../../constants";
 
-const haulerSpawner: RoleSpawner = {
-    spawn(spawner: StructureSpawn) {
+class HaulerSpawner implements RoleSpawner {
+    public spawn(spawner: StructureSpawn) {
         if (spawner.creepsByRole[MINER].length === 0) return false;
 
-        // todo
-        let sourceIds: Id<Source>[] = spawner.room.memory.sources;
-        if (spawner.room.memory.remoteSources) {
-            const remoteSourceIds = Object.values(spawner.room.memory.remoteSources).reduce((acc, sources) => {
-                return [...acc, ...sources];
-            }, [] as Id<Source>[]);
-            sourceIds = [...sourceIds, ...remoteSourceIds];
+        return this.spawnLocalHaulers(spawner) || this.spawnRemoteHaulers(spawner);
+    }
+
+    private spawnLocalHaulers(spawner: StructureSpawn): boolean {
+        const body = new Body(spawner).addParts([CARRY, MOVE], 10);
+        const source = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
+        if (source) {
+            spawner.spawn({
+                parts: body.getParts(),
+                memory: {
+                    role: HAULER,
+                    assignedSource: source.id,
+                    assignedRoom: source.room.name
+                }
+            });
+
+            return true;
         }
 
+        return false;
+    }
+
+    private spawnRemoteHaulers(spawner: StructureSpawn): boolean {
+        for (const colony of spawner.room.getColonies()) {
+            let remoteHaulerBody = new Body(spawner).addParts([CARRY, MOVE], 10);
+            if (spawner.room.controller!.level >= 3) {
+                remoteHaulerBody = new Body(spawner).addParts([WORK, MOVE]).addParts([CARRY, MOVE], 10);
+            }
+
+            const remoteSource = this.findSourceWithMissingHauler(spawner, colony.memory.sources, remoteHaulerBody);
+            if (remoteSource) {
+                spawner.spawn({
+                    parts: remoteHaulerBody.getParts(),
+                    memory: {
+                        role: HAULER,
+                        assignedSource: remoteSource.id,
+                        assignedRoom: remoteSource.room.name
+                    }
+                });
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private findSourceWithMissingHauler(
+        spawner: StructureSpawn,
+        sourceIds: Id<Source>[],
+        body: Body
+    ): Source | undefined {
         for (const sourceId of sourceIds) {
             const source = Game.getObjectById(sourceId);
             if (!source) continue;
@@ -26,24 +69,19 @@ const haulerSpawner: RoleSpawner = {
             );
             const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));
 
-            const body = new Body(spawner).addParts([CARRY, MOVE], 10);
             const energyGeneratedByWorkersPerLifetime = Math.min(totalWorkParts, 5) * 2 * CREEP_LIFE_TIME;
             const biRoutePerLifetime = CREEP_LIFE_TIME / source.memory.pathCost / 2;
             const energyStoredByHaulerPerLifetime = body.getCapacity() * biRoutePerLifetime;
             const requiredHaulerCount = energyGeneratedByWorkersPerLifetime / energyStoredByHaulerPerLifetime;
 
             if (assignedHaulers.length < requiredHaulerCount) {
-                spawner.spawn({
-                    parts: body.getParts(),
-                    memory: {role: HAULER, assignedSource: source.id, assignedRoom: source.room.name}
-                });
-
-                return true;
+                return source;
             }
         }
 
-        return false;
+        return undefined;
     }
-};
+}
 
+const haulerSpawner = new HaulerSpawner();
 export default haulerSpawner;

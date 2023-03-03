@@ -62,6 +62,18 @@ import workerOrganizer from "../creep/workerOrganizer";
 
         return this.storage.store.getUsedCapacity(RESOURCE_ENERGY) <= this.energyCapacityAvailable * 2;
     };
+
+    this.getColonies = function () {
+        if (!this.memory.colonies) return [];
+
+        return this.memory.colonies.map(roomName => Game.rooms[roomName]).filter(room => Boolean(room));
+    };
+
+    this.isBeingReserved = function () {
+        if (!this.controller?.reservation?.ticksToEnd) return false;
+
+        return this.controller.reservation.ticksToEnd >= 1;
+    };
 }).call(Room.prototype);
 
 Object.defineProperty(Room.prototype, "spawn", {

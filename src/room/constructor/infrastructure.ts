@@ -1,8 +1,16 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
 import roomScanner from "../../creep/roomScanner";
 
+declare global {
+    interface RoomMemory {
+        colonies?: string[];
+    }
+}
+
+const COLONY_LIMIT = 2;
+
 function buildEnergyInfrastructure(room: Room) {
-    if (room.memory.sources || !room.spawn) return;
+    if (room.memory.sources) return;
 
     room.memory.sources = roomScanner
         .scanSources(room, room.spawn)
@@ -26,22 +34,25 @@ function buildSpawnInfrastructure(room: Room) {
     }
 }
 
-function setupRemoteMines(room: Room) {
-    if (room.memory.remoteSources) return;
+function establishColonies(room: Room) {
+    if (room.memory.colonies) return;
     if (room.controller!.level < 2) return;
-    if (!roomScanner.finishedScanningAround(room)) return;
+    if (!roomScanner.roomsAreVisible(room)) return;
 
-    const neighbors = Object.values(room.memory.neighbors!.scannedRooms)
+    const colonies = Object.values(room.memory.neighborsInfo!.scannedRooms)
         .filter(it => it.isVacant)
         .sort((a, b) => {
             const bCosts = b.sources.map(id => Memory.sources[id].pathCost);
             const aCosts = a.sources.map(id => Memory.sources[id].pathCost);
             return _.sum(bCosts) - _.sum(aCosts);
-        });
+        })
+        .slice(0, COLONY_LIMIT);
 
-    room.memory.remoteSources = {};
-    _.forEach(neighbors, neighbor => {
-        room.memory.remoteSources![neighbor.name] = neighbor.sources;
+    room.memory.colonies = colonies.map(it => it.name);
+
+    _.forEach(colonies, colonyInfo => {
+        const room = Game.rooms[colonyInfo.name];
+        room.memory.sources = room.find(FIND_SOURCES).map(it => it.id);
     });
 }
 
@@ -56,7 +67,7 @@ class RoomInfrastructure {
         buildEnergyInfrastructure(this.room);
         buildControllerInfrastructure(this.room);
         buildSpawnInfrastructure(this.room);
-        setupRemoteMines(this.room);
+        establishColonies(this.room);
     }
 }
 

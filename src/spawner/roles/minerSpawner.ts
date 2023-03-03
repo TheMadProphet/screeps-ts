@@ -1,17 +1,41 @@
 import Body from "../body";
 import {MINER} from "../../constants";
 
-const minerSpawner: RoleSpawner = {
+class MinerSpawner implements RoleSpawner {
     spawn(spawner: StructureSpawn) {
-        // todo
-        let sourceIds: Id<Source>[] = spawner.room.memory.sources;
-        if (spawner.room.memory.remoteSources) {
-            const remoteSourceIds = Object.values(spawner.room.memory.remoteSources).reduce((acc, sources) => {
-                return [...acc, ...sources];
-            }, [] as Id<Source>[]);
-            sourceIds = [...sourceIds, ...remoteSourceIds];
+        const source = this.findSourceWithMissingMiner(spawner.room.memory.sources, spawner);
+        if (source) {
+            let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
+
+            spawner.spawn({
+                parts: body.getParts(),
+                memory: {role: MINER, assignedSource: source.id as Id<Source>}
+            });
+
+            return true;
         }
 
+        for (const colony of spawner.room.getColonies()) {
+            const source = this.findSourceWithMissingMiner(colony.memory.sources, spawner);
+            if (source) {
+                let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
+                if (!colony.isBeingReserved()) {
+                    body = new Body(spawner).addParts([WORK, WORK, MOVE]).addParts([WORK, MOVE]);
+                }
+
+                spawner.spawn({
+                    parts: body.getParts(),
+                    memory: {role: MINER, assignedSource: source.id as Id<Source>}
+                });
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    findSourceWithMissingMiner(sourceIds: Id<Source>[], spawner: StructureSpawn): Source | undefined {
         for (const sourceId of sourceIds) {
             const source = Game.getObjectById(sourceId);
             if (!source) continue;
@@ -23,26 +47,13 @@ const minerSpawner: RoleSpawner = {
 
             const hasSpaceForMore = source.memory.spaceAvailable > assignedMiners.length;
             if (hasSpaceForMore && totalWorkParts < 6) {
-                let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
-
-                if (source.room.name !== spawner.room.name) {
-                    if (spawner.room.energyCapacityAvailable < 650) {
-                        if (totalWorkParts >= 3) continue;
-                        body = new Body(spawner).addParts([WORK, WORK, MOVE]).addParts([WORK, MOVE]);
-                    }
-                }
-
-                spawner.spawn({
-                    parts: body.getParts(),
-                    memory: {role: MINER, assignedSource: sourceId as Id<Source>}
-                });
-
-                return true;
+                return source;
             }
         }
 
-        return false;
+        return undefined;
     }
-};
+}
 
+const minerSpawner = new MinerSpawner();
 export default minerSpawner;
