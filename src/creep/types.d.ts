@@ -18,6 +18,10 @@ declare global {
 
         fillContainersWithEnergy(): ScreepsReturnCode;
 
+        isHome(): boolean;
+
+        isInAssignedRoom(): boolean;
+
         movedLastTick(): boolean;
 
         moveToAssignedRoom(): void;
