@@ -99,7 +99,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     };
 
     this.fillSpawnsWithEnergy = function () {
-        const closestStructure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+        const closestStructure = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
             filter: structure => {
                 return (
                     (structure.structureType === STRUCTURE_EXTENSION ||
@@ -107,19 +107,12 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
                         structure.structureType === STRUCTURE_TOWER) &&
                     structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                 );
-            },
-            ignoreCreeps: true
+            }
         });
 
         if (closestStructure) {
-            if (this.transfer(closestStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.travelTo(closestStructure);
-            }
-
-            return OK;
+            this.transferTo(closestStructure);
         }
-
-        return ERR_FULL;
     };
 
     this.movedLastTick = function () {

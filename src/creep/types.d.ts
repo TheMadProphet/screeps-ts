@@ -18,7 +18,7 @@ declare global {
 
         transferTo(target: Structure, resource?: ResourceConstant): void;
 
-        fillSpawnsWithEnergy(): ScreepsReturnCode;
+        fillSpawnsWithEnergy(): void;
 
         isHome(): boolean;
 
