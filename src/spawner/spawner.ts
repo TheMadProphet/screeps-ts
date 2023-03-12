@@ -40,13 +40,13 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     };
 
     this.spawn = function ({body, memory}) {
+        spawnWasIssued = true;
+
         const creepName = `${memory.role}`;
         const creepMemory = {home: this.room.name, ...memory};
         const spawnStatus = this.spawnCreep(body.getParts(), creepName + `(${Game.time})`, {memory: creepMemory});
 
-        if (spawnStatus === OK) {
-            spawnWasIssued = true;
-        } else if (spawnStatus === ERR_NOT_ENOUGH_ENERGY) {
+        if (spawnStatus === ERR_NOT_ENOUGH_ENERGY) {
             this.memory.hasEnoughEnergy = false;
             this.memory.wantsToSpawn = creepName;
         }
@@ -71,17 +71,14 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     };
 }).call(StructureSpawn.prototype);
 
-const EMPTY_CREEPS_BY_ROLE = roles.reduce((acc, role) => {
-    return {...acc, [role]: []};
-}, {} as {[role in CreepRole]: Creep[]});
-
-const EMPTY_WORKERS_BY_TASK = Object.values(WorkerTask).reduce((acc, role) => {
-    return {...acc, [role]: []};
-}, {} as {[task in WorkerTask]: Creep[]});
-
 function initializeCreepsData(spawn: StructureSpawn) {
-    spawn.creepsByRole = EMPTY_CREEPS_BY_ROLE;
-    spawn.workersByTask = EMPTY_WORKERS_BY_TASK;
+    spawn.creepsByRole = roles.reduce((acc, role) => {
+        return {...acc, [role]: []};
+    }, {} as {[role in CreepRole]: Creep[]});
+
+    spawn.workersByTask = Object.values(WorkerTask).reduce((acc, role) => {
+        return {...acc, [role]: []};
+    }, {} as {[task in WorkerTask]: Creep[]});
 
     for (const name in Memory.creeps) {
         const creep = Game.creeps[name];
