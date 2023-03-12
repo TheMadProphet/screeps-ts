@@ -20,6 +20,8 @@ declare global {
 
 Object.defineProperty(Source.prototype, "memory", {
     get: function () {
+        if (!Memory.sources) Memory.sources = {};
+
         if (!Memory.sources[this.id]) {
             Memory.sources[this.id] = {
                 id: this.id,
