@@ -32,6 +32,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         }
 
         this.say("💤");
+        this.giveWay();
     };
 
     this.withdrawEnergy = function (includeSpawn = true) {
