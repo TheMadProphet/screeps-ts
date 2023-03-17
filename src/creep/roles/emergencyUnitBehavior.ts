@@ -21,10 +21,21 @@ class EmergencyUnitBehavior implements RoleBehavior {
     }
 
     private mineSources(creep: Creep) {
-        const sources = creep.room.find(FIND_SOURCES, {filter: source => source.energy > 0});
+        const sourcesInRange = creep.pos.findInRange(FIND_SOURCES, 1);
+        if (sourcesInRange.length > 0) {
+            creep.harvest(sourcesInRange[0]);
+            return;
+        }
 
-        if (sources.length) {
-            creep.harvestFrom(sources[0]);
+        const sources = creep.room.find(FIND_SOURCES, {filter: source => source.energy > 0});
+        sources.sort((a, b) => creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b));
+
+        for (const source of sources) {
+            const creepsNearSource = source.pos.findInRange(FIND_CREEPS, 1).length;
+            if (source.memory.spaceAvailable > creepsNearSource) {
+                creep.travelTo(source, {ignoreCreeps: false});
+                break;
+            }
         }
     }
 }
