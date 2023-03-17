@@ -34,6 +34,7 @@ declare global {
         previousPos?: RoomPosition;
         previousFatigue?: number;
         home: string;
+        assignedRoom?: string | null;
         working?: boolean;
         assignedSource?: Id<Source>;
     }

@@ -5,21 +5,11 @@ declare global {
     interface RoomMemory {
         neighborsInfo?: {
             roomNames: string[];
-            scannedRooms: Record<string, RoomScanInfo>;
+            scannedRooms: string[];
             vacantRooms: string[];
             scanComplete?: boolean;
         };
     }
-
-    interface CreepMemory {
-        assignedRoom?: string | null;
-    }
-}
-
-interface RoomScanInfo {
-    name: string;
-    isVacant: boolean;
-    sources: Id<Source>[];
 }
 
 export function getSpaceAroundSource(source: Source) {
@@ -55,35 +45,31 @@ function isVacant(room: Room) {
 }
 
 const roomScanner = {
-    roomsAreVisible(room: Room): boolean {
-        return Boolean(room.memory.neighborsInfo?.scanComplete && this.getUnscoutedRoomAround(room) === null);
+    isNeighborsScanComplete(room: Room): boolean {
+        return Boolean(room.memory.neighborsInfo?.scanComplete);
     },
 
-    needsMoreScouts(room: Room) {
-        return (
-            !room.memory.neighborsInfo ||
-            room.spawn.creepsByRole[SCOUT].length < room.memory.neighborsInfo.roomNames.length
-        );
+    needsScoutToScanNeighbors(room: Room) {
+        if (room.memory.neighborsInfo?.scanComplete) {
+            return false;
+        }
+
+        return room.spawn.creepsByRole[SCOUT].length < 1;
     },
 
-    getUnscoutedRoomAround(room: Room): string | null {
+    getUnscoutedNeighborFor(room: Room): string | null {
         if (!room.memory.neighborsInfo) {
             room.memory.neighborsInfo = {
                 roomNames: _.map(Game.map.describeExits(room.name), value => value),
-                scannedRooms: {},
+                scannedRooms: [],
                 vacantRooms: []
             };
         }
 
-        const scoutedNeighbors = room.spawn.creepsByRole[SCOUT].map(it => it.memory.assignedRoom);
-
-        let roomsToScout = room.memory.neighborsInfo.vacantRooms;
-        if (!room.memory.neighborsInfo.scanComplete) roomsToScout = room.memory.neighborsInfo.roomNames;
-
-        for (const i in roomsToScout) {
-            const roomName = roomsToScout[i];
-            if (!scoutedNeighbors.includes(roomName)) {
-                return roomName;
+        const roomsToScout = room.memory.neighborsInfo.roomNames;
+        for (const roomToScout of roomsToScout) {
+            if (!room.memory.neighborsInfo.scannedRooms.includes(roomToScout)) {
+                return roomToScout;
             }
         }
 
@@ -92,26 +78,16 @@ const roomScanner = {
 
     scanRoom(roomToScan: Room, home: Room) {
         const neighbors = home.memory.neighborsInfo!;
-        if (neighbors.scannedRooms[roomToScan.name]) return;
+        if (neighbors.scannedRooms.includes(roomToScan.name)) return;
 
-        const cpuStart = Game.cpu.getUsed();
-        const roomInfo: RoomScanInfo = {
-            name: roomToScan.name,
-            isVacant: isVacant(roomToScan),
-            sources: this.scanSources(roomToScan, home.spawn)
-        };
-        const usedCpu = Game.cpu.getUsed() - cpuStart;
-        console.log(`Scanned ${roomToScan.name}[${roomInfo.sources.length}], CPU used: `, usedCpu);
+        roomToScan.memory.sources = this.scanSources(roomToScan, home.spawn);
+        neighbors.scannedRooms.push(roomToScan.name);
+        if (isVacant(roomToScan)) {
+            neighbors.vacantRooms.push(roomToScan.name);
+        }
 
-        neighbors.scannedRooms[roomToScan.name] = roomInfo;
-
-        if (_.size(neighbors.roomNames) === _.size(neighbors.scannedRooms)) {
+        if (neighbors.roomNames.length === neighbors.scannedRooms.length) {
             neighbors.scanComplete = true;
-            neighbors.vacantRooms = Object.values(neighbors.scannedRooms)
-                .filter(room => room.isVacant)
-                .map(room => room.name);
-            console.log(`${home.name} Neighbors Scan Finished`);
-            console.log(`Vacant rooms: [${neighbors.vacantRooms.length}/${neighbors.roomNames.length}]`);
         }
     },
 

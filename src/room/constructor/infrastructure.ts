@@ -37,23 +37,16 @@ function buildSpawnInfrastructure(room: Room) {
 function establishColonies(room: Room) {
     if (room.memory.colonies) return;
     if (room.controller!.level < 2) return;
-    if (!roomScanner.roomsAreVisible(room)) return;
+    if (!roomScanner.isNeighborsScanComplete(room)) return;
 
-    const colonies = Object.values(room.memory.neighborsInfo!.scannedRooms)
-        .filter(it => it.isVacant)
+    const vacantRooms = room.memory.neighborsInfo!.vacantRooms;
+    room.memory.colonies = vacantRooms
         .sort((a, b) => {
-            const bCosts = b.sources.map(id => Memory.sources[id].pathCost);
-            const aCosts = a.sources.map(id => Memory.sources[id].pathCost);
-            return _.sum(bCosts) - _.sum(aCosts);
+            const aCosts = Memory.rooms[a].sources.map(id => Memory.sources[id].pathCost);
+            const bCosts = Memory.rooms[b].sources.map(id => Memory.sources[id].pathCost);
+            return _.sum(aCosts) - _.sum(bCosts);
         })
         .slice(0, COLONY_LIMIT);
-
-    room.memory.colonies = colonies.map(it => it.name);
-
-    _.forEach(colonies, colonyInfo => {
-        const room = Game.rooms[colonyInfo.name];
-        room.memory.sources = room.find(FIND_SOURCES).map(it => it.id);
-    });
 }
 
 class RoomInfrastructure {
