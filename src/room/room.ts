@@ -6,10 +6,11 @@ import workerOrganizer from "../creep/workerOrganizer";
     this.automate = function () {
         if (!this.controller?.my) return;
 
+        // TODO: group creeps somewhere else
+        this.spawn.automate();
+
         new RoomStructures(this).build();
         new RoomInfrastructure(this).build();
-
-        this.spawn.automate();
 
         const towers: StructureTower[] = this.find(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_TOWER
