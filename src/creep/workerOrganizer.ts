@@ -1,42 +1,44 @@
 import {WORKER} from "../constants";
 
-export enum WorkerTask {
-    BUILD,
-    UPGRADE,
-    REPAIR
-}
+export const workerTasks = {
+    BUILD: 0,
+    UPGRADE: 1,
+    REPAIR: 2
+} as const;
+
+export type WorkerTask = (typeof workerTasks)[keyof typeof workerTasks];
 
 class WorkerOrganizer {
-    private taskReservations: Set<WorkerTask> = new Set();
-    private defaultTask: WorkerTask = WorkerTask.UPGRADE;
+    private taskReservations: WorkerTask[] = [];
+    private defaultTask: WorkerTask = workerTasks.UPGRADE;
 
     public organizeWorkersIn(room: Room) {
-        if (Game.time % 10 !== 0) return;
+        if (Game.time % 2 !== 0) return;
         if (this.roomHasNoWorkers(room)) return;
 
         this.resetData();
 
         if (this.roomNeedsRepairs(room)) {
-            this.reserveOneWorkerFor(WorkerTask.REPAIR);
+            this.reserveOneWorkerFor(workerTasks.REPAIR);
         }
 
         if (this.roomHasConstructionSites(room)) {
-            this.reserveOneWorkerFor(WorkerTask.UPGRADE);
-            this.reserveRemainingWorkersFor(WorkerTask.BUILD);
+            this.reserveOneWorkerFor(workerTasks.UPGRADE);
+            this.reserveRemainingWorkersFor(workerTasks.BUILD);
         } else {
-            this.reserveRemainingWorkersFor(WorkerTask.UPGRADE);
+            this.reserveRemainingWorkersFor(workerTasks.UPGRADE);
         }
 
         this.applyAssignment(room);
     }
 
     private resetData() {
-        this.taskReservations = new Set();
-        this.defaultTask = WorkerTask.UPGRADE;
+        this.taskReservations = [];
+        this.defaultTask = workerTasks.UPGRADE;
     }
 
     private reserveOneWorkerFor(task: WorkerTask) {
-        this.taskReservations.add(task);
+        this.taskReservations.push(task);
     }
 
     private reserveRemainingWorkersFor(task: WorkerTask) {
@@ -59,18 +61,20 @@ class WorkerOrganizer {
         const workers = room.spawn.workersByTask;
 
         let tasksMissingWorkers: WorkerTask[] = [];
-        _.forEach(WorkerTask, it => {
+        for (const it of _.values(workerTasks)) {
             const task = it as WorkerTask;
             const assignedWorkersToTask = workers[task];
 
-            if (this.taskReservations.has(task)) {
+            if (this.taskReservations.includes(task)) {
                 if (assignedWorkersToTask.length < 1) {
                     tasksMissingWorkers.push(task);
+                } else if (assignedWorkersToTask.length > 1) {
+                    _.forEach(assignedWorkersToTask.slice(1), it => (it.memory.task = this.defaultTask));
                 }
             } else if (assignedWorkersToTask.length > 0 && task !== this.defaultTask) {
-                _.forEach(workers[task], it => (it.memory.task = this.defaultTask));
+                _.forEach(assignedWorkersToTask, it => (it.memory.task = this.defaultTask));
             }
-        });
+        }
 
         for (let i = workers[this.defaultTask].length - 1; i >= 0; i--) {
             if (tasksMissingWorkers.length === 0) break;

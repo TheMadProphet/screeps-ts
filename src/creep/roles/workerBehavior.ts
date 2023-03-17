@@ -1,4 +1,4 @@
-import {WorkerTask} from "../workerOrganizer";
+import {WorkerTask, workerTasks} from "../workerOrganizer";
 
 declare global {
     interface CreepMemory {
@@ -11,13 +11,13 @@ class WorkerBehavior implements RoleBehavior {
         if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
 
         switch (creep.memory.task) {
-            case WorkerTask.UPGRADE:
+            case workerTasks.UPGRADE:
                 this.runUpgraderTask(creep);
                 break;
-            case WorkerTask.BUILD:
+            case workerTasks.BUILD:
                 this.runBuilderTask(creep);
                 break;
-            case WorkerTask.REPAIR:
+            case workerTasks.REPAIR:
                 this.runRepairerTask(creep);
                 break;
         }

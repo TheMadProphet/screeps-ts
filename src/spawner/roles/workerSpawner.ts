@@ -1,6 +1,6 @@
 import Body from "../body";
 import {WORKER} from "../../constants";
-import {WorkerTask} from "../../creep/workerOrganizer";
+import {workerTasks} from "../../creep/workerOrganizer";
 
 const ENERGY_PER_SOURCE = 10;
 const ENERGY_EFFICIENCY = 0.8;
@@ -8,8 +8,8 @@ const REMOTE_ENERGY_EFFICIENCY = 0.6;
 
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
-        const upgraders = spawner.workersByTask[WorkerTask.UPGRADE];
-        const builders = spawner.workersByTask[WorkerTask.BUILD];
+        const upgraders = spawner.workersByTask[workerTasks.UPGRADE];
+        const builders = spawner.workersByTask[workerTasks.BUILD];
 
         const upgraderWorkPartCount = (upgraders[0]?.getActiveBodyparts(WORK) ?? 0) * upgraders.length;
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
@@ -28,7 +28,7 @@ const workerSpawner: RoleSpawner = {
         if (availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick) {
             spawner.spawn({
                 body: new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 5),
-                memory: {role: WORKER, task: WorkerTask.BUILD}
+                memory: {role: WORKER, task: workerTasks.BUILD}
             });
         }
     }

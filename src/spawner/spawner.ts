@@ -6,13 +6,13 @@ import workerSpawner from "./roles/workerSpawner";
 import scoutSpawner from "./roles/scoutSpawner";
 import reserverSpawner from "./roles/reserverSpawner";
 import emergencyUnitSpawner from "./roles/emergencyUnitSpawner";
-import {WorkerTask} from "../creep/workerOrganizer";
+import {WorkerTask, workerTasks} from "../creep/workerOrganizer";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
-    [RESERVER]: reserverSpawner,
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,
+    [RESERVER]: reserverSpawner,
     [SCOUT]: scoutSpawner,
     [WORKER]: workerSpawner,
     [FILLER]: fillerSpawner
@@ -76,7 +76,7 @@ function initializeCreepsData(spawn: StructureSpawn) {
         return {...acc, [role]: []};
     }, {} as {[role in CreepRole]: Creep[]});
 
-    spawn.workersByTask = Object.values(WorkerTask).reduce((acc, role) => {
+    spawn.workersByTask = Object.values(workerTasks).reduce((acc, role) => {
         return {...acc, [role]: []};
     }, {} as {[task in WorkerTask]: Creep[]});
 
