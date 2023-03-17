@@ -13,13 +13,18 @@ declare global {
 
     interface UserStatistics {
         time: number;
-        cpu: number;
-        cpuForIntents?: number;
-        cpuForPathfinding?: number;
-        cpuForStats?: number;
+        usedCpu: UsedCpuStatistics;
         bucket: number;
+        maxCpu: number;
         memory: number;
         gcl: number;
+    }
+
+    interface UsedCpuStatistics {
+        total: number;
+        intents?: number;
+        pathfinding?: number;
+        stats?: number;
     }
 
     interface RoomStatistics {
@@ -51,14 +56,14 @@ export class Statistics {
         const cpuStart = Game.cpu.getUsed();
 
         if (!Memory.stats) {
-            Memory.stats = {roomStats: {}, creepStats: {}, userStats: {}} as Stats;
+            Memory.stats = {roomStats: {}, creepStats: {}, userStats: {usedCpu: {}}} as Stats;
         }
 
         _.forEach(Game.rooms, room => this.exportRoomStatistics(room));
         this.exportCreepStatistics();
         this.exportUserStatistics();
 
-        Memory.stats.userStats.cpuForStats = Game.cpu.getUsed() - cpuStart;
+        Memory.stats.userStats.usedCpu.stats = Game.cpu.getUsed() - cpuStart;
     }
 
     private static exportRoomStatistics(room: Room) {
@@ -102,36 +107,36 @@ export class Statistics {
 
     private static exportUserStatistics() {
         Memory.stats.userStats = {
-            ...Memory.stats.userStats,
-            time: Game.time,
-            cpu: Game.cpu.getUsed(),
             bucket: Game.cpu.bucket,
+            maxCpu: Game.cpu.limit,
             memory: RawMemory.get().length,
-            gcl: Game.gcl.level
+            gcl: Game.gcl.level,
+            time: Game.time,
+            usedCpu: {...Memory.stats.userStats.usedCpu, total: Game.cpu.getUsed()}
         };
     }
 
     public static registerCreepIntent(creepName: string) {
         if (Game.time != Statistics.lastCreepIntentTick) {
-            Memory.stats.userStats.cpuForIntents = 0;
+            Memory.stats.userStats.usedCpu.intents = 0;
             Statistics.lastCreepIntentTick = Game.time;
             Statistics.creepIntentRegistry = new Set();
         }
 
         if (Statistics.creepIntentRegistry.has(creepName)) return;
 
-        Memory.stats.userStats.cpuForIntents! += 0.2;
+        Memory.stats.userStats.usedCpu.intents! += 0.2;
         Statistics.creepIntentRegistry.add(creepName);
     }
 
     public static registerPathfindingCpuUsage(cpuUsage: number) {
-        let pathfindingTotalCpuUsage = Memory.stats.userStats.cpuForPathfinding ?? 0;
+        let pathfindingTotalCpuUsage = Memory.stats.userStats.usedCpu.pathfinding ?? 0;
 
         if (Game.time != Statistics.lastPathfindingUsageTick) {
             pathfindingTotalCpuUsage = 0;
             Statistics.lastPathfindingUsageTick = Game.time;
         }
 
-        Memory.stats.userStats.cpuForPathfinding = pathfindingTotalCpuUsage + cpuUsage;
+        Memory.stats.userStats.usedCpu.pathfinding = pathfindingTotalCpuUsage + cpuUsage;
     }
 }
