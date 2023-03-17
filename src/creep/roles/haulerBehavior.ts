@@ -2,6 +2,7 @@ class HaulerBehavior implements RoleBehavior {
     run(creep: Creep) {
         const source = Game.getObjectById(creep.memory.assignedSource ?? ("" as Id<Source>));
         if (!source) {
+            creep.idle();
             creep.say("⚠");
             return;
         }
@@ -12,6 +13,7 @@ class HaulerBehavior implements RoleBehavior {
         if (creep.memory.working) {
             if (creep.memory.home !== creep.room.name) {
                 creep.travelTo(Game.rooms[creep.memory.home].spawn, {range: 2});
+                creep.getOffExit();
             } else {
                 creep.fillSpawnsWithEnergy();
             }
