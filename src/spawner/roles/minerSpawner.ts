@@ -40,8 +40,10 @@ class MinerSpawner implements RoleSpawner {
             const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));
 
             const hasSpaceForMore = source.memory.spaceAvailable > assignedMiners.length;
-            if (hasSpaceForMore && totalWorkParts < 6) {
-                return source;
+            if (hasSpaceForMore) {
+                if (source.energyCapacity >= totalWorkParts * 2 * 300) {
+                    return source;
+                }
             }
         }
 
