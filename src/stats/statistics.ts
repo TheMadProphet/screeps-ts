@@ -8,7 +8,6 @@ declare global {
     interface Stats {
         userStats: UserStatistics;
         rooms: Record<string, RoomStatistics>;
-        creeps: CreepStatistics;
     }
 
     interface UserStatistics {
@@ -38,12 +37,7 @@ declare global {
         containerEnergy: number;
         towerEnergy: number;
         hostileCreeps: number;
-        creepStats: CreepStatistics;
-    }
-
-    interface CreepStatistics {
-        totalCreeps: number;
-        creepsByRole: Partial<Record<CreepRole, number>>;
+        creeps: Record<CreepRole, number>;
     }
 }
 
@@ -52,7 +46,7 @@ export class Statistics {
 
     public static onTickStart() {
         if (!Memory.stats) {
-            Memory.stats = {rooms: {}, creeps: {}, userStats: {usedCpu: {}}} as Stats;
+            Memory.stats = {rooms: {}, userStats: {usedCpu: {}}} as Stats;
         }
 
         Memory.stats.userStats.usedCpu.intents = 0;
@@ -64,7 +58,6 @@ export class Statistics {
         const cpuStart = Game.cpu.getUsed();
 
         _.forEach(Game.rooms, room => this.exportRoomStatistics(room));
-        this.exportCreepStatistics();
         this.exportUserStatistics();
 
         Memory.stats.userStats.usedCpu.stats = Game.cpu.getUsed() - cpuStart;
@@ -94,18 +87,13 @@ export class Statistics {
             containerEnergy,
             towerEnergy,
             hostileCreeps: room.find(FIND_HOSTILE_CREEPS).length,
-            creepStats: this.generateCreepStatistics(room.find(FIND_MY_CREEPS))
-        };
-    }
-
-    private static exportCreepStatistics() {
-        Memory.stats.creeps = this.generateCreepStatistics(Game.creeps);
-    }
-
-    private static generateCreepStatistics(creeps: Creep[] | typeof Game.creeps): CreepStatistics {
-        return {
-            totalCreeps: _.size(creeps),
-            creepsByRole: _.countBy(creeps, c => c.memory.role)
+            creeps: _.reduce(
+                room.creepsByRole,
+                (acc, creeps, role) => {
+                    return {...acc, [role]: creeps.length};
+                },
+                {} as Record<CreepRole, number>
+            )
         };
     }
 
