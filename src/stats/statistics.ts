@@ -36,8 +36,14 @@ declare global {
         storageEnergy: number;
         containerEnergy: number;
         towerEnergy: number;
-        hostileCreeps: number;
+        hostileCreeps: HostileCreeps;
+        hostileCreepsInColonies: Record<string, HostileCreeps>;
         creeps: Record<CreepRole, number>;
+    }
+
+    interface HostileCreeps {
+        invaders: number;
+        playerCreeps: {count: number; player: string};
     }
 }
 
@@ -86,7 +92,10 @@ export class Statistics {
             storageEnergy: room.storage?.store?.energy || 0,
             containerEnergy,
             towerEnergy,
-            hostileCreeps: room.find(FIND_HOSTILE_CREEPS).length,
+            hostileCreeps: this.getHostileCreepsIn(room),
+            hostileCreepsInColonies: room.getColonies().reduce((acc, room) => {
+                return {...acc, [room.name]: this.getHostileCreepsIn(room)};
+            }, {} as Record<string, HostileCreeps>),
             creeps: _.reduce(
                 room.creepsByRole,
                 (acc, creeps, role) => {
@@ -94,6 +103,16 @@ export class Statistics {
                 },
                 {} as Record<CreepRole, number>
             )
+        };
+    }
+
+    private static getHostileCreepsIn(room: Room): HostileCreeps {
+        const invaderCreeps = room.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader");
+        const playerCreeps = room.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username !== "Invader");
+
+        return {
+            playerCreeps: {count: playerCreeps.length, player: playerCreeps[0]?.owner?.username},
+            invaders: invaderCreeps.length
         };
     }
 
