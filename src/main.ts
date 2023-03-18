@@ -21,9 +21,10 @@ import "stats/pathfindingMonitor";
  * generate pixels
  */
 export const loop = ErrorMapper.wrapLoop(() => {
+    Statistics.onTickStart();
+
     improveLog();
     clearNudges();
-
     for (const name in Memory.creeps) {
         if (!(name in Game.creeps)) {
             delete Memory.creeps[name];

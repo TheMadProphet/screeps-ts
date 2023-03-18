@@ -7,8 +7,8 @@ declare global {
 
     interface Stats {
         userStats: UserStatistics;
-        roomStats: RoomStatistics;
-        creepStats: CreepStatistics;
+        rooms: RoomStatistics;
+        creeps: CreepStatistics;
     }
 
     interface UserStatistics {
@@ -22,8 +22,8 @@ declare global {
 
     interface UsedCpuStatistics {
         total: number;
-        intents?: number;
-        pathfinding?: number;
+        intents: number;
+        pathfinding: number;
         stats?: number;
     }
 
@@ -48,16 +48,20 @@ declare global {
 }
 
 export class Statistics {
-    private static lastCreepIntentTick = 0;
     private static creepIntentRegistry = new Set();
-    private static lastPathfindingUsageTick = 0;
+
+    public static onTickStart() {
+        if (!Memory.stats) {
+            Memory.stats = {rooms: {}, creeps: {}, userStats: {usedCpu: {}}} as Stats;
+        }
+
+        Memory.stats.userStats.usedCpu.intents = 0;
+        Memory.stats.userStats.usedCpu.pathfinding = 0;
+        Statistics.creepIntentRegistry = new Set();
+    }
 
     public static exportAll() {
         const cpuStart = Game.cpu.getUsed();
-
-        if (!Memory.stats) {
-            Memory.stats = {roomStats: {}, creepStats: {}, userStats: {usedCpu: {}}} as Stats;
-        }
 
         _.forEach(Game.rooms, room => this.exportRoomStatistics(room));
         this.exportCreepStatistics();
@@ -79,7 +83,7 @@ export class Statistics {
         }) as StructureTower[];
         const towerEnergy = _.sum(towers, t => t.store.energy);
 
-        Memory.stats.roomStats = {
+        Memory.stats.rooms = {
             rcl: room.controller?.level,
             rclProgress: room.controller.progress,
             rclProgressTotal: room.controller.progressTotal,
@@ -95,7 +99,7 @@ export class Statistics {
     }
 
     private static exportCreepStatistics() {
-        Memory.stats.creepStats = this.generateCreepStatistics(Game.creeps);
+        Memory.stats.creeps = this.generateCreepStatistics(Game.creeps);
     }
 
     private static generateCreepStatistics(creeps: Creep[] | typeof Game.creeps): CreepStatistics {
@@ -117,26 +121,13 @@ export class Statistics {
     }
 
     public static registerCreepIntent(creepName: string) {
-        if (Game.time != Statistics.lastCreepIntentTick) {
-            Memory.stats.userStats.usedCpu.intents = 0;
-            Statistics.lastCreepIntentTick = Game.time;
-            Statistics.creepIntentRegistry = new Set();
-        }
-
         if (Statistics.creepIntentRegistry.has(creepName)) return;
 
-        Memory.stats.userStats.usedCpu.intents! += 0.2;
+        Memory.stats.userStats.usedCpu.intents += 0.2;
         Statistics.creepIntentRegistry.add(creepName);
     }
 
     public static registerPathfindingCpuUsage(cpuUsage: number) {
-        let pathfindingTotalCpuUsage = Memory.stats.userStats.usedCpu.pathfinding ?? 0;
-
-        if (Game.time != Statistics.lastPathfindingUsageTick) {
-            pathfindingTotalCpuUsage = 0;
-            Statistics.lastPathfindingUsageTick = Game.time;
-        }
-
-        Memory.stats.userStats.usedCpu.pathfinding = pathfindingTotalCpuUsage + cpuUsage;
+        Memory.stats.userStats.usedCpu.pathfinding += cpuUsage;
     }
 }
