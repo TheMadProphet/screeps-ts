@@ -43,7 +43,7 @@ declare global {
 
     interface HostileCreeps {
         invaders: number;
-        playerCreeps: {count: number; player: string};
+        playerCreeps: {total: number; perPlayer: Record<string, number>};
     }
 }
 
@@ -109,9 +109,15 @@ export class Statistics {
     private static getHostileCreepsIn(room: Room): HostileCreeps {
         const invaderCreeps = room.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader");
         const playerCreeps = room.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username !== "Invader");
+        const players = [...new Set(playerCreeps.map(it => it.owner.username))];
 
         return {
-            playerCreeps: {count: playerCreeps.length, player: playerCreeps[0]?.owner?.username},
+            playerCreeps: {
+                total: playerCreeps.length,
+                perPlayer: players.reduce((acc, player) => {
+                    return {...acc, [player]: playerCreeps.filter(it => it.owner.username === player).length};
+                }, {} as Record<string, number>)
+            },
             invaders: invaderCreeps.length
         };
     }
