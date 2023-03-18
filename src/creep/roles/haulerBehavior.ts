@@ -18,7 +18,12 @@ class HaulerBehavior implements RoleBehavior {
                 creep.fillSpawnsWithEnergy();
             }
         } else {
-            this.pickupEnergyNearSource(creep, source);
+            if (creep.memory.assignedRoom != creep.room.name) {
+                creep.moveToAssignedRoom();
+            } else {
+                this.pickupEnergyNearSource(creep, source);
+                creep.getOffExit();
+            }
         }
 
         creep.giveWay();

@@ -7,7 +7,7 @@ class MinerSpawner implements RoleSpawner {
         if (source) {
             spawner.spawn({
                 body: new Body(spawner).addParts([WORK, WORK, MOVE], 3),
-                memory: {role: MINER, assignedSource: source.id as Id<Source>}
+                memory: {role: MINER, assignedSource: source.id as Id<Source>, assignedRoom: source.room.name}
             });
 
             return;
@@ -23,7 +23,7 @@ class MinerSpawner implements RoleSpawner {
 
                 spawner.spawn({
                     body: body,
-                    memory: {role: MINER, assignedSource: source.id as Id<Source>}
+                    memory: {role: MINER, assignedSource: source.id as Id<Source>, assignedRoom: source.room.name}
                 });
             }
         }

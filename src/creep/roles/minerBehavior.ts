@@ -5,9 +5,13 @@ const minerBehavior: RoleBehavior = {
             return;
         }
 
-        const source = Game.getObjectById(creep.memory.assignedSource!)!;
-        if (creep.harvestFrom(source) === ERR_NOT_ENOUGH_RESOURCES) {
-            creep.say("🕑");
+        if (creep.memory.assignedRoom != creep.room.name) {
+            creep.moveToAssignedRoom();
+        } else {
+            const source = Game.getObjectById(creep.memory.assignedSource!)!;
+            if (creep.harvestFrom(source) === ERR_NOT_ENOUGH_RESOURCES) {
+                creep.say("🕑");
+            }
         }
     }
 };
