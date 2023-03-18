@@ -7,7 +7,7 @@ declare global {
 
     interface Stats {
         userStats: UserStatistics;
-        rooms: RoomStatistics;
+        rooms: Record<string, RoomStatistics>;
         creeps: CreepStatistics;
     }
 
@@ -83,7 +83,7 @@ export class Statistics {
         }) as StructureTower[];
         const towerEnergy = _.sum(towers, t => t.store.energy);
 
-        Memory.stats.rooms = {
+        Memory.stats.rooms[room.name] = {
             rcl: room.controller?.level,
             rclProgress: room.controller.progress,
             rclProgressTotal: room.controller.progressTotal,
