@@ -34,7 +34,7 @@ class MinerSpawner implements RoleSpawner {
             const source = Game.getObjectById(sourceId);
             if (!source) continue;
 
-            const assignedMiners = spawner.creepsByRole[MINER].filter(
+            const assignedMiners = spawner.room.creepsByRole[MINER].filter(
                 miner => miner.memory.assignedSource === source.id
             );
             const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));

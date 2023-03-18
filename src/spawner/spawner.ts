@@ -1,12 +1,11 @@
 import fillerSpawner from "./roles/fillerSpawner";
 import minerSpawner from "./roles/minerSpawner";
-import {CreepRole, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, roles, SCOUT, WORKER} from "../constants";
+import {CreepRole, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
 import haulerSpawner from "./roles/haulerSpawner";
 import workerSpawner from "./roles/workerSpawner";
 import scoutSpawner from "./roles/scoutSpawner";
 import reserverSpawner from "./roles/reserverSpawner";
 import emergencyUnitSpawner from "./roles/emergencyUnitSpawner";
-import {WorkerTask, workerTasks} from "../creep/workerOrganizer";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
@@ -22,7 +21,6 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     let spawnWasIssued = false;
 
     this.automate = function () {
-        initializeCreepsData(this);
         this.memory.hasEnoughEnergy = true;
         spawnWasIssued = false;
 
@@ -70,22 +68,3 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         return this.memory.hasEnoughEnergy && this.store.getUsedCapacity(RESOURCE_ENERGY) > 50;
     };
 }).call(StructureSpawn.prototype);
-
-function initializeCreepsData(spawn: StructureSpawn) {
-    spawn.creepsByRole = roles.reduce((acc, role) => {
-        return {...acc, [role]: []};
-    }, {} as {[role in CreepRole]: Creep[]});
-
-    spawn.workersByTask = Object.values(workerTasks).reduce((acc, role) => {
-        return {...acc, [role]: []};
-    }, {} as {[task in WorkerTask]: Creep[]});
-
-    for (const name in Memory.creeps) {
-        const creep = Game.creeps[name];
-        spawn.creepsByRole[creep.memory.role].push(creep);
-
-        if (creep.memory.role === WORKER) {
-            spawn.workersByTask[creep.memory.task!].push(creep);
-        }
-    }
-}

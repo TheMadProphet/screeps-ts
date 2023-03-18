@@ -1,9 +1,18 @@
+import {CreepRole} from "../constants";
+import {WorkerTask} from "../creep/workerOrganizer";
+
 export {};
 
 declare global {
     interface Room {
         spawn: StructureSpawn;
         availableExtension: number;
+        creepsByRole: {
+            [role in CreepRole]: Creep[];
+        };
+        workersByTask: {
+            [task in WorkerTask]: Creep[];
+        };
 
         automate(): void;
 

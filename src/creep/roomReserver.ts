@@ -9,7 +9,7 @@ const roomReserver = {
         if (!room.memory.colonies || room.energyCapacityAvailable < BODYPART_COST[CLAIM] + BODYPART_COST[MOVE])
             return null;
 
-        const reservers = room.spawn.creepsByRole[RESERVER];
+        const reservers = room.creepsByRole[RESERVER];
 
         for (const colony of room.memory.colonies) {
             const roomReservers = reservers.filter(it => it.memory.assignedRoom === colony);

@@ -46,7 +46,7 @@ class WorkerOrganizer {
     }
 
     private roomHasNoWorkers(room: Room) {
-        return !room.spawn || room.spawn.creepsByRole[WORKER].length === 0;
+        return !room.spawn || room.creepsByRole[WORKER].length === 0;
     }
 
     private roomNeedsRepairs(room: Room) {
@@ -58,7 +58,7 @@ class WorkerOrganizer {
     }
 
     private applyAssignment(room: Room) {
-        const workers = room.spawn.workersByTask;
+        const workers = room.workersByTask;
 
         let tasksMissingWorkers: WorkerTask[] = [];
         for (const it of _.values(workerTasks)) {

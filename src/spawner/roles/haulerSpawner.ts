@@ -3,7 +3,7 @@ import {HAULER, MINER} from "../../constants";
 
 class HaulerSpawner implements RoleSpawner {
     public spawn(spawner: StructureSpawn) {
-        if (spawner.creepsByRole[MINER].length === 0) return;
+        if (spawner.room.creepsByRole[MINER].length === 0) return;
 
         const body = new Body(spawner).addParts([CARRY, MOVE], 10);
         const source = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
@@ -49,10 +49,10 @@ class HaulerSpawner implements RoleSpawner {
             const source = Game.getObjectById(sourceId);
             if (!source) continue;
 
-            const assignedHaulers = spawner.creepsByRole[HAULER].filter(
+            const assignedHaulers = spawner.room.creepsByRole[HAULER].filter(
                 hauler => hauler.memory.assignedSource === source.id
             );
-            const assignedMiners = spawner.creepsByRole[MINER].filter(
+            const assignedMiners = spawner.room.creepsByRole[MINER].filter(
                 miner => miner.memory.assignedSource === source.id
             );
             const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));

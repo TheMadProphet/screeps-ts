@@ -5,8 +5,8 @@ class EmergencyUnitSpawner implements RoleSpawner {
     readonly EMERGENCY_UNIT_COUNT = 3;
 
     spawn(spawner: StructureSpawn) {
-        if (this.isEmergency(spawner)) {
-            const emergencyUnitCount = spawner.creepsByRole[EMERGENCY_UNIT].length;
+        if (this.roomHasEmergency(spawner.room)) {
+            const emergencyUnitCount = spawner.room.creepsByRole[EMERGENCY_UNIT].length;
             if (emergencyUnitCount < this.EMERGENCY_UNIT_COUNT) {
                 spawner.spawn({
                     body: new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE]),
@@ -18,10 +18,10 @@ class EmergencyUnitSpawner implements RoleSpawner {
         }
     }
 
-    isEmergency(spawner: StructureSpawn) {
+    roomHasEmergency(room: Room) {
         return (
-            spawner.room.energyCapacityAvailable > 300 &&
-            (spawner.creepsByRole[MINER].length < 1 || spawner.creepsByRole[HAULER].length < 1)
+            room.energyCapacityAvailable > 300 &&
+            (room.creepsByRole[MINER].length < 1 || room.creepsByRole[HAULER].length < 1)
         );
     }
 }

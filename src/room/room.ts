@@ -1,12 +1,13 @@
 import RoomInfrastructure from "./constructor/infrastructure";
 import RoomStructures from "./constructor/structures";
-import workerOrganizer from "../creep/workerOrganizer";
+import workerOrganizer, {WorkerTask, workerTasks} from "../creep/workerOrganizer";
+import {CreepRole, roles, WORKER} from "../constants";
 
 (function (this: typeof Room.prototype) {
     this.automate = function () {
         if (!this.controller?.my) return;
 
-        // TODO: group creeps somewhere else
+        groupCreeps(this);
         this.spawn.automate();
 
         new RoomStructures(this).build();
@@ -114,4 +115,24 @@ function getAvailableStructure(room: Room, structureType: BuildableStructureCons
     const maxAvailable = CONTROLLER_STRUCTURES[structureType][room.controller.level];
 
     return maxAvailable - currentlyBuilt;
+}
+
+function groupCreeps(room: Room) {
+    room.creepsByRole = roles.reduce((acc, role) => {
+        return {...acc, [role]: []};
+    }, {} as {[role in CreepRole]: Creep[]});
+
+    room.workersByTask = Object.values(workerTasks).reduce((acc, role) => {
+        return {...acc, [role]: []};
+    }, {} as {[task in WorkerTask]: Creep[]});
+
+    for (const name in Memory.creeps) {
+        const creep = Game.creeps[name];
+        if (creep.memory.home != room.name) continue;
+
+        room.creepsByRole[creep.memory.role].push(creep);
+        if (creep.memory.role === WORKER) {
+            room.workersByTask[creep.memory.task!].push(creep);
+        }
+    }
 }

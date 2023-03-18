@@ -54,7 +54,7 @@ const roomScanner = {
             return false;
         }
 
-        return room.spawn.creepsByRole[SCOUT].length < 1;
+        return room.creepsByRole[SCOUT].length < 1;
     },
 
     getUnscoutedNeighborFor(room: Room): string | null {

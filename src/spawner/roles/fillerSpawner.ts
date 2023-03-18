@@ -4,7 +4,7 @@ import {FILLER} from "../../constants";
 const fillerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         if (spawner.room.fillersAreEnabled()) {
-            const fillers = spawner.creepsByRole[FILLER];
+            const fillers = spawner.room.creepsByRole[FILLER];
             const maxFillers = 1;
 
             if (!fillers || !fillers.length || fillers.length < maxFillers) {
