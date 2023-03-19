@@ -32,7 +32,7 @@ declare global {
         rclProgressTotal: number;
         spawnEnergy: number;
         spawnEnergyMax: number;
-        spawning: boolean;
+        spawning: number;
         storageEnergy: number;
         containerEnergy: number;
         towerEnergy: number;
@@ -88,7 +88,7 @@ export class Statistics {
             rclProgressTotal: room.controller.progressTotal,
             spawnEnergy: room.energyAvailable,
             spawnEnergyMax: room.energyCapacityAvailable,
-            spawning: !!room.spawn.spawning,
+            spawning: room.spawn.spawning ? 1 : 0,
             storageEnergy: room.storage?.store?.energy || 0,
             containerEnergy,
             towerEnergy,
