@@ -12,7 +12,7 @@ declare global {
         spaceAvailable: number;
         pathCost: number;
         containerId?: Id<StructureContainer>;
-        containerConstructionSiteId?: Id<ConstructionSite>;
+        containerConstructionStarted?: boolean;
     }
 
     interface Source {

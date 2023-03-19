@@ -22,11 +22,11 @@ function findContainerNearSource(source: Source): Id<StructureContainer> | undef
 function buildContainerForSource(source: Source) {
     if (source.memory.containerId) return;
 
-    if (source.memory.containerConstructionSiteId) {
+    if (source.memory.containerConstructionStarted) {
         const containerId = findContainerNearSource(source);
         if (containerId) {
             source.memory.containerId = containerId;
-            delete source.memory.containerConstructionSiteId;
+            delete source.memory.containerConstructionStarted;
             return;
         }
     } else {
@@ -35,11 +35,7 @@ function buildContainerForSource(source: Source) {
 
         const constructionStatus = source.room.createConstructionSite(pos.x, pos.y, STRUCTURE_CONTAINER);
         if (constructionStatus === OK) {
-            source.memory.containerConstructionSiteId = source.room.lookForAt(
-                LOOK_CONSTRUCTION_SITES,
-                pos.x,
-                pos.y
-            )[0].id;
+            source.memory.containerConstructionStarted = true;
         }
     }
 }
