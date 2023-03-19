@@ -1,7 +1,6 @@
 class HaulerBehavior implements RoleBehavior {
     run(creep: Creep) {
-        const source = Game.getObjectById(creep.memory.assignedSource ?? ("" as Id<Source>));
-        if (!source) {
+        if (!creep.memory.assignedSource) {
             creep.idle();
             creep.say("⚠");
             return;
@@ -11,22 +10,39 @@ class HaulerBehavior implements RoleBehavior {
         if (!creep.memory.working && creep.store.getFreeCapacity() === 0) creep.memory.working = true;
 
         if (creep.memory.working) {
-            if (creep.memory.home !== creep.room.name) {
-                creep.travelTo(Game.rooms[creep.memory.home].spawn, {range: 2});
-                creep.getOffExit();
-            } else {
-                creep.fillSpawnsWithEnergy();
-            }
+            this.retrieveEnergy(creep);
         } else {
-            if (creep.memory.assignedRoom != creep.room.name) {
-                creep.moveToAssignedRoom();
-            } else {
-                this.pickupEnergyNearSource(creep, source);
-                creep.getOffExit();
-            }
+            this.gatherEnergy(creep, creep.memory.assignedSource);
         }
 
         creep.giveWay();
+    }
+
+    retrieveEnergy(creep: Creep) {
+        if (creep.memory.home !== creep.room.name) {
+            creep.travelTo(Game.rooms[creep.memory.home].spawn, {range: 2});
+            creep.getOffExit();
+        } else {
+            creep.fillSpawnsWithEnergy();
+        }
+    }
+
+    gatherEnergy(creep: Creep, sourceId: Id<Source>) {
+        if (creep.memory.assignedRoom != creep.room.name) {
+            creep.moveToAssignedRoom();
+        } else {
+            creep.getOffExit();
+
+            const container = this.findContainerForSource(creep, sourceId);
+            if (container) {
+                creep.withdrawFrom(container);
+            } else {
+                const source = Game.getObjectById(sourceId);
+                if (source) {
+                    this.pickupEnergyNearSource(creep, source);
+                }
+            }
+        }
     }
 
     pickupEnergyNearSource(creep: Creep, source: Source) {
@@ -39,6 +55,13 @@ class HaulerBehavior implements RoleBehavior {
         } else if (creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
             creep.travelTo(droppedEnergies[0]);
         }
+    }
+
+    findContainerForSource(creep: Creep, sourceId: Id<Source>): StructureContainer | undefined {
+        const containerId = Memory.sources[sourceId].containerId;
+        if (!containerId) return undefined;
+
+        return Game.getObjectById(containerId) ?? undefined;
     }
 }
 
