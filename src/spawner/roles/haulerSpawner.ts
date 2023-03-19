@@ -26,7 +26,11 @@ class HaulerSpawner implements RoleSpawner {
                 remoteHaulerBody = new Body(spawner).addParts([WORK, MOVE]).addParts([CARRY, MOVE], 10);
             }
 
-            const remoteSource = this.findSourceWithMissingHauler(spawner, colony.memory.sources, remoteHaulerBody);
+            const remoteSource = this.findSourceWithMissingHauler(
+                spawner,
+                Memory.rooms[colony].sources,
+                remoteHaulerBody
+            );
             if (remoteSource) {
                 spawner.spawn({
                     body: remoteHaulerBody,

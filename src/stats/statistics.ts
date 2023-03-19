@@ -93,8 +93,11 @@ export class Statistics {
             containerEnergy,
             towerEnergy,
             hostileCreeps: this.getHostileCreepsIn(room),
-            hostileCreepsInColonies: room.getColonies().reduce((acc, room) => {
-                return {...acc, [room.name]: this.getHostileCreepsIn(room)};
+            hostileCreepsInColonies: room.getColonies().reduce((acc, roomName) => {
+                const room = Game.rooms[roomName];
+                if (!room) return acc;
+
+                return {...acc, [roomName]: this.getHostileCreepsIn(room)};
             }, {} as Record<string, HostileCreeps>),
             creeps: _.reduce(
                 room.creepsByRole,

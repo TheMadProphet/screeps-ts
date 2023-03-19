@@ -69,7 +69,7 @@ import {CreepRole, roles, WORKER} from "../constants";
     this.getColonies = function () {
         if (!this.memory.colonies) return [];
 
-        return this.memory.colonies.map(roomName => Game.rooms[roomName]).filter(room => Boolean(room));
+        return this.memory.colonies;
     };
 
     this.isBeingReserved = function () {

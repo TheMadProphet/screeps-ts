@@ -24,7 +24,7 @@ declare global {
 
         hasEnergyEmergency(): boolean;
 
-        getColonies(): Room[];
+        getColonies(): string[];
 
         isBeingReserved(): boolean;
     }
