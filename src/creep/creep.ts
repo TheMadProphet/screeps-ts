@@ -132,7 +132,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         return this.room.name === this.memory.assignedRoom;
     };
 
-    this.travelToAssignedRoom = function () {
+    this.travelToHome = function () {
         if (this.isHome()) {
             return;
         }

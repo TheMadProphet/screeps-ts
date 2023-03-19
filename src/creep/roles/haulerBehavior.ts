@@ -20,6 +20,7 @@ class HaulerBehavior implements RoleBehavior {
 
     retrieveEnergy(creep: Creep) {
         if (creep.isHome()) {
+            creep.getOffExit();
             creep.fillSpawnsWithEnergy();
         } else {
             creep.travelToHome();
