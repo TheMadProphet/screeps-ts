@@ -8,10 +8,11 @@ import {CreepRole, roles, WORKER} from "../constants";
         if (!this.controller?.my) return;
 
         groupCreeps(this);
-        this.spawn.automate();
 
         new RoomStructures(this).build();
         new RoomInfrastructure(this).build();
+
+        this.spawn.automate();
 
         const towers: StructureTower[] = this.find(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_TOWER
