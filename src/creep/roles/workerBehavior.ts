@@ -42,13 +42,13 @@ class WorkerBehavior implements RoleBehavior {
     }
 
     private runRepairerTask(creep: Creep) {
-        const repairableStructures = creep.room.find(FIND_STRUCTURES, {
-            filter: structure => structure.hits / structure.hitsMax < 0.3
+        const closestStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: structure => structure.hits / structure.hitsMax <= 0.95
         });
 
-        if (repairableStructures.length) {
-            if (creep.repair(repairableStructures[0]) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(repairableStructures[0]);
+        if (closestStructure) {
+            if (creep.repair(closestStructure) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(closestStructure);
             }
         }
     }
