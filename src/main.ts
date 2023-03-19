@@ -4,6 +4,7 @@ import "utils/getOffExit";
 import "utils/excuseMe";
 import "creep/creep";
 import "spawner/spawner";
+import "room/tower";
 import "room/room";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/console";
