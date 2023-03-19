@@ -19,17 +19,16 @@ class HaulerBehavior implements RoleBehavior {
     }
 
     retrieveEnergy(creep: Creep) {
-        if (creep.memory.home !== creep.room.name) {
-            creep.travelTo(Game.rooms[creep.memory.home].spawn, {range: 2});
-            creep.getOffExit();
-        } else {
+        if (creep.isHome()) {
             creep.fillSpawnsWithEnergy();
+        } else {
+            creep.travelToHome();
         }
     }
 
     gatherEnergy(creep: Creep, sourceId: Id<Source>) {
         if (creep.memory.assignedRoom != creep.room.name) {
-            creep.moveToAssignedRoom();
+            creep.travelToAssignedRoom();
         } else {
             creep.getOffExit();
 

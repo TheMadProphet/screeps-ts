@@ -13,7 +13,7 @@ class ReserverBehavior implements RoleBehavior {
                 creep.travelTo(controller);
             }
         } else {
-            creep.moveToAssignedRoom();
+            creep.travelToAssignedRoom();
         }
     }
 

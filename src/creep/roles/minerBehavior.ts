@@ -6,7 +6,7 @@ class MinerBehavior implements RoleBehavior {
         }
 
         if (creep.memory.assignedRoom != creep.room.name) {
-            creep.moveToAssignedRoom();
+            creep.travelToAssignedRoom();
         } else {
             const source = Game.getObjectById(creep.memory.assignedSource);
             if (source) {

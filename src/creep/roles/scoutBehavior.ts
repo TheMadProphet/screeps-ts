@@ -17,7 +17,7 @@ class ScoutBehavior implements ScoutBehavior {
             creep.memory.assignedRoom = null;
             creep.getOffExit();
         } else {
-            creep.moveToAssignedRoom();
+            creep.travelToAssignedRoom();
         }
     }
 

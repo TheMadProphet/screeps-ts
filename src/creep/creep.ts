@@ -132,11 +132,19 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         return this.room.name === this.memory.assignedRoom;
     };
 
-    this.moveToAssignedRoom = function () {
-        if (this.isInAssignedRoom()) {
+    this.travelToAssignedRoom = function () {
+        if (this.isHome()) {
             return;
         }
 
-        this.travelTo(new RoomPosition(25, 25, this.memory.assignedRoom!), {range: 20});
+        this.travelTo(new RoomPosition(25, 25, this.memory.home), {range: 20});
+    };
+
+    this.travelToAssignedRoom = function () {
+        if (!this.memory.assignedRoom || this.isInAssignedRoom()) {
+            return;
+        }
+
+        this.travelTo(new RoomPosition(25, 25, this.memory.assignedRoom), {range: 20});
     };
 }).call(Creep.prototype);

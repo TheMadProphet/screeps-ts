@@ -26,7 +26,9 @@ declare global {
 
         movedLastTick(): boolean;
 
-        moveToAssignedRoom(): void;
+        travelToHome(): void;
+
+        travelToAssignedRoom(): void;
     }
 
     interface CreepMemory {
