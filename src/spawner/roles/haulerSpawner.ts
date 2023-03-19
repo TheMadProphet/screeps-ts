@@ -6,14 +6,14 @@ class HaulerSpawner implements RoleSpawner {
         if (spawner.room.creepsByRole[MINER].length === 0) return;
 
         const body = new Body(spawner).addParts([CARRY, MOVE], 10);
-        const source = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
-        if (source) {
+        const sourceId = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
+        if (sourceId) {
             spawner.spawn({
                 body: body,
                 memory: {
                     role: HAULER,
-                    assignedSource: source.id,
-                    assignedRoom: source.room.name
+                    assignedSource: sourceId,
+                    assignedRoom: spawner.room.name
                 }
             });
 
@@ -26,18 +26,19 @@ class HaulerSpawner implements RoleSpawner {
                 remoteHaulerBody = new Body(spawner).addParts([WORK, MOVE]).addParts([CARRY, MOVE], 10);
             }
 
-            const remoteSource = this.findSourceWithMissingHauler(
+            const remoteSourceId = this.findSourceWithMissingHauler(
                 spawner,
                 Memory.rooms[colony].sources,
                 remoteHaulerBody
             );
-            if (remoteSource) {
+
+            if (remoteSourceId) {
                 spawner.spawn({
                     body: remoteHaulerBody,
                     memory: {
                         role: HAULER,
-                        assignedSource: remoteSource.id,
-                        assignedRoom: remoteSource.room.name
+                        assignedSource: remoteSourceId,
+                        assignedRoom: colony
                     }
                 });
             }
@@ -48,27 +49,24 @@ class HaulerSpawner implements RoleSpawner {
         spawner: StructureSpawn,
         sourceIds: Id<Source>[],
         body: Body
-    ): Source | undefined {
+    ): Id<Source> | undefined {
         for (const sourceId of sourceIds) {
-            const source = Game.getObjectById(sourceId);
-            if (!source) continue;
-
             const assignedHaulers = spawner.room.creepsByRole[HAULER].filter(
-                hauler => hauler.memory.assignedSource === source.id
+                hauler => hauler.memory.assignedSource === sourceId
             );
             const assignedMiners = spawner.room.creepsByRole[MINER].filter(
-                miner => miner.memory.assignedSource === source.id
+                miner => miner.memory.assignedSource === sourceId
             );
             const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));
 
             const energyGeneratedByWorkersPerLifetime = Math.min(totalWorkParts, 5) * 2 * CREEP_LIFE_TIME;
-            const pathCost = source.memory.pathCost / 2; // TODO: dont need to divide if using ignoreRoads option
+            const pathCost = Memory.sources[sourceId].pathCost / 2; // TODO: dont need to divide if using ignoreRoads option
             const biRoutePerLifetime = CREEP_LIFE_TIME / pathCost / 2;
             const energyStoredByHaulerPerLifetime = body.getCapacity() * biRoutePerLifetime;
             const requiredHaulerCount = energyGeneratedByWorkersPerLifetime / energyStoredByHaulerPerLifetime;
 
             if (assignedHaulers.length < requiredHaulerCount) {
-                return source;
+                return sourceId;
             }
         }
 
