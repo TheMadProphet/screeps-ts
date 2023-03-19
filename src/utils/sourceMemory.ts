@@ -1,4 +1,4 @@
-import {getSpaceAroundSource} from "../creep/roomScanner";
+import {getAvailablePositionsAround} from "../creep/roomScanner";
 
 export {};
 
@@ -25,7 +25,7 @@ Object.defineProperty(Source.prototype, "memory", {
         if (!Memory.sources[this.id]) {
             Memory.sources[this.id] = {
                 id: this.id,
-                spaceAvailable: getSpaceAroundSource(this),
+                spaceAvailable: getAvailablePositionsAround(this).length,
                 pathCost: Infinity
             };
         }

@@ -12,11 +12,11 @@ declare global {
     }
 }
 
-export function getSpaceAroundSource(source: Source) {
+export function getAvailablePositionsAround(source: Source) {
     const room = source.room;
     const pos = source.pos;
 
-    let space = 0;
+    let availablePositions: {x: number; y: number}[] = [];
     const area = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1);
     for (const y in area) {
         for (const x in area[y]) {
@@ -24,13 +24,13 @@ export function getSpaceAroundSource(source: Source) {
             for (const i in objects) {
                 const object = objects[i];
                 if (object.type === LOOK_TERRAIN && object.terrain !== "wall") {
-                    space++;
+                    availablePositions.push({x: parseInt(x), y: parseInt(y)});
                 }
             }
         }
     }
 
-    return space;
+    return availablePositions;
 }
 
 function isVacant(room: Room) {
@@ -92,7 +92,7 @@ const roomScanner = {
     },
 
     scanSources(room: Room, spawn: StructureSpawn) {
-        const sources = room.find(FIND_SOURCES).filter(it => getSpaceAroundSource(it) > 0);
+        const sources = room.find(FIND_SOURCES).filter(it => getAvailablePositionsAround(it).length > 0);
 
         sources.forEach(it => {
             it.memory.pathCost = Traveler.findTravelPath(spawn.pos, it.pos).cost;
