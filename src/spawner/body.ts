@@ -29,7 +29,7 @@ class Body {
     }
 
     getCapacity() {
-        return CARRY_CAPACITY* this.getPartCount(CARRY);
+        return CARRY_CAPACITY * this.getPartCount(CARRY);
     }
 
     calculateCost(parts: BodyPartConstant[]) {

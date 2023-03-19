@@ -6,20 +6,20 @@ Traveler is a general-purpose tool for moving your creeps around. Feel free to f
 
 #### Features:
 
-* Efficient path-caching and CPU-use (you can see how it compares
+- Efficient path-caching and CPU-use (you can see how it compares
   with `creep.moveTo()` [here](https://github.com/bonzaiferroni/bonzAI/wiki/Improving-on-moveTo's-efficiency))
-* Ignores creeps in pathing by default which allows for fewer PathFinder calls
+- Ignores creeps in pathing by default which allows for fewer PathFinder calls
   and [single-lane creep movement](https://github.com/bonzaiferroni/screepswiki/blob/master/gifs/s33-moveTo.gif)
-* Can detect hostile rooms and
+- Can detect hostile rooms and
   will [path around them once discovered](https://github.com/bonzaiferroni/bonzAI/wiki/Improving-on-moveTo's-efficiency#long-distances-path-length-400).
   More info on how to enable
   detection [here](https://github.com/bonzaiferroni/Traveler/wiki/Improving-Traveler:-Important-Changes#hostile-room-avoidance)
-*
+-
 
 Effective [long-range pathing](https://github.com/bonzaiferroni/bonzAI/wiki/Improving-on-moveTo's-efficiency#very-long-distances-path-length-1200)
 
-* [Lots of options](https://github.com/bonzaiferroni/Traveler/wiki/Traveler-API)
-* [Visuals](https://github.com/bonzaiferroni/Traveler/wiki/Improving-Traveler:-Features#show-your-path)
+- [Lots of options](https://github.com/bonzaiferroni/Traveler/wiki/Traveler-API)
+- [Visuals](https://github.com/bonzaiferroni/Traveler/wiki/Improving-Traveler:-Features#show-your-path)
 
 ## Installation
 
@@ -29,8 +29,8 @@ Effective [long-range pathing](https://github.com/bonzaiferroni/bonzAI/wiki/Impr
    the screeps console.
 
 2. Add a require statement to `main.js`:
-    * `var Traveler = require('Traveler');`
-    * (in the sim or some private servers you might need to use `'Traveler.js'`)
+    - `var Traveler = require('Traveler');`
+    - (in the sim or some private servers you might need to use `'Traveler.js'`)
 3. Replace situations where you used `moveTo` with `travelTo`
 
 ```
@@ -59,35 +59,35 @@ and collaboration to improve Traveler, pull requests welcome!
 
 2017-06-26
 
-* Reorganized type definitions into index.d.ts
-* Fixed bug where public ramparts were not seen as pathable
-* Fixed bug that caused exceptions due to non-existant Memory.rooms
+- Reorganized type definitions into index.d.ts
+- Fixed bug where public ramparts were not seen as pathable
+- Fixed bug that caused exceptions due to non-existant Memory.rooms
 
 2017-06-16
 
-* Fixed bug that caused options.preferHighway to not prefer highways
+- Fixed bug that caused options.preferHighway to not prefer highways
 
 2017-06-05
 
-* Fixed bug in the commented line of code that registered whether creeps were in a hostile room or not.
-* New version of Traveler! See what is
+- Fixed bug in the commented line of code that registered whether creeps were in a hostile room or not.
+- New version of Traveler! See what is
   different [here](https://github.com/bonzaiferroni/Traveler/wiki/Improving-Traveler). The old version can still be
   found [here](https://github.com/bonzaiferroni/bonzAI/wiki/Traveler-API).
 
 2017-03-10
 
-* Fixed a bug where public ramparts were not set as valid positions for pathing in the costmatrix (thanks ricane!)
+- Fixed a bug where public ramparts were not set as valid positions for pathing in the costmatrix (thanks ricane!)
 
 2017-03-06
 
-* Fixed a bug where pathfinder gets needlessly called when using `options.range` (thanks helam!)
+- Fixed a bug where pathfinder gets needlessly called when using `options.range` (thanks helam!)
 
 2017-01-17
 
-* Fixed bug in code that determines whether a room is SK from roomname
+- Fixed bug in code that determines whether a room is SK from roomname
 
 2017-01-15
 
-* Eliminated option `returnPosition` and added `returnData`
-* Fixed bug where preferHighway would not produce the intended results
-* Fixed bug where ignoreCreep behavior was reversed and creeps could not get unstuck
+- Eliminated option `returnPosition` and added `returnData`
+- Fixed bug where preferHighway would not produce the intended results
+- Fixed bug where ignoreCreep behavior was reversed and creeps could not get unstuck

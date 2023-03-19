@@ -28,11 +28,11 @@ const DIRECTIONS: Record<DirectionConstant, number[]> = {
     [TOP_LEFT]: [-1, -1]
 };
 
-RoomPosition.prototype.fromDirection = function(direction: DirectionConstant) {
+RoomPosition.prototype.fromDirection = function (direction: DirectionConstant) {
     return new RoomPosition(this.x + DIRECTIONS[direction][0], this.y + DIRECTIONS[direction][1], this.roomName);
 };
 
-Creep.prototype.getOffExit = function() {
+Creep.prototype.getOffExit = function () {
     const directionsFromExit = {
         x: {
             49: [LEFT, TOP_LEFT, BOTTOM_LEFT],
@@ -57,10 +57,11 @@ Creep.prototype.getOffExit = function() {
 
     for (let direction of allowedDirections) {
         let stuff = this.pos.fromDirection(direction).look(); // collection of things at our potential target
-        const index = stuff.findIndex(p =>
-            p.type === LOOK_CREEPS ||
-            (p.structure && OBSTACLE_OBJECT_TYPES.includes(p.structure.structureType as any)) ||
-            p.terrain == "wall"
+        const index = stuff.findIndex(
+            p =>
+                p.type === LOOK_CREEPS ||
+                (p.structure && OBSTACLE_OBJECT_TYPES.includes(p.structure.structureType as any)) ||
+                p.terrain == "wall"
         );
 
         if (index == -1) {
