@@ -11,7 +11,7 @@ const COLONY_LIMIT = 2;
 
 function findContainerNearSource(source: Source): Id<StructureContainer> | undefined {
     const findResult = source.room
-        .lookForAtArea(LOOK_STRUCTURES, source.pos.y + 1, source.pos.x - 1, source.pos.y - 1, source.pos.x + 1, true)
+        .lookForAtArea(LOOK_STRUCTURES, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true)
         .find(it => it.structure.structureType === STRUCTURE_CONTAINER);
 
     if (!findResult) return undefined;
