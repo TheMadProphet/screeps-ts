@@ -17,6 +17,7 @@ declare global {
 
     interface Source {
         memory: SourceMemory;
+        container: StructureContainer | undefined;
     }
 }
 
@@ -33,6 +34,17 @@ Object.defineProperty(Source.prototype, "memory", {
         }
 
         return Memory.sources[this.id];
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Source.prototype, "container", {
+    get: function () {
+        const containerId = this.memory.containerId;
+        if (!containerId) return undefined;
+
+        return Game.getObjectById(containerId) ?? undefined;
     },
     enumerable: false,
     configurable: true

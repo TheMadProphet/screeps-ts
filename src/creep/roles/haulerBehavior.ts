@@ -33,12 +33,11 @@ class HaulerBehavior implements RoleBehavior {
         } else {
             creep.getOffExit();
 
-            const container = this.findContainerForSource(creep, sourceId);
-            if (container) {
-                creep.withdrawFrom(container);
-            } else {
-                const source = Game.getObjectById(sourceId);
-                if (source) {
+            const source = Game.getObjectById(sourceId);
+            if (source) {
+                if (source.container) {
+                    creep.withdrawFrom(source.container);
+                } else {
                     this.pickupEnergyNearSource(creep, source);
                 }
             }
@@ -55,13 +54,6 @@ class HaulerBehavior implements RoleBehavior {
         } else if (creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
             creep.travelTo(droppedEnergies[0]);
         }
-    }
-
-    findContainerForSource(creep: Creep, sourceId: Id<Source>): StructureContainer | undefined {
-        const containerId = Memory.sources[sourceId].containerId;
-        if (!containerId) return undefined;
-
-        return Game.getObjectById(containerId) ?? undefined;
     }
 }
 
