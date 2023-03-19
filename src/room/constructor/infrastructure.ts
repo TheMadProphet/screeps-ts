@@ -1,5 +1,5 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
-import roomScanner from "../../creep/roomScanner";
+import roomScanner, {getAvailablePositionsAround} from "../../creep/roomScanner";
 
 declare global {
     interface RoomMemory {
@@ -9,12 +9,63 @@ declare global {
 
 const COLONY_LIMIT = 2;
 
-function buildEnergyInfrastructure(room: Room) {
-    if (room.memory.sources) return;
+function findContainerNearSource(source: Source): Id<StructureContainer> | undefined {
+    const findResult = source.room
+        .lookForAtArea(LOOK_STRUCTURES, source.pos.y + 1, source.pos.x - 1, source.pos.y - 1, source.pos.x + 1, true)
+        .find(it => it.structure.structureType === STRUCTURE_CONTAINER);
 
-    room.memory.sources = roomScanner
-        .scanSources(room, room.spawn)
-        .sort((a, b) => Memory.sources[a].pathCost - Memory.sources[b].pathCost);
+    if (!findResult) return undefined;
+
+    return findResult.structure.id as Id<StructureContainer>;
+}
+
+function buildContainerForSource(source: Source) {
+    if (source.memory.containerId) return;
+
+    if (source.memory.containerConstructionSiteId) {
+        const containerId = findContainerNearSource(source);
+        if (containerId) {
+            source.memory.containerId = containerId;
+            delete source.memory.containerConstructionSiteId;
+            return;
+        }
+    } else {
+        const pos = getAvailablePositionsAround(source)[0];
+        if (!pos) return;
+
+        const constructionStatus = source.room.createConstructionSite(pos.x, pos.y, STRUCTURE_CONTAINER);
+        if (constructionStatus === OK) {
+            source.memory.containerConstructionSiteId = source.room.lookForAt(
+                LOOK_CONSTRUCTION_SITES,
+                pos.x,
+                pos.y
+            )[0].id;
+        }
+    }
+}
+
+function buildContainersForSources(sourceIds: Id<Source>[]) {
+    sourceIds
+        .map(it => Game.getObjectById(it))
+        .filter((it): it is Source => Boolean(it))
+        .forEach(source => buildContainerForSource(source));
+}
+
+function buildEnergyInfrastructure(room: Room) {
+    if (!room.controller) return;
+
+    if (!room.memory.sources) {
+        room.memory.sources = roomScanner
+            .scanSources(room, room.spawn)
+            .sort((a, b) => Memory.sources[a].pathCost - Memory.sources[b].pathCost);
+    }
+
+    if (room.controller.level === 3) {
+        if (room.availableExtension === 0) {
+            buildContainersForSources(room.memory.sources);
+            // buildRoadsForSources(room.memory.sources);
+        }
+    }
 }
 
 function buildControllerInfrastructure(room: Room) {
