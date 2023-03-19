@@ -2,17 +2,20 @@ export {};
 
 declare global {
     interface StructureTower {
-        autoDefend(): void;
+        defendAgainstInvaders(): void;
 
         autoRepair(): void;
     }
 }
 
 (function (this: typeof StructureTower.prototype) {
-    this.autoDefend = function () {
-        const closestHostile = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile) {
-            this.attack(closestHostile);
+    this.defendAgainstInvaders = function () {
+        const closestInvader = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+            filter: it => it.owner.username === "Invader"
+        });
+
+        if (closestInvader) {
+            this.attack(closestInvader);
         }
     };
 

@@ -14,10 +14,9 @@ import {CreepRole, roles, WORKER} from "../constants";
 
         this.spawn.automate();
 
-        const towers: StructureTower[] = this.find(FIND_STRUCTURES, {
+        this.find<StructureTower>(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_TOWER
-        });
-        towers.forEach(it => it.autoDefend());
+        }).forEach(it => it.defendAgainstInvaders());
 
         workerOrganizer.organizeWorkersIn(this);
     };
