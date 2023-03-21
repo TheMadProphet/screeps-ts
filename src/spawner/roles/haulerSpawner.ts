@@ -3,74 +3,87 @@ import {HAULER, MINER} from "../../constants";
 
 class HaulerSpawner implements RoleSpawner {
     public spawn(spawner: StructureSpawn) {
-        if (spawner.room.creepsByRole[MINER].length === 0) return;
+        const room = spawner.room;
+        if (room.creepsByRole[MINER].length === 0) return;
 
-        const body = new Body(spawner).addParts([CARRY, MOVE], 10);
-        const sourceId = this.findSourceWithMissingHauler(spawner, spawner.room.memory.sources, body);
-        if (sourceId) {
-            spawner.spawn({
-                body: body,
-                memory: {
-                    role: HAULER,
-                    assignedSource: sourceId,
-                    assignedRoom: spawner.room.name
-                }
-            });
-
-            return;
+        for (const sourceId of room.memory.sources) {
+            if (this.spawnHaulerForSource(spawner, sourceId, room.name) === OK) return;
         }
 
-        for (const colony of spawner.room.getColonies()) {
-            let remoteHaulerBody = body;
-            if (spawner.room.controller!.level >= 3) {
-                remoteHaulerBody = new Body(spawner).addParts([WORK, MOVE]).addParts([CARRY, MOVE], 10);
-            }
-
-            const remoteSourceId = this.findSourceWithMissingHauler(
-                spawner,
-                Memory.rooms[colony].sources,
-                remoteHaulerBody
-            );
-
-            if (remoteSourceId) {
-                spawner.spawn({
-                    body: remoteHaulerBody,
-                    memory: {
-                        role: HAULER,
-                        assignedSource: remoteSourceId,
-                        assignedRoom: colony
-                    }
-                });
+        for (const colony of room.getColonies()) {
+            for (const sourceId of Memory.rooms[colony].sources) {
+                if (this.spawnHaulerForSource(spawner, sourceId, colony, true) === OK) return;
             }
         }
     }
 
-    private findSourceWithMissingHauler(
+    private spawnHaulerForSource(
         spawner: StructureSpawn,
-        sourceIds: Id<Source>[],
-        body: Body
-    ): Id<Source> | undefined {
-        for (const sourceId of sourceIds) {
-            const assignedHaulers = spawner.room.creepsByRole[HAULER].filter(
-                hauler => hauler.memory.assignedSource === sourceId
-            );
-            const assignedMiners = spawner.room.creepsByRole[MINER].filter(
-                miner => miner.memory.assignedSource === sourceId
-            );
-            const totalWorkParts = _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));
+        sourceId: Id<Source>,
+        sourceRoomName: string,
+        isRemote = false
+    ): OK | false {
+        const sourceMemory = Memory.sources[sourceId];
+        const totalWorkParts = this.getAssignedWorkPartsForSource(sourceId, spawner.room);
+        const requiredCarryParts = this.calculateRequiredCarryParts(sourceMemory, totalWorkParts);
 
-            const energyGeneratedByWorkersPerLifetime = Math.min(totalWorkParts, 5) * 2 * CREEP_LIFE_TIME;
-            const pathCost = Memory.sources[sourceId].pathCost / 2; // TODO: dont need to divide if using ignoreRoads option
-            const biRoutePerLifetime = CREEP_LIFE_TIME / pathCost / 2;
-            const energyStoredByHaulerPerLifetime = body.getCapacity() * biRoutePerLifetime;
-            const requiredHaulerCount = energyGeneratedByWorkersPerLifetime / energyStoredByHaulerPerLifetime;
+        const totalCarryParts = this.getAssignedCarryPartsForSource(sourceId, spawner.room);
+        if (totalCarryParts < requiredCarryParts) {
+            let haulerBody = this.getHaulerBody(spawner, requiredCarryParts, sourceMemory.hasRoad, isRemote);
 
-            if (assignedHaulers.length < requiredHaulerCount) {
-                return sourceId;
+            if (haulerBody.getPartCount(CARRY) < requiredCarryParts) {
+                const maxCarryPerCreep = haulerBody.getPartCount(CARRY);
+                const minCreepCount = Math.ceil(requiredCarryParts / maxCarryPerCreep);
+                const partsPerCreep = Math.ceil(requiredCarryParts / minCreepCount);
+
+                haulerBody = this.getHaulerBody(spawner, partsPerCreep, sourceMemory.hasRoad, isRemote);
             }
+
+            spawner.spawn({
+                body: haulerBody,
+                memory: {role: HAULER, assignedSource: sourceId, assignedRoom: sourceRoomName}
+            });
+
+            return OK;
         }
 
-        return undefined;
+        return false;
+    }
+
+    private getHaulerBody(
+        spawner: StructureSpawn,
+        carryPartsRequired: number,
+        hasRoad: boolean | undefined,
+        isRemote: boolean
+    ): Body {
+        if (hasRoad) {
+            return new Body(spawner)
+                .addParts(isRemote ? [WORK, CARRY, MOVE] : [])
+                .addParts([CARRY, CARRY, MOVE], Math.ceil(carryPartsRequired / 2));
+        }
+
+        return new Body(spawner).addParts([CARRY, MOVE], carryPartsRequired);
+    }
+
+    private getAssignedCarryPartsForSource(sourceId: Id<Source>, room: Room): number {
+        const assignedHaulers = room.creepsByRole[HAULER].filter(hauler => hauler.memory.assignedSource === sourceId);
+
+        return _.sum(assignedHaulers, miner => miner.getActiveBodyparts(CARRY));
+    }
+
+    private getAssignedWorkPartsForSource(sourceId: Id<Source>, room: Room): number {
+        const assignedMiners = room.creepsByRole[MINER].filter(miner => miner.memory.assignedSource === sourceId);
+
+        return _.sum(assignedMiners, miner => miner.getActiveBodyparts(WORK));
+    }
+
+    private calculateRequiredCarryParts(sourceMemory: SourceMemory, minerWorkParts: number): number {
+        const energyGeneratedByWorkersPerLifetime = Math.min(minerWorkParts, 5) * 2 * CREEP_LIFE_TIME;
+        const pathCost = sourceMemory.pathCost / 2; // TODO: dont need to divide if using ignoreRoads option
+        const biRoutePerLifetime = CREEP_LIFE_TIME / pathCost / 2;
+
+        const totalCapacityRequired = energyGeneratedByWorkersPerLifetime / biRoutePerLifetime;
+        return totalCapacityRequired / CARRY_CAPACITY;
     }
 }
 
