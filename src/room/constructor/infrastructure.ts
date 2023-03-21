@@ -4,6 +4,8 @@ import roomScanner, {getAvailablePositionsAround} from "../../creep/roomScanner"
 declare global {
     interface RoomMemory {
         colonies?: string[];
+        hasRoadAroundSpawn?: boolean;
+        hasRoadToController?: boolean;
     }
 }
 
@@ -57,7 +59,7 @@ function buildEnergyInfrastructure(room: Room) {
     }
 
     if (room.controller.level === 3) {
-        if (room.availableExtension === 0) {
+        if (room.extensionsAreBuilt()) {
             buildContainersForSources(room.memory.sources);
             // buildRoadsForSources(room.memory.sources);
         }

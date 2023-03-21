@@ -4,6 +4,36 @@ import workerOrganizer, {WorkerTask, workerTasks} from "../creep/workerOrganizer
 import {CreepRole, roles, WORKER} from "../constants";
 import {Traveler} from "../utils/traveler/traveler";
 
+declare global {
+    interface Room {
+        spawn: StructureSpawn;
+        creepsByRole: {
+            [role in CreepRole]: Creep[];
+        };
+        workersByTask: {
+            [task in WorkerTask]: Creep[];
+        };
+
+        automate(): void;
+
+        buildRoad(from: RoomPosition, to: RoomPosition): void;
+
+        fillersAreEnabled(): boolean;
+
+        hasEnergyEmergency(): boolean;
+
+        getColonies(): string[];
+
+        isBeingReserved(): boolean;
+
+        extensionsAreBuilt(): boolean;
+    }
+
+    interface RoomMemory {
+        sources: Id<Source>[];
+    }
+}
+
 (function (this: typeof Room.prototype) {
     this.automate = function () {
         if (!this.controller?.my) return;
@@ -38,7 +68,7 @@ import {Traveler} from "../utils/traveler/traveler";
         return (
             this.controller != undefined &&
             this.controller.level >= 4 &&
-            this.availableExtension === 0 &&
+            this.extensionsAreBuilt() &&
             this.storage !== null &&
             this.storage !== undefined
         );
@@ -61,6 +91,10 @@ import {Traveler} from "../utils/traveler/traveler";
 
         return this.controller.reservation.ticksToEnd >= 1;
     };
+
+    this.extensionsAreBuilt = function () {
+        return getAvailableStructure(this, STRUCTURE_EXTENSION) === 0;
+    };
 }).call(Room.prototype);
 
 Object.defineProperty(Room.prototype, "spawn", {
@@ -73,18 +107,6 @@ Object.defineProperty(Room.prototype, "spawn", {
         }
 
         return this._spawn;
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(Room.prototype, "availableExtension", {
-    get: function () {
-        if (!this._availableExtension) {
-            this._availableExtension = getAvailableStructure(this, STRUCTURE_EXTENSION);
-        }
-
-        return this._availableExtension;
     },
     enumerable: false,
     configurable: true

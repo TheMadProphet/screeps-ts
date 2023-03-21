@@ -1,5 +1,11 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
 
+declare global {
+    interface RoomMemory {
+        ringsize?: number;
+    }
+}
+
 function positionIsNotOccupied(pos: RoomPosition, room: Room) {
     const lookObjects = room.lookAt(pos);
     for (const i in lookObjects) {
@@ -66,7 +72,7 @@ class RoomStructures {
 
     build() {
         if (!this.room.find(FIND_MY_CONSTRUCTION_SITES).length) {
-            if (this.room.availableExtension > 0) {
+            if (!this.room.extensionsAreBuilt()) {
                 buildExtensions(this.room);
             }
         }
