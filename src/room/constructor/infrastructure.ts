@@ -7,6 +7,10 @@ declare global {
         hasRoadAroundSpawn?: boolean;
         hasRoadToController?: boolean;
     }
+
+    interface SourceMemory {
+        hasRoad?: boolean;
+    }
 }
 
 const COLONY_LIMIT = 2;
@@ -49,6 +53,19 @@ function buildContainersForSources(sourceIds: Id<Source>[]) {
         .forEach(source => buildContainerForSource(source));
 }
 
+function buildRoadForSource(source: Source, fromStructure: AnyStructure) {
+    fromStructure.room.buildRoad(fromStructure.pos, source.pos);
+    source.memory.hasRoad = true;
+}
+
+function buildRoadsForSources(sourceIds: Id<Source>[], fromStructure: AnyStructure) {
+    sourceIds
+        .map(it => Game.getObjectById(it))
+        .filter((it): it is Source => Boolean(it))
+        .filter(it => !it.memory.hasRoad)
+        .forEach(source => buildRoadForSource(source, fromStructure));
+}
+
 function buildEnergyInfrastructure(room: Room) {
     if (!room.controller) return;
 
@@ -61,7 +78,7 @@ function buildEnergyInfrastructure(room: Room) {
     if (room.controller.level === 3) {
         if (room.extensionsAreBuilt()) {
             buildContainersForSources(room.memory.sources);
-            // buildRoadsForSources(room.memory.sources);
+            buildRoadsForSources(room.memory.sources, room.spawn);
         }
     }
 }
