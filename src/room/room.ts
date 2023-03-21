@@ -2,6 +2,7 @@ import RoomInfrastructure from "./constructor/infrastructure";
 import RoomStructures from "./constructor/structures";
 import workerOrganizer, {WorkerTask, workerTasks} from "../creep/workerOrganizer";
 import {CreepRole, roles, WORKER} from "../constants";
+import {Traveler} from "../utils/traveler/traveler";
 
 (function (this: typeof Room.prototype) {
     this.automate = function () {
@@ -22,28 +23,12 @@ import {CreepRole, roles, WORKER} from "../constants";
     };
 
     this.buildRoad = function (from, to) {
-        const path = this.findPath(from, to, {ignoreRoads: true, ignoreCreeps: true});
+        const path = Traveler.findTravelPath(from, to, {ignoreCreeps: true}).path;
 
         for (const i in path) {
             const pos = path[i];
 
             if (to.x !== pos.x || to.y !== pos.y) {
-                this.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
-            }
-        }
-    };
-
-    this.buildBiDirectionalRoad = function (pos1, pos2) {
-        this.buildRoad(pos1, pos2);
-
-        const fromPos1 = PathFinder.search(pos1, {pos: pos2, range: 1});
-        const fromPos2 = PathFinder.search(pos2, {pos: pos1, range: 0});
-
-        const path = [...fromPos1.path, ...fromPos2.path];
-        for (const i in path) {
-            const pos = path[i];
-
-            if ((pos1.x !== pos.x || pos1.y !== pos.y) && (pos2.x !== pos.x || pos2.y !== pos.y)) {
                 this.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
             }
         }

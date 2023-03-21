@@ -18,8 +18,6 @@ declare global {
 
         buildRoad(from: RoomPosition, to: RoomPosition): void;
 
-        buildBiDirectionalRoad(pos1: RoomPosition, pos2: RoomPosition): void;
-
         fillersAreEnabled(): boolean;
 
         hasEnergyEmergency(): boolean;
