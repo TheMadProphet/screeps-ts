@@ -79,7 +79,7 @@ function buildRoadsForSources(sourceIds: Id<Source>[], fromStructure: AnyStructu
     const sourcesWithoutRoad = sourceIds.filter(it => !Memory.sources[it].hasRoad);
 
     if (sourcesWithoutRoad.length) {
-        const source = Game.getObjectById(sourceIds[0]);
+        const source = Game.getObjectById(sourcesWithoutRoad[0]);
         if (source) {
             buildRoadForSource(source, fromStructure);
         }
