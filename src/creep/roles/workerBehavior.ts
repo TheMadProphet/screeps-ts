@@ -29,7 +29,7 @@ class WorkerBehavior implements RoleBehavior {
         const closestConstruction = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)!;
 
         if (creep.build(closestConstruction) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(closestConstruction);
+            creep.travelTo(closestConstruction, {ignoreRoads: true});
         }
     }
 
@@ -37,7 +37,7 @@ class WorkerBehavior implements RoleBehavior {
         const controller = creep.room.controller!;
 
         if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(controller);
+            creep.travelTo(controller, {ignoreRoads: true});
         }
     }
 
@@ -48,7 +48,7 @@ class WorkerBehavior implements RoleBehavior {
 
         if (closestStructure) {
             if (creep.repair(closestStructure) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(closestStructure);
+                creep.travelTo(closestStructure, {ignoreRoads: true});
             }
         }
     }
