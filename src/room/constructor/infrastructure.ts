@@ -76,11 +76,14 @@ function buildRoadForSource(source: Source, fromStructure: AnyStructure) {
 }
 
 function buildRoadsForSources(sourceIds: Id<Source>[], fromStructure: AnyStructure) {
-    sourceIds
-        .map(it => Game.getObjectById(it))
-        .filter((it): it is Source => Boolean(it))
-        .filter(it => !it.memory.hasRoad)
-        .forEach(source => buildRoadForSource(source, fromStructure));
+    const sourcesWithoutRoad = sourceIds.filter(it => !Memory.sources[it].hasRoad);
+
+    if (sourcesWithoutRoad.length) {
+        const source = Game.getObjectById(sourceIds[0]);
+        if (source) {
+            buildRoadForSource(source, fromStructure);
+        }
+    }
 }
 
 function buildEnergyInfrastructure(room: Room) {
