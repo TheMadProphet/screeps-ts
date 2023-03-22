@@ -1,5 +1,6 @@
 import {buildRoadAtPositions, getPositionsAround} from "./helper";
-import roomScanner, {getAvailablePositionsAround} from "../../creep/roomScanner";
+import roomScanner from "../../creep/roomScanner";
+import {Traveler} from "../../utils/traveler/traveler";
 
 declare global {
     interface RoomMemory {
@@ -25,7 +26,7 @@ function findContainerNearSource(source: Source): Id<StructureContainer> | undef
     return findResult.structure.id as Id<StructureContainer>;
 }
 
-function buildContainerForSource(source: Source) {
+function buildContainerForSource(source: Source, fromStructure: AnyStructure) {
     if (source.memory.containerId) return;
 
     if (source.memory.containerConstructionStarted) {
@@ -36,21 +37,22 @@ function buildContainerForSource(source: Source) {
             return;
         }
     } else {
-        const pos = getAvailablePositionsAround(source)[0];
+        const path = Traveler.findTravelPath(fromStructure, source).path;
+        const [pos] = path.slice(-1);
         if (!pos) return;
 
-        const constructionStatus = source.room.createConstructionSite(pos.x, pos.y, STRUCTURE_CONTAINER);
+        const constructionStatus = source.room.createConstructionSite(pos, STRUCTURE_CONTAINER);
         if (constructionStatus === OK) {
             source.memory.containerConstructionStarted = true;
         }
     }
 }
 
-function buildContainersForSources(sourceIds: Id<Source>[]) {
+function buildContainersForSources(sourceIds: Id<Source>[], fromStructure: AnyStructure) {
     sourceIds
         .map(it => Game.getObjectById(it))
         .filter((it): it is Source => Boolean(it))
-        .forEach(source => buildContainerForSource(source));
+        .forEach(source => buildContainerForSource(source, fromStructure));
 }
 
 function buildRoadForSource(source: Source, fromStructure: AnyStructure) {
@@ -77,7 +79,7 @@ function buildEnergyInfrastructure(room: Room) {
 
     if (room.controller.level === 3) {
         if (room.extensionsAreBuilt()) {
-            buildContainersForSources(room.memory.sources);
+            buildContainersForSources(room.memory.sources, room.spawn);
             buildRoadsForSources(room.memory.sources, room.spawn);
         }
     }
