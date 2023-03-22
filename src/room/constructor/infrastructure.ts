@@ -56,7 +56,22 @@ function buildContainersForSources(sourceIds: Id<Source>[], fromStructure: AnySt
 }
 
 function buildRoadForSource(source: Source, fromStructure: AnyStructure) {
-    fromStructure.room.buildRoad(fromStructure.pos, source.pos);
+    const path = Traveler.findTravelPath(fromStructure, source, {
+        roomCallback: (roomName: string, matrix: CostMatrix) => {
+            let room = Game.rooms[roomName];
+            if (room) {
+                for (let site of room.find(FIND_MY_CONSTRUCTION_SITES)) {
+                    if (site.structureType === STRUCTURE_ROAD) {
+                        matrix.set(site.pos.x, site.pos.y, 1);
+                    }
+                }
+            }
+
+            return matrix;
+        }
+    }).path;
+
+    buildRoadAtPositions(fromStructure.room, path);
     source.memory.hasRoad = true;
 }
 
