@@ -37,7 +37,7 @@ class WorkerBehavior implements RoleBehavior {
         const controller = creep.room.controller!;
 
         if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(controller, {ignoreRoads: true});
+            creep.travelTo(controller, {ignoreRoads: true, ignoreCreeps: false});
         }
     }
 
