@@ -1,4 +1,5 @@
 import {WorkerTask, workerTasks} from "../workerOrganizer";
+import roomBuilder from "../roomBuilder";
 
 declare global {
     interface CreepMemory {
@@ -26,10 +27,14 @@ class WorkerBehavior implements RoleBehavior {
     }
 
     runBuilderTask(creep: Creep) {
-        const closestConstruction = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)!;
-
-        if (creep.build(closestConstruction) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(closestConstruction, {ignoreRoads: true});
+        const constructionSite = roomBuilder.findConstructionSite(creep);
+        if (constructionSite) {
+            if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(constructionSite, {ignoreRoads: true});
+            }
+        } else {
+            creep.idle();
+            creep.say("⚠");
         }
     }
 
