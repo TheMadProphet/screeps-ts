@@ -36,8 +36,12 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     };
 
     this.withdrawEnergy = function (includeSpawn = true) {
-        const energyRepository = this.findEnergyRepository(includeSpawn);
+        if (!this.isHome()) {
+            this.travelToHome();
+            return;
+        }
 
+        const energyRepository = this.findEnergyRepository(includeSpawn);
         if (energyRepository && !this.room.hasEnergyEmergency()) {
             this.withdrawFrom(energyRepository);
         } else {
