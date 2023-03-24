@@ -24,6 +24,7 @@ Object.defineProperty(Source.prototype, "memory", {
         if (!Memory.sources) Memory.sources = {};
 
         if (!Memory.sources[this.id]) {
+            // TODO: Assign spaceAvailable/pathCost somewhere else, possibly remove id
             Memory.sources[this.id] = {
                 id: this.id,
                 spaceAvailable: getAvailablePositionsAround(this).length,
