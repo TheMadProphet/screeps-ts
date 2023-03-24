@@ -1,3 +1,5 @@
+import {Statistics} from "../../stats/statistics";
+
 class HaulerBehavior implements RoleBehavior {
     run(creep: Creep) {
         if (!creep.memory.assignedSource) {
@@ -13,6 +15,17 @@ class HaulerBehavior implements RoleBehavior {
             this.retrieveEnergy(creep);
         } else {
             this.gatherEnergy(creep, creep.memory.assignedSource);
+        }
+
+        if (creep.getActiveBodyparts(WORK) > 0) {
+            const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+                filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
+            });
+
+            if (damagedRoads.length > 0) {
+                creep.repair(damagedRoads[0]);
+                Statistics.registerCreepIntent(creep.name + "repair"); // TODO: Handle simultaneous actions
+            }
         }
 
         creep.giveWay();
