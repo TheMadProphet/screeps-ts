@@ -22,7 +22,7 @@ class RoomBuilder {
 
     private findConstructionSiteInColoniesOf(room: Room): ConstructionSite | undefined {
         for (const colony of room.getVisibleColonies()) {
-            const sitesInColony = room.find(FIND_MY_CONSTRUCTION_SITES);
+            const sitesInColony = colony.find(FIND_MY_CONSTRUCTION_SITES);
             if (sitesInColony.length > 0) {
                 return sitesInColony[0];
             }
