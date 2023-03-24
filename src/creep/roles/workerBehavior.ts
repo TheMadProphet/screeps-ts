@@ -57,8 +57,9 @@ class WorkerBehavior implements RoleBehavior {
     private runBuilderTask(creep: Creep) {
         const constructionSite = roomBuilder.findConstructionSite(creep);
         if (constructionSite) {
+            creep.getOffExit();
             if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(constructionSite, {ignoreRoads: true});
+                creep.travelTo(constructionSite, {ignoreRoads: true, ignoreCreeps: false});
             }
         } else {
             creep.idle();
