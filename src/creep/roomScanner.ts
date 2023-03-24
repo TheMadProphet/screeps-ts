@@ -98,7 +98,7 @@ const roomScanner = {
             it.memory.pathCost = Traveler.findTravelPath(spawn.pos, it.pos).cost;
         });
 
-        return sources.map(it => it.id);
+        return sources.sort((a, b) => a.memory.pathCost - b.memory.pathCost).map(it => it.id);
     }
 };
 
