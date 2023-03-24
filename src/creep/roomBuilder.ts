@@ -1,40 +1,34 @@
-declare global {
-    interface RoomMemory {
-        constructions: SimpleConstructionSite[];
-    }
-}
-
-interface SimpleConstructionSite {
-    id: Id<ConstructionSite>;
-    room: string;
-    home: string;
-    type: BuildableStructureConstant;
-}
-
 class RoomBuilder {
-    public queue(construction: ConstructionSite, homeName?: string) {
-        const home = homeName ? Game.rooms[homeName] : construction.room!;
+    public constructionSitesAreAvailable(room: Room): boolean {
+        const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
+        if (constructionSites.length > 0) {
+            return true;
+        }
 
-        if (!home.memory.constructions) home.memory.constructions = [];
-
-        home.memory.constructions.push({
-            id: construction.id,
-            home: home.name,
-            room: construction.room!.name,
-            type: construction.structureType
-        });
+        return this.findConstructionSiteInColoniesOf(room) !== undefined;
     }
 
-    public getNextConstruction(room: Room): SimpleConstructionSite | null {
-        if (!room.memory.constructions || room.memory.constructions.length === 0) return null;
+    public findConstructionSite(creep: Creep): ConstructionSite | undefined {
+        const closestSite = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+        if (closestSite) return closestSite;
 
-        const construction = room.memory.constructions[0];
-        if (Game.constructionSites[construction.id]) {
-            return construction;
-        } else {
-            room.memory.constructions.shift();
-            return room.memory.constructions[0] ?? null;
+        const home = Game.rooms[creep.memory.home];
+        if (home) {
+            return this.findConstructionSiteInColoniesOf(home);
         }
+
+        return undefined;
+    }
+
+    private findConstructionSiteInColoniesOf(room: Room): ConstructionSite | undefined {
+        for (const colony of room.getVisibleColonies()) {
+            const sitesInColony = room.find(FIND_MY_CONSTRUCTION_SITES);
+            if (sitesInColony.length > 0) {
+                return sitesInColony[0];
+            }
+        }
+
+        return undefined;
     }
 }
 
