@@ -9,7 +9,7 @@ declare global {
 
 class WorkerBehavior implements RoleBehavior {
     run(creep: Creep): void {
-        if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
+        if (creep.store.getUsedCapacity() === 0) return this.gatherEnergy(creep);
 
         switch (creep.memory.task) {
             case workerTasks.UPGRADE:
@@ -26,7 +26,35 @@ class WorkerBehavior implements RoleBehavior {
         creep.giveWay();
     }
 
-    runBuilderTask(creep: Creep) {
+    private gatherEnergy(creep: Creep) {
+        if (creep.isHome()) {
+            creep.withdrawEnergy();
+            return;
+        }
+
+        const closestDroppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+            filter: it => it.amount > 250
+        });
+        const closestContainerWithEnergy = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: it => it.structureType === STRUCTURE_CONTAINER && it.store.getUsedCapacity() > 500
+        });
+
+        if (closestDroppedEnergy && closestContainerWithEnergy) {
+            if (creep.pos.getRangeTo(closestDroppedEnergy) < creep.pos.getRangeTo(closestContainerWithEnergy)) {
+                creep.pickupResource(closestDroppedEnergy);
+            } else {
+                creep.withdrawFrom(closestContainerWithEnergy);
+            }
+        } else if (closestContainerWithEnergy) {
+            creep.withdrawFrom(closestContainerWithEnergy);
+        } else if (closestDroppedEnergy) {
+            creep.pickupResource(closestDroppedEnergy);
+        } else {
+            creep.travelToHome();
+        }
+    }
+
+    private runBuilderTask(creep: Creep) {
         const constructionSite = roomBuilder.findConstructionSite(creep);
         if (constructionSite) {
             if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
@@ -38,7 +66,7 @@ class WorkerBehavior implements RoleBehavior {
         }
     }
 
-    runUpgraderTask(creep: Creep) {
+    private runUpgraderTask(creep: Creep) {
         const controller = creep.room.controller!;
 
         if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
