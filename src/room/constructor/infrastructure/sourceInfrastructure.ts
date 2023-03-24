@@ -18,11 +18,15 @@ class SourceInfrastructure {
     }
 
     public build(fromStructure: AnyStructure) {
-        this.buildContainer(fromStructure);
-        this.buildRoad(fromStructure);
+        const path = Traveler.findTravelPath(fromStructure, this.source, {
+            roomCallback: this.getRoomCallbackForRoadPath()
+        }).path;
+
+        this.buildContainer(path);
+        this.buildRoad(path);
     }
 
-    private buildContainer(fromStructure: AnyStructure) {
+    private buildContainer(path: RoomPosition[]) {
         if (this.source.memory.containerId) return;
 
         if (this.source.memory.containerConstructionStarted) {
@@ -32,7 +36,6 @@ class SourceInfrastructure {
                 delete this.source.memory.containerConstructionStarted;
             }
         } else {
-            const path = Traveler.findTravelPath(fromStructure, this.source).path;
             const [endOfPath] = path.slice(-1);
             if (!endOfPath) return;
 
@@ -60,7 +63,7 @@ class SourceInfrastructure {
         return findResult.structure.id as Id<StructureContainer>;
     }
 
-    private buildRoad(fromStructure: AnyStructure) {
+    private buildRoad(path: RoomPosition[]) {
         if (this.source.memory.hasRoad) return;
 
         if (this.source.memory.roadConstructionStarted) {
@@ -73,11 +76,9 @@ class SourceInfrastructure {
                 delete this.source.memory.roadConstructionStarted;
             }
         } else {
-            const path = Traveler.findTravelPath(fromStructure, this.source, {
-                roomCallback: this.getRoomCallbackForRoadPath()
-            }).path;
-
-            buildRoadAtPositions(fromStructure.room, path);
+            _.forEach(path, pos => {
+                pos.createConstructionSite(STRUCTURE_ROAD);
+            });
             this.source.memory.roadConstructionStarted = true;
         }
     }
