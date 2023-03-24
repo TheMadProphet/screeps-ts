@@ -25,7 +25,8 @@ function buildEnergyInfrastructure(room: Room) {
         if (room.controller.level === 3) {
             buildInfrastructureForSources(room.memory.sources, room.spawn);
         } else if (room.controller.level === 4) {
-            room.getVisibleColonies().forEach(it => buildInfrastructureForSources(it.memory.sources, room.spawn)); // TODO: Storage
+            const sources = _.flatten(room.getVisibleColonies().map(it => it.memory.sources));
+            buildInfrastructureForSources(sources, room.spawn); // TODO: Storage
         }
     }
 }
