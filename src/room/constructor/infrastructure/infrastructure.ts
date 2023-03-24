@@ -8,10 +8,6 @@ declare global {
         hasRoadAroundSpawn?: boolean;
         hasRoadToController?: boolean;
     }
-
-    interface SourceMemory {
-        hasRoad?: boolean;
-    }
 }
 
 const COLONY_LIMIT = 2;

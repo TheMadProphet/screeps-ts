@@ -1,6 +1,15 @@
 import {Traveler} from "../../../utils/traveler/traveler";
 import {buildRoadAtPositions} from "../helper";
 
+declare global {
+    interface SourceMemory {
+        hasRoad?: boolean;
+        roadConstructionStarted?: boolean;
+        containerId?: Id<StructureContainer>;
+        containerConstructionStarted?: boolean;
+    }
+}
+
 class SourceInfrastructure {
     source: Source;
 
@@ -21,7 +30,6 @@ class SourceInfrastructure {
             if (containerId) {
                 this.source.memory.containerId = containerId;
                 delete this.source.memory.containerConstructionStarted;
-                return;
             }
         } else {
             const path = Traveler.findTravelPath(fromStructure, this.source).path;
@@ -55,24 +63,39 @@ class SourceInfrastructure {
     private buildRoad(fromStructure: AnyStructure) {
         if (this.source.memory.hasRoad) return;
 
-        const path = Traveler.findTravelPath(fromStructure, this.source, {
-            // Weigh road construction sites same as built roads
-            roomCallback: (roomName: string, matrix: CostMatrix) => {
-                let room = Game.rooms[roomName];
-                if (room) {
-                    for (let site of room.find(FIND_MY_CONSTRUCTION_SITES)) {
-                        if (site.structureType === STRUCTURE_ROAD) {
-                            matrix.set(site.pos.x, site.pos.y, 1);
-                        }
+        if (this.source.memory.roadConstructionStarted) {
+            const roadConstructionsAreBuilt = this.source.room
+                .find(FIND_MY_CONSTRUCTION_SITES)
+                .every(it => it.structureType !== STRUCTURE_ROAD);
+
+            if (roadConstructionsAreBuilt) {
+                this.source.memory.hasRoad = true;
+                delete this.source.memory.roadConstructionStarted;
+            }
+        } else {
+            const path = Traveler.findTravelPath(fromStructure, this.source, {
+                roomCallback: this.getRoomCallbackForRoadPath()
+            }).path;
+
+            buildRoadAtPositions(fromStructure.room, path);
+            this.source.memory.roadConstructionStarted = true;
+        }
+    }
+
+    private getRoomCallbackForRoadPath() {
+        // Ignore if road is construction site, treat it as built road
+        return (roomName: string, matrix: CostMatrix) => {
+            let room = Game.rooms[roomName];
+            if (room) {
+                for (let site of room.find(FIND_MY_CONSTRUCTION_SITES)) {
+                    if (site.structureType === STRUCTURE_ROAD) {
+                        matrix.set(site.pos.x, site.pos.y, 1);
                     }
                 }
-
-                return matrix;
             }
-        }).path;
 
-        buildRoadAtPositions(fromStructure.room, path);
-        this.source.memory.hasRoad = true;
+            return matrix;
+        };
     }
 }
 

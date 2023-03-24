@@ -11,8 +11,6 @@ declare global {
         id: Id<Source>;
         spaceAvailable: number;
         pathCost: number;
-        containerId?: Id<StructureContainer>;
-        containerConstructionStarted?: boolean;
     }
 
     interface Source {
