@@ -1,4 +1,5 @@
 import {WORKER} from "../constants";
+import roomBuilder from "./roomBuilder";
 
 export const workerTasks = {
     BUILD: 0,
@@ -22,7 +23,7 @@ class WorkerOrganizer {
             this.reserveOneWorkerFor(workerTasks.REPAIR);
         }
 
-        if (this.roomHasConstructionSites(room)) {
+        if (roomBuilder.constructionSitesAreAvailable(room)) {
             this.reserveOneWorkerFor(workerTasks.UPGRADE);
             this.reserveRemainingWorkersFor(workerTasks.BUILD);
         } else {
@@ -51,10 +52,6 @@ class WorkerOrganizer {
 
     private roomNeedsRepairs(room: Room) {
         return room.find(FIND_STRUCTURES, {filter: structure => structure.hits / structure.hitsMax < 0.95}).length > 0;
-    }
-
-    private roomHasConstructionSites(room: Room) {
-        return room.find(FIND_MY_CONSTRUCTION_SITES).length > 0;
     }
 
     private applyAssignment(room: Room) {
