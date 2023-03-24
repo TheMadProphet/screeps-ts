@@ -1,4 +1,4 @@
-import RoomInfrastructure from "./constructor/infrastructure";
+import RoomInfrastructure from "./constructor/infrastructure/infrastructure";
 import RoomStructures from "./constructor/structures";
 import workerOrganizer, {WorkerTask, workerTasks} from "../creep/workerOrganizer";
 import {CreepRole, roles, WORKER} from "../constants";
