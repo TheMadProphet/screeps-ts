@@ -100,8 +100,13 @@ class SourceInfrastructure {
 }
 
 export function buildInfrastructureForSources(sourceIds: Id<Source>[], fromStructure: AnyStructure) {
-    sourceIds
-        .map(it => Game.getObjectById(it))
-        .filter((it): it is Source => Boolean(it))
-        .forEach(source => new SourceInfrastructure(source).build(fromStructure));
+    const sources = sourceIds.map(it => Game.getObjectById(it)).filter((it): it is Source => Boolean(it));
+
+    for (const source of sources) {
+        new SourceInfrastructure(source).build(fromStructure);
+
+        if (source.memory.roadConstructionStarted) {
+            break; // Skip others while construction is not done
+        }
+    }
 }
