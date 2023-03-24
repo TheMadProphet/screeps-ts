@@ -25,8 +25,15 @@ function buildEnergyInfrastructure(room: Room) {
             .sort((a, b) => Memory.sources[a].pathCost - Memory.sources[b].pathCost);
     }
 
-    if (room.controller.level === 3 && room.extensionsAreBuilt()) {
-        buildInfrastructureForSources(room.memory.sources, room.spawn);
+    if (room.extensionsAreBuilt()) {
+        if (room.controller.level === 3) {
+            buildInfrastructureForSources(room.memory.sources, room.spawn);
+        } else if (room.controller.level === 4) {
+            room.getColonies()
+                .map(it => Game.rooms[it])
+                .filter(it => Boolean(it))
+                .forEach(it => buildInfrastructureForSources(it.memory.sources, room.spawn)); // TODO: Storage
+        }
     }
 }
 

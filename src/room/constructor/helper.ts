@@ -3,7 +3,7 @@ export function buildRoadAtPositions(room: Room, positions: RoomPosition[]) {
         const terrain = room.lookForAt(LOOK_TERRAIN, pos.x, pos.y)[0];
 
         if (terrain !== "wall") {
-            room.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
+            pos.createConstructionSite(STRUCTURE_ROAD);
         }
     });
 }
