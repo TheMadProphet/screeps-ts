@@ -22,7 +22,9 @@ declare global {
 
         hasEnergyEmergency(): boolean;
 
-        getColonies(): string[];
+        getAllColonies(): string[];
+
+        getVisibleColonies(): Room[];
 
         isBeingReserved(): boolean;
 
@@ -80,10 +82,16 @@ declare global {
         return this.storage.store.getUsedCapacity(RESOURCE_ENERGY) <= this.energyCapacityAvailable * 2;
     };
 
-    this.getColonies = function () {
+    this.getAllColonies = function () {
         if (!this.memory.colonies) return [];
 
         return this.memory.colonies;
+    };
+
+    this.getVisibleColonies = function () {
+        if (!this.memory.colonies) return [];
+
+        return this.memory.colonies.map(it => Game.rooms[it]).filter(it => Boolean(it));
     };
 
     this.isBeingReserved = function () {

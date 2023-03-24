@@ -25,10 +25,7 @@ function buildEnergyInfrastructure(room: Room) {
         if (room.controller.level === 3) {
             buildInfrastructureForSources(room.memory.sources, room.spawn);
         } else if (room.controller.level === 4) {
-            room.getColonies()
-                .map(it => Game.rooms[it])
-                .filter(it => Boolean(it))
-                .forEach(it => buildInfrastructureForSources(it.memory.sources, room.spawn)); // TODO: Storage
+            room.getVisibleColonies().forEach(it => buildInfrastructureForSources(it.memory.sources, room.spawn)); // TODO: Storage
         }
     }
 }

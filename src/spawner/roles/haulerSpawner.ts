@@ -10,7 +10,7 @@ class HaulerSpawner implements RoleSpawner {
             if (this.spawnHaulerForSource(spawner, sourceId, room.name) === OK) return;
         }
 
-        for (const colony of room.getColonies()) {
+        for (const colony of room.getAllColonies()) {
             for (const sourceId of Memory.rooms[colony].sources) {
                 if (this.spawnHaulerForSource(spawner, sourceId, colony, true) === OK) return;
             }

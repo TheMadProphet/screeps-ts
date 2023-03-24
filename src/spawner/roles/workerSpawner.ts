@@ -20,7 +20,10 @@ const workerSpawner: RoleSpawner = {
         let sourceCount = _.size(spawner.room.memory.sources);
         let availableEnergyPerTick = sourceCount * ENERGY_PER_SOURCE * ENERGY_EFFICIENCY;
         if (spawner.room.memory.colonies) {
-            const remoteSourceCount = _.sum(spawner.room.getColonies(), colony => Memory.rooms[colony].sources.length);
+            const remoteSourceCount = _.sum(
+                spawner.room.getAllColonies(),
+                colony => Memory.rooms[colony].sources.length
+            );
 
             availableEnergyPerTick += remoteSourceCount * ENERGY_PER_SOURCE * REMOTE_ENERGY_EFFICIENCY;
         }
