@@ -1,7 +1,7 @@
 import {Statistics} from "../../stats/statistics";
 
 class HaulerBehavior implements RoleBehavior {
-    run(creep: Creep) {
+    public run(creep: Creep) {
         if (!creep.memory.assignedSource) {
             creep.idle();
             creep.say("⚠");
@@ -18,29 +18,27 @@ class HaulerBehavior implements RoleBehavior {
         }
 
         if (creep.getActiveBodyparts(WORK) > 0) {
-            const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
-                filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
-            });
-
-            if (damagedRoads.length > 0) {
-                creep.repair(damagedRoads[0]);
-                Statistics.registerCreepIntent(creep.name + "repair"); // TODO: Handle simultaneous actions
-            }
+            this.maintainRoads(creep);
         }
 
         creep.giveWay();
     }
 
-    retrieveEnergy(creep: Creep) {
+    private retrieveEnergy(creep: Creep) {
         if (creep.isHome()) {
             creep.getOffExit();
-            creep.fillSpawnsWithEnergy();
+
+            if (creep.room.storage) {
+                creep.transferTo(creep.room.storage);
+            } else {
+                creep.fillSpawnsWithEnergy();
+            }
         } else {
             creep.travelToHome();
         }
     }
 
-    gatherEnergy(creep: Creep, sourceId: Id<Source>) {
+    private gatherEnergy(creep: Creep, sourceId: Id<Source>) {
         if (creep.memory.assignedRoom != creep.room.name) {
             creep.travelToAssignedRoom();
         } else {
@@ -57,7 +55,7 @@ class HaulerBehavior implements RoleBehavior {
         }
     }
 
-    pickupEnergyNearSource(creep: Creep, source: Source) {
+    private pickupEnergyNearSource(creep: Creep, source: Source) {
         const droppedEnergies = source.pos.findInRange(FIND_DROPPED_RESOURCES, 1, {
             filter: resource => resource.resourceType === RESOURCE_ENERGY
         });
@@ -66,6 +64,17 @@ class HaulerBehavior implements RoleBehavior {
             creep.giveWay();
         } else if (creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
             creep.travelTo(droppedEnergies[0]);
+        }
+    }
+
+    private maintainRoads(creep: Creep) {
+        const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+            filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
+        });
+
+        if (damagedRoads.length > 0) {
+            creep.repair(damagedRoads[0]);
+            Statistics.registerCreepIntent(creep.name + "repair"); // TODO: Handle simultaneous actions
         }
     }
 }
