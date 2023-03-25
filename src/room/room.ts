@@ -67,13 +67,7 @@ declare global {
     };
 
     this.fillersAreEnabled = function () {
-        return (
-            this.controller != undefined &&
-            this.controller.level >= 4 &&
-            this.extensionsAreBuilt() &&
-            this.storage !== null &&
-            this.storage !== undefined
-        );
+        return Boolean(this.storage) && this.extensionsAreBuilt();
     };
 
     this.hasEnergyEmergency = function () {
