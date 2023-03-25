@@ -15,10 +15,7 @@ import "stats/pathfindingMonitor";
 
 /**
  * TODO:
- * do nothing for few ticks to build up bucket
- * container for sources and ROADS
  * intent detection for simultaneous actions
- * limit hauler formula based on source energy capacity as well
  * generate pixels
  */
 export const loop = ErrorMapper.wrapLoop(() => {
