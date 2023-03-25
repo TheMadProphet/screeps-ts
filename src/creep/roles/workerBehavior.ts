@@ -68,7 +68,11 @@ class WorkerBehavior implements RoleBehavior {
     }
 
     private runUpgraderTask(creep: Creep) {
-        const controller = creep.room.controller!;
+        const controller = creep.room.controller;
+        if (!controller) {
+            creep.travelToHome();
+            return;
+        }
 
         if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
             creep.travelTo(controller, {ignoreRoads: true, ignoreCreeps: false});
