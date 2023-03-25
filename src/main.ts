@@ -16,7 +16,6 @@ import "stats/pathfindingMonitor";
 /**
  * TODO:
  * intent detection for simultaneous actions
- * generate pixels
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     Statistics.onTickStart();
@@ -33,4 +32,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     _.forEach(Game.creeps, creep => creep.runRole());
 
     Statistics.exportAll();
+
+    if (Game.cpu.bucket === 10000) Game.cpu.generatePixel();
 });
