@@ -32,6 +32,10 @@ class WorkerBehavior implements RoleBehavior {
             return;
         }
 
+        this.gatherEnergyInRemote(creep);
+    }
+
+    private gatherEnergyInRemote(creep: Creep) {
         const closestDroppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
             filter: it => it.amount > 250
         });
