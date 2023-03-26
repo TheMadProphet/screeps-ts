@@ -17,9 +17,9 @@ class MinerSpawner implements RoleSpawner {
             const isRoomReserved = !Game.rooms[colony]?.isBeingReserved();
             const sourceId = this.findSourceWithMissingMiner(Memory.rooms[colony].sources, spawner, isRoomReserved);
             if (sourceId) {
-                let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
+                let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3).addParts([CARRY]);
                 if (isRoomReserved) {
-                    body = new Body(spawner).addParts([WORK, WORK, MOVE]).addParts([WORK, MOVE]);
+                    body = new Body(spawner).addParts([WORK, WORK, MOVE]).addParts([WORK, MOVE]).addParts([CARRY]);
                 }
 
                 spawner.spawn({

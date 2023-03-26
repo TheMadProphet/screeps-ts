@@ -10,6 +10,7 @@ class MinerBehavior implements RoleBehavior {
         } else {
             const source = Game.getObjectById(creep.memory.assignedSource);
             if (source) {
+                this.maintainContainer(creep, source);
                 this.mineSource(creep, source);
             }
         }
@@ -26,6 +27,12 @@ class MinerBehavior implements RoleBehavior {
             if (creep.harvestFrom(source) === ERR_NOT_ENOUGH_RESOURCES) {
                 creep.say("🕑");
             }
+        }
+    }
+
+    private maintainContainer(creep: Creep, source: Source) {
+        if (source.container && creep.store.getUsedCapacity() > 0) {
+            creep.repair(source.container);
         }
     }
 }
