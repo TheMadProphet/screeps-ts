@@ -7,7 +7,7 @@ class HaulerBehavior implements RoleBehavior {
         }
 
         if (creep.memory.working && creep.store.getUsedCapacity() === 0) creep.memory.working = false;
-        if (!creep.memory.working && creep.store.getFreeCapacity() === 0) creep.memory.working = true;
+        if (!creep.memory.working && creep.store.getFreeCapacity() <= 5) creep.memory.working = true;
 
         if (creep.memory.working) {
             this.retrieveEnergy(creep);
