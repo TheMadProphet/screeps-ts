@@ -16,7 +16,7 @@ class HaulerBehavior implements RoleBehavior {
         }
 
         if (creep.getActiveBodyparts(WORK) > 0) {
-            this.maintainRoads(creep);
+            this.maintainInfrastructure(creep);
         }
 
         creep.giveWay();
@@ -65,8 +65,17 @@ class HaulerBehavior implements RoleBehavior {
         }
     }
 
-    private maintainRoads(creep: Creep) {
+    private maintainInfrastructure(creep: Creep) {
         if (creep.isHome()) return;
+
+        const damagedContainers = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+            filter: it => it.structureType === STRUCTURE_CONTAINER && it.hitsMax - it.hits > 100
+        });
+
+        if (damagedContainers.length > 0) {
+            creep.repair(damagedContainers[0]);
+            return;
+        }
 
         const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
