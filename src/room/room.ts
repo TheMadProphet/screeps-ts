@@ -33,6 +33,7 @@ declare global {
 
     interface RoomMemory {
         sources: Id<Source>[];
+        hadInvaderCreepLastTick?: boolean;
     }
 }
 
@@ -52,6 +53,8 @@ declare global {
         }).forEach(it => it.defendAgainstInvaders());
 
         workerOrganizer.organizeWorkersIn(this);
+        this.memory.hadInvaderCreepLastTick =
+            this.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader").length > 0;
     };
 
     this.buildRoad = function (from, to) {
