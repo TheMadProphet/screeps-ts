@@ -63,7 +63,7 @@ class WorkerBehavior implements RoleBehavior {
         if (constructionSite) {
             creep.getOffExit();
             if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(constructionSite, {ignoreRoads: true, ignoreCreeps: false});
+                creep.travelTo(constructionSite, {ignoreRoads: true, ignoreCreeps: false, range: 3});
             }
         } else {
             creep.idle();
@@ -79,7 +79,7 @@ class WorkerBehavior implements RoleBehavior {
         }
 
         if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(controller, {ignoreRoads: true, ignoreCreeps: false});
+            creep.travelTo(controller, {ignoreRoads: true, ignoreCreeps: false, range: 3});
         }
     }
 
@@ -90,7 +90,7 @@ class WorkerBehavior implements RoleBehavior {
 
         if (closestStructure) {
             if (creep.repair(closestStructure) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(closestStructure, {ignoreRoads: true});
+                creep.travelTo(closestStructure, {ignoreRoads: true, range: 3});
             }
         }
     }
