@@ -30,7 +30,7 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     this.idle = function () {
         const afkFlag = Game.flags["AFK"];
         if (afkFlag) {
-            this.moveTo(afkFlag);
+            this.travelTo(afkFlag, {ignoreCreeps: false});
         }
 
         this.say("💤");
