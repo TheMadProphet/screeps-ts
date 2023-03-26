@@ -4,9 +4,12 @@ import {FILLER} from "../../constants";
 const fillerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         if (spawner.room.fillersAreEnabled()) {
-            const filler = spawner.room.creepsByRole[FILLER][0];
+            const fillers = spawner.room.creepsByRole[FILLER];
+            if (fillers.length > 1) return;
 
-            if (!filler || (filler.ticksToLive && filler.ticksToLive < 100)) {
+            const mainFiller = fillers[0];
+
+            if (!mainFiller || (mainFiller.ticksToLive && mainFiller.ticksToLive < 100)) {
                 spawner.spawn({
                     body: new Body(spawner).addParts([CARRY, CARRY, MOVE], 7),
                     memory: {
