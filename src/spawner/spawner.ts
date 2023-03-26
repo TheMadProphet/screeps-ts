@@ -7,6 +7,7 @@ import scoutSpawner from "./roles/scoutSpawner";
 import reserverSpawner from "./roles/reserverSpawner";
 import emergencyUnitSpawner from "./roles/emergencyUnitSpawner";
 import defenderSpawner from "./roles/defenderSpawner";
+import {Statistics} from "../stats/statistics";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
@@ -23,6 +24,7 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     let spawnWasIssued = false;
 
     this.automate = function () {
+        const cpuUsed = Game.cpu.getUsed();
         this.memory.hasEnoughEnergy = true;
         spawnWasIssued = false;
 
@@ -37,6 +39,8 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         }
 
         this.displayVisuals();
+
+        Statistics.registerSpawnCpuUsage(Game.cpu.getUsed() - cpuUsed);
     };
 
     this.spawn = function ({body, memory}) {

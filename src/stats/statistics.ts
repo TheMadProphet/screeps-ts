@@ -23,7 +23,9 @@ declare global {
         total: number;
         intents: number;
         pathfinding: number;
-        stats?: number;
+        spawner: number;
+        find: number;
+        other: number;
     }
 
     interface RoomStatistics {
@@ -54,15 +56,13 @@ export class Statistics {
         }
 
         Memory.stats.userStats.usedCpu.pathfinding = 0;
+        Memory.stats.userStats.usedCpu.find = 0;
+        Memory.stats.userStats.usedCpu.spawner = 0;
     }
 
     public static exportAll() {
-        const cpuStart = Game.cpu.getUsed();
-
         _.forEach(Game.rooms, room => this.exportRoomStatistics(room));
         this.exportUserStatistics();
-
-        Memory.stats.userStats.usedCpu.stats = Game.cpu.getUsed() - cpuStart;
     }
 
     private static exportRoomStatistics(room: Room) {
@@ -122,6 +122,8 @@ export class Statistics {
     }
 
     private static exportUserStatistics() {
+        const intents = _.sum(Game.creeps, creep => creep.intentTracker.getIntentCount() * 0.2);
+        const usedCpu = Memory.stats.userStats.usedCpu;
         Memory.stats.userStats = {
             bucket: Game.cpu.bucket,
             maxCpu: Game.cpu.limit,
@@ -129,14 +131,23 @@ export class Statistics {
             gcl: Game.gcl.level,
             time: Game.time,
             usedCpu: {
-                ...Memory.stats.userStats.usedCpu,
-                intents: _.sum(Game.creeps, creep => creep.intentTracker.getIntentCount() * 0.2),
-                total: Game.cpu.getUsed()
+                ...usedCpu,
+                intents: intents,
+                total: Game.cpu.getUsed(),
+                other: Game.cpu.getUsed() - usedCpu.find - usedCpu.pathfinding - intents
             }
         };
     }
 
     public static registerPathfindingCpuUsage(cpuUsage: number) {
         Memory.stats.userStats.usedCpu.pathfinding += cpuUsage;
+    }
+
+    static registerFindCpuUsage(cpuUsage: number) {
+        Memory.stats.userStats.usedCpu.find += cpuUsage;
+    }
+
+    static registerSpawnCpuUsage(cpuUsage: number) {
+        Memory.stats.userStats.usedCpu.spawner += cpuUsage;
     }
 }
