@@ -12,7 +12,11 @@ declare global {
 
         harvestFrom(target: Source): ReturnType<typeof Creep.prototype.harvest>;
 
-        withdrawFrom(target: Structure, resource?: ResourceConstant): ReturnType<typeof Creep.prototype.withdraw>;
+        withdrawFrom(
+            target: Structure,
+            resource?: ResourceConstant,
+            amount?: number
+        ): ReturnType<typeof Creep.prototype.withdraw>;
 
         pickupResource(resource: Resource): ReturnType<typeof Creep.prototype.pickup>;
 

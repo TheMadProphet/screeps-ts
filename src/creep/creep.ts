@@ -79,8 +79,8 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
         return harvestStatus;
     };
 
-    this.withdrawFrom = function (target, resource = RESOURCE_ENERGY) {
-        const withdrawStatus = this.withdraw(target, resource);
+    this.withdrawFrom = function (target, resource = RESOURCE_ENERGY, amount = undefined) {
+        const withdrawStatus = this.withdraw(target, resource, amount);
         if (withdrawStatus === ERR_NOT_IN_RANGE) {
             this.travelTo(target);
         }
