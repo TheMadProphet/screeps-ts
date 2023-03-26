@@ -3,8 +3,8 @@ import {WORKER} from "../../constants";
 import {workerTasks} from "../../creep/workerOrganizer";
 
 const ENERGY_PER_SOURCE = 10;
-const ENERGY_EFFICIENCY = 0.8;
-const REMOTE_ENERGY_EFFICIENCY = 0.6;
+const ENERGY_EFFICIENCY = 0.9;
+const REMOTE_ENERGY_EFFICIENCY = 0.8;
 
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
@@ -28,9 +28,13 @@ const workerSpawner: RoleSpawner = {
             availableEnergyPerTick += remoteSourceCount * ENERGY_PER_SOURCE * REMOTE_ENERGY_EFFICIENCY;
         }
 
-        if (availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick) {
+        if (
+            availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick ||
+            spawner.room.creepsByRole[WORKER].length < 4
+        ) {
+            const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
             spawner.spawn({
-                body: new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 5),
+                body: new Body(spawner).addParts(template, 10),
                 memory: {role: WORKER, task: workerTasks.BUILD}
             });
         }
