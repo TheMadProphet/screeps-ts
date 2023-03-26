@@ -6,6 +6,7 @@ import "creep/creep";
 import "spawner/spawner";
 import "room/tower";
 import "room/room";
+import {IntentTracker} from "./stats/creepIntentTracker";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/console";
 import {clearNudges} from "./utils/excuseMe";
@@ -15,11 +16,11 @@ import "stats/pathfindingMonitor";
 
 /**
  * TODO:
- * intent detection for simultaneous actions
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     Statistics.onTickStart();
 
+    IntentTracker.WrapIntents(Creep.prototype);
     improveLog();
     clearNudges();
     for (const name in Memory.creeps) {

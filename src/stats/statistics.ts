@@ -132,7 +132,11 @@ export class Statistics {
             memory: RawMemory.get().length,
             gcl: Game.gcl.level,
             time: Game.time,
-            usedCpu: {...Memory.stats.userStats.usedCpu, total: Game.cpu.getUsed()}
+            usedCpu: {
+                ...Memory.stats.userStats.usedCpu,
+                intents: _.sum(Game.creeps, creep => creep.intentTracker.getIntentCount() * 0.2),
+                total: Game.cpu.getUsed()
+            }
         };
     }
 
