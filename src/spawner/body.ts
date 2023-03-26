@@ -16,7 +16,9 @@ class Body {
         const partsToAdd = Math.min(amount, maxAmount);
 
         for (let i = 0; i < partsToAdd; i++) {
-            this.parts.push(...parts);
+            if (this.parts.length + parts.length <= 50) {
+                this.parts.push(...parts);
+            }
         }
 
         this.totalEnergy -= partsToAdd * this.calculateCost(parts);
