@@ -11,6 +11,7 @@ class WorkerBehavior implements RoleBehavior {
     run(creep: Creep): void {
         if (creep.store.getUsedCapacity() === 0) return this.gatherEnergy(creep);
 
+        // TODO: Ignore roads if 1:1 move parts
         switch (creep.memory.task) {
             case workerTasks.UPGRADE:
                 this.runUpgraderTask(creep);
@@ -63,7 +64,7 @@ class WorkerBehavior implements RoleBehavior {
         if (constructionSite) {
             creep.getOffExit();
             if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(constructionSite, {ignoreRoads: true, ignoreCreeps: false, range: 3});
+                creep.travelTo(constructionSite, {ignoreCreeps: false, range: 3});
             }
         } else {
             creep.idle();
@@ -79,7 +80,7 @@ class WorkerBehavior implements RoleBehavior {
         }
 
         if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(controller, {ignoreRoads: true, ignoreCreeps: false, range: 3});
+            creep.travelTo(controller, {ignoreCreeps: false, range: 3});
         }
     }
 
@@ -90,7 +91,7 @@ class WorkerBehavior implements RoleBehavior {
 
         if (closestStructure) {
             if (creep.repair(closestStructure) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(closestStructure, {ignoreRoads: true, range: 3});
+                creep.travelTo(closestStructure, {range: 3});
             }
         }
     }
