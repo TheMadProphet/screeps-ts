@@ -1,11 +1,12 @@
 import fillerBehavior from "./roles/fillerBehavior";
-import {CreepRole, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
+import {CreepRole, DEFENDER, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
 import minerBehavior from "./roles/minerBehavior";
 import haulerBehavior from "./roles/haulerBehavior";
 import workerBehavior from "./roles/workerBehavior";
 import scoutBehavior from "./roles/scoutBehavior";
 import reserverBehavior from "./roles/reserverBehavior";
 import emergencyUnitBehavior from "./roles/emergencyUnitBehavior";
+import defenderBehavior from "./roles/defenderBehavior";
 
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [EMERGENCY_UNIT]: emergencyUnitBehavior,
@@ -14,7 +15,8 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [WORKER]: workerBehavior,
     [FILLER]: fillerBehavior,
     [SCOUT]: scoutBehavior,
-    [RESERVER]: reserverBehavior
+    [RESERVER]: reserverBehavior,
+    [DEFENDER]: defenderBehavior
 };
 
 (function (this: typeof Creep.prototype) {
