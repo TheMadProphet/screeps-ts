@@ -8,7 +8,7 @@ class Body {
     }
 
     getParts() {
-        return this.parts.sort();
+        return this.parts;
     }
 
     addParts(parts: BodyPartConstant[], amount = 1) {
