@@ -1,5 +1,3 @@
-import {Statistics} from "../../stats/statistics";
-
 class HaulerBehavior implements RoleBehavior {
     public run(creep: Creep) {
         if (!creep.memory.assignedSource) {
@@ -76,7 +74,6 @@ class HaulerBehavior implements RoleBehavior {
 
         if (damagedRoads.length > 0) {
             creep.repair(damagedRoads[0]);
-            Statistics.registerCreepIntent(creep.name + "repair"); // TODO: Handle simultaneous actions
         }
     }
 }

@@ -48,16 +48,12 @@ declare global {
 }
 
 export class Statistics {
-    private static creepIntentRegistry = new Set();
-
     public static onTickStart() {
         if (!Memory.stats) {
             Memory.stats = {rooms: {}, userStats: {usedCpu: {}}} as Stats;
         }
 
-        Memory.stats.userStats.usedCpu.intents = 0;
         Memory.stats.userStats.usedCpu.pathfinding = 0;
-        Statistics.creepIntentRegistry = new Set();
     }
 
     public static exportAll() {
@@ -138,13 +134,6 @@ export class Statistics {
                 total: Game.cpu.getUsed()
             }
         };
-    }
-
-    public static registerCreepIntent(creepName: string) {
-        if (Statistics.creepIntentRegistry.has(creepName)) return;
-
-        Memory.stats.userStats.usedCpu.intents += 0.2;
-        Statistics.creepIntentRegistry.add(creepName);
     }
 
     public static registerPathfindingCpuUsage(cpuUsage: number) {
