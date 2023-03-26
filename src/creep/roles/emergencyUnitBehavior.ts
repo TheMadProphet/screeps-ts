@@ -11,7 +11,11 @@ class EmergencyUnitBehavior implements RoleBehavior {
     }
 
     private gatherEnergy(creep: Creep) {
-        // TODO: withdraw from storage
+        if (creep.room.storage) {
+            creep.withdrawFrom(creep.room.storage);
+            return;
+        }
+
         const closestContainerWithEnergy = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: it => it.structureType === STRUCTURE_CONTAINER && it.store.getUsedCapacity() > 0
         });
