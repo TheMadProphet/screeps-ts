@@ -13,11 +13,14 @@ import {clearNudges} from "./utils/excuseMe";
 import {Statistics} from "./stats/statistics";
 import "stats/pathfindingMonitor";
 import "stats/findMonitor";
+import {memHack} from "./utils/memHack";
 
 /**
  * TODO:
  */
 export const loop = ErrorMapper.wrapLoop(() => {
+    memHack.run();
+
     Statistics.onTickStart();
 
     IntentTracker.WrapIntents(Creep.prototype);
