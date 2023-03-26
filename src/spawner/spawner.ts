@@ -9,12 +9,12 @@ import emergencyUnitSpawner from "./roles/emergencyUnitSpawner";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
+    [FILLER]: fillerSpawner,
+    [RESERVER]: reserverSpawner,
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,
-    [RESERVER]: reserverSpawner,
     [SCOUT]: scoutSpawner,
-    [WORKER]: workerSpawner,
-    [FILLER]: fillerSpawner
+    [WORKER]: workerSpawner
 };
 
 (function (this: typeof StructureSpawn.prototype) {
