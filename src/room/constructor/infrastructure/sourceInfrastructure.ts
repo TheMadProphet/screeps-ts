@@ -95,6 +95,8 @@ class SourceInfrastructure {
         if (this.source.memory.containerId && !this.source.container) {
             delete this.source.memory.containerId;
             this.buildContainer(path);
+        } else if (!this.source.memory.containerId) {
+            this.buildContainer(path);
         }
     }
 
