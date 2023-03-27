@@ -10,7 +10,7 @@ class ReserverBehavior implements RoleBehavior {
             if (creep.pos.isNearTo(controller)) {
                 creep.reserveController(controller);
             } else {
-                creep.travelTo(controller);
+                creep.travelTo(controller, {range: 1});
             }
         } else {
             creep.travelToAssignedRoom();
