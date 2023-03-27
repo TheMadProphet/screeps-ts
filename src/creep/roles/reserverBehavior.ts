@@ -1,3 +1,5 @@
+import {RESERVER} from "../../constants";
+
 class ReserverBehavior implements RoleBehavior {
     run(creep: Creep) {
         if (!creep.memory.assignedRoom) {
@@ -5,20 +7,28 @@ class ReserverBehavior implements RoleBehavior {
             return;
         }
 
-        if (this.isInAssignedRoom(creep)) {
-            const controller = creep.room.controller!;
-            if (creep.pos.isNearTo(controller)) {
-                creep.reserveController(controller);
-            } else {
-                creep.travelTo(controller, {range: 1});
+        if (creep.isInAssignedRoom()) {
+            if (creep.room.controller) {
+                this.reserveController(creep, creep.room.controller);
             }
         } else {
             creep.travelToAssignedRoom();
         }
     }
 
-    private isInAssignedRoom(creep: Creep) {
-        return creep.memory.assignedRoom === creep.room.name;
+    private reserveController(creep: Creep, controller: StructureController) {
+        if (creep.pos.isNearTo(controller)) {
+            creep.reserveController(controller);
+
+            if (creep.memory.excuseMe) {
+                const creepsNudging = creep.pos.fromDirection(creep.memory.excuseMe).lookFor(LOOK_CREEPS);
+                if (creepsNudging.some(it => it.memory.role === RESERVER)) {
+                    creep.suicide();
+                }
+            }
+        } else {
+            creep.travelTo(controller);
+        }
     }
 }
 
