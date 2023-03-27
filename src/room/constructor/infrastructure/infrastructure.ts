@@ -1,6 +1,6 @@
 import {buildRoadAtPositions, getPositionsAround} from "../helper";
 import roomScanner from "../../../creep/roomScanner";
-import {buildInfrastructureForSources} from "./sourceInfrastructure";
+import {buildInfrastructureForSources, rebuildSourceInfrastructure} from "./sourceInfrastructure";
 
 declare global {
     interface RoomMemory {
@@ -26,7 +26,10 @@ function buildEnergyInfrastructure(room: Room) {
             buildInfrastructureForSources(room.memory.sources, room.spawn);
         } else if (room.controller.level === 4) {
             const sources = _.flatten(room.getVisibleColonies().map(it => it.memory.sources));
-            buildInfrastructureForSources(sources, room.spawn); // TODO: Storage
+            buildInfrastructureForSources(sources, room.storage ?? room.spawn);
+        } else if (room.controller.level >= 5 && room.storage && Game.time % 25 === 0) {
+            const remoteSources = _.flatten(room.getVisibleColonies().map(it => it.memory.sources));
+            rebuildSourceInfrastructure([...room.memory.sources, ...remoteSources], room.storage);
         }
     }
 }

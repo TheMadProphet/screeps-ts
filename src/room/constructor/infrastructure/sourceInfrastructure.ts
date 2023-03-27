@@ -1,5 +1,4 @@
 import {Traveler} from "../../../utils/traveler/traveler";
-import {buildRoadAtPositions} from "../helper";
 
 declare global {
     interface SourceMemory {
@@ -24,6 +23,15 @@ class SourceInfrastructure {
 
         this.buildContainer(path);
         this.buildRoad(path);
+    }
+
+    public rebuild(fromStructure: AnyStructure) {
+        const path = Traveler.findTravelPath(fromStructure, this.source, {
+            roomCallback: this.getRoomCallbackForRoadPath()
+        }).path;
+
+        this.rebuildContainer(path);
+        this.rebuildRoad(path);
     }
 
     private buildContainer(path: RoomPosition[]) {
@@ -83,6 +91,22 @@ class SourceInfrastructure {
         }
     }
 
+    private rebuildContainer(path: RoomPosition[]) {
+        if (this.source.memory.containerId && !this.source.container) {
+            delete this.source.memory.containerId;
+            this.buildContainer(path);
+        }
+    }
+
+    private rebuildRoad(path: RoomPosition[]) {
+        for (const pos of path) {
+            const isRoadOnPos = pos.lookFor(LOOK_STRUCTURES).some(it => it.structureType === STRUCTURE_ROAD);
+            if (!isRoadOnPos) {
+                pos.createConstructionSite(STRUCTURE_ROAD);
+            }
+        }
+    }
+
     private getRoomCallbackForRoadPath() {
         // Ignore if road is construction site, treat it as built road
         return (roomName: string, matrix: CostMatrix) => {
@@ -109,5 +133,13 @@ export function buildInfrastructureForSources(sourceIds: Id<Source>[], fromStruc
         if (source.memory.roadConstructionStarted) {
             break; // Skip others while construction is not done
         }
+    }
+}
+
+export function rebuildSourceInfrastructure(sourceIds: Id<Source>[], fromStructure: AnyStructure) {
+    const sources = sourceIds.map(it => Game.getObjectById(it)).filter((it): it is Source => Boolean(it));
+
+    for (const source of sources) {
+        new SourceInfrastructure(source).rebuild(fromStructure);
     }
 }
