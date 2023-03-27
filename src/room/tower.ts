@@ -2,20 +2,26 @@ export {};
 
 declare global {
     interface StructureTower {
-        defendAgainstInvaders(): void;
+        automate(attackOnlyInvaders?: boolean): void;
 
         autoRepair(): void;
     }
 }
 
 (function (this: typeof StructureTower.prototype) {
-    this.defendAgainstInvaders = function () {
-        const closestInvader = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
-            filter: it => it.owner.username === "Invader"
+    this.automate = function (attackOnlyInvaders) {
+        const damagedCreeps = this.room.find(FIND_MY_CREEPS, {filter: it => it.hits != it.hitsMax});
+        if (damagedCreeps.length) {
+            this.heal(damagedCreeps[0]);
+            return;
+        }
+
+        const closestHostile = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+            filter: it => attackOnlyInvaders || it.owner.username === "Invader"
         });
 
-        if (closestInvader) {
-            this.attack(closestInvader);
+        if (closestHostile) {
+            this.attack(closestHostile);
         }
     };
 

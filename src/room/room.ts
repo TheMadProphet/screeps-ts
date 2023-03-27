@@ -50,7 +50,7 @@ declare global {
 
         this.find<StructureTower>(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_TOWER
-        }).forEach(it => it.defendAgainstInvaders());
+        }).forEach(it => it.automate(true));
 
         workerOrganizer.organizeWorkersIn(this);
         this.getVisibleColonies().forEach(it => {
