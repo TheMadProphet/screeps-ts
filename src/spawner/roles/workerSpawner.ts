@@ -4,7 +4,7 @@ import {workerTasks} from "../../creep/workerOrganizer";
 
 const ENERGY_PER_SOURCE = 10;
 const ENERGY_EFFICIENCY = 0.9;
-const REMOTE_ENERGY_EFFICIENCY = 0.8;
+const REMOTE_ENERGY_EFFICIENCY = 0.6;
 
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
