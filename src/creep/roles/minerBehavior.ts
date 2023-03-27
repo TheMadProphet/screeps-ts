@@ -16,14 +16,15 @@ class MinerBehavior implements RoleBehavior {
     }
 
     private mineSource(creep: Creep, source: Source) {
-        if (creep.pos.isNearTo(source)) {
+        if (source.container && !creep.pos.isEqualTo(source.container)) {
+            creep.travelTo(source.container);
+        } else if (!creep.pos.isNearTo(source)) {
+            creep.travelTo(source);
+        } else {
             if (creep.harvest(source) === ERR_NOT_ENOUGH_RESOURCES) {
                 this.maintainInfrastructure(creep, source);
                 creep.say("🕑");
             }
-        } else {
-            if (source.container) creep.travelTo(source.container);
-            else creep.travelTo(source, {range: 1});
         }
     }
 
