@@ -1,18 +1,19 @@
 class HaulerBehavior implements RoleBehavior {
     public run(creep: Creep) {
-        if (!creep.memory.assignedSource) {
+        const assignedSource = creep.memory.assignedSource;
+        if (!assignedSource) {
             creep.idle();
             creep.say("⚠");
             return;
         }
 
-        if (creep.memory.working && creep.store.getUsedCapacity() === 0) creep.memory.working = false;
-        if (!creep.memory.working && creep.store.getFreeCapacity() <= 5) creep.memory.working = true;
+        if (!creep.memory.working && creep.store.getFreeCapacity() <= 5) this.onWorkStart(creep);
+        if (creep.memory.working && creep.store.getUsedCapacity() === 0) this.onWorkDone(creep, assignedSource);
 
         if (creep.memory.working) {
             this.retrieveEnergy(creep);
         } else {
-            this.gatherEnergy(creep, creep.memory.assignedSource);
+            this.gatherEnergy(creep, assignedSource);
         }
 
         if (creep.getActiveBodyparts(WORK) > 0) {
@@ -20,6 +21,17 @@ class HaulerBehavior implements RoleBehavior {
         }
 
         creep.giveWay();
+    }
+
+    private onWorkDone(creep: Creep, sourceId: Id<Source>) {
+        creep.memory.working = false;
+        if (!this.hasEnoughTimeToHaulOnce(creep, sourceId)) {
+            creep.suicide();
+        }
+    }
+
+    private onWorkStart(creep: Creep) {
+        creep.memory.working = true;
     }
 
     private retrieveEnergy(creep: Creep) {
@@ -83,6 +95,14 @@ class HaulerBehavior implements RoleBehavior {
         if (damagedRoads.length > 0) {
             creep.repair(damagedRoads[0]);
         }
+    }
+
+    private hasEnoughTimeToHaulOnce(creep: Creep, sourceId: Id<Source>): boolean {
+        const pathCost = Memory.sources[sourceId].pathCost;
+
+        if (!creep.ticksToLive) return true;
+
+        return creep.ticksToLive > pathCost * 1.1;
     }
 }
 
