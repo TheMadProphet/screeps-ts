@@ -35,7 +35,7 @@ function buildControllerInfrastructure(room: Room) {
     if (!room.controller) return;
 
     if (!room.memory.hasRoadToController && room.controller.level >= 3 && room.extensionsAreBuilt()) {
-        room.buildRoad(room.spawn.pos, room.controller!.pos);
+        room.buildRoad(room.spawn.pos, room.controller.pos);
         room.memory.hasRoadToController = true;
     }
 }
