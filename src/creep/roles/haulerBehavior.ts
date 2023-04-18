@@ -49,18 +49,20 @@ class HaulerBehavior implements RoleBehavior {
     }
 
     private gatherEnergy(creep: Creep, sourceId: Id<Source>) {
-        if (creep.memory.assignedRoom != creep.room.name) {
-            creep.travelToAssignedRoom();
-        } else {
-            creep.getOffExit();
+        creep.getOffExit();
 
-            const source = Game.getObjectById(sourceId);
-            if (source) {
-                this.pickupEnergyNearSource(creep, source);
-                if (source.container) {
-                    creep.withdrawFrom(source.container);
+        const source = Game.getObjectById(sourceId);
+        if (source) {
+            this.pickupEnergyNearSource(creep, source);
+            if (source.container) {
+                if (creep.pos.isNearTo(source.container)) {
+                    creep.withdraw(source.container, RESOURCE_ENERGY);
+                } else {
+                    creep.travelTo(source.container, {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
                 }
             }
+        } else {
+            creep.travelToAssignedRoom();
         }
     }
 
@@ -72,7 +74,7 @@ class HaulerBehavior implements RoleBehavior {
         if (!droppedEnergies?.length) {
             creep.giveWay();
         } else if (creep.pickup(droppedEnergies[0]) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(droppedEnergies[0]);
+            creep.travelTo(droppedEnergies[0], {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
         }
     }
 

@@ -5,21 +5,19 @@ class MinerBehavior implements RoleBehavior {
             return;
         }
 
-        if (creep.memory.assignedRoom != creep.room.name) {
-            creep.travelToAssignedRoom();
+        const source = Game.getObjectById(creep.memory.assignedSource);
+        if (source) {
+            this.mineSource(creep, source);
         } else {
-            const source = Game.getObjectById(creep.memory.assignedSource);
-            if (source) {
-                this.mineSource(creep, source);
-            }
+            creep.travelToAssignedRoom();
         }
     }
 
     private mineSource(creep: Creep, source: Source) {
         if (source.container && !creep.pos.isEqualTo(source.container)) {
-            creep.travelTo(source.container);
+            creep.travelTo(source.container, {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
         } else if (!creep.pos.isNearTo(source)) {
-            creep.travelTo(source);
+            creep.travelTo(source, {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
         } else {
             if (creep.harvest(source) === ERR_NOT_ENOUGH_RESOURCES) {
                 this.maintainInfrastructure(creep, source);
@@ -32,7 +30,7 @@ class MinerBehavior implements RoleBehavior {
         if (!source.container) return;
 
         if (creep.store.getUsedCapacity() === 0) {
-            creep.withdrawFrom(source.container);
+            creep.withdraw(source.container, RESOURCE_ENERGY);
         } else if (source.container.hitsMax - source.container.hits > 1000) {
             creep.repair(source.container);
         } else {

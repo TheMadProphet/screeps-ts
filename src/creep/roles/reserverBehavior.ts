@@ -7,10 +7,9 @@ class ReserverBehavior implements RoleBehavior {
             return;
         }
 
-        if (creep.isInAssignedRoom()) {
-            if (creep.room.controller) {
-                this.reserveController(creep, creep.room.controller);
-            }
+        const controller = Game.rooms[creep.memory.assignedRoom]?.controller;
+        if (controller) {
+            this.reserveController(creep, controller);
         } else {
             creep.travelToAssignedRoom();
         }
@@ -27,7 +26,7 @@ class ReserverBehavior implements RoleBehavior {
                 }
             }
         } else {
-            creep.travelTo(controller);
+            creep.travelTo(controller, {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
         }
     }
 }
