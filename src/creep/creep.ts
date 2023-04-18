@@ -182,6 +182,6 @@ class ExtendedCreep extends Creep {
 function AddToPrototype(target: any, methodName: string, descriptor: PropertyDescriptor) {
     // @ts-ignore
     Creep.prototype[methodName] = function (...args: any[]) {
-        descriptor.value.apply(this, args);
+        return descriptor.value.apply(this, args);
     };
 }
