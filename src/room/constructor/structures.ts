@@ -1,17 +1,5 @@
 import roomGrid from "../grid/roomGrid";
 
-function buildStructure(room: Room, structure: BuildableStructureConstant) {
-    const pos = roomGrid.getPositionForStructure(room, structure);
-    if (!pos) {
-        return console.log(`Cannot find position for ${structure}`);
-    }
-
-    const constructionStatus = room.createConstructionSite(pos.x, pos.y, structure);
-    if (constructionStatus !== OK) {
-        return console.log(`${structure} build failed with status ${constructionStatus}`);
-    }
-}
-
 const structuresToBuild: BuildableStructureConstant[] = [
     STRUCTURE_EXTENSION,
     STRUCTURE_STORAGE,
@@ -37,8 +25,20 @@ class RoomStructures {
 
         for (const structure of structuresToBuild) {
             if (this.room.canBuildStructure(structure)) {
-                buildStructure(this.room, structure);
+                this.buildStructure(structure);
             }
+        }
+    }
+
+    private buildStructure(structure: BuildableStructureConstant) {
+        const pos = roomGrid.getPositionForStructure(this.room, structure);
+        if (!pos) {
+            return console.log(`Cannot find position for ${structure}`);
+        }
+
+        const constructionStatus = this.room.createConstructionSite(pos.x, pos.y, structure);
+        if (constructionStatus !== OK) {
+            return console.log(`${structure} build failed with status ${constructionStatus}`);
         }
     }
 }
