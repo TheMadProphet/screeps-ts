@@ -74,7 +74,7 @@ class RoomGrid {
         room.visual.connectRoads();
     }
 
-    private getCell(room: Room, cellIndex: number): Cell {
+    public getCell(room: Room, cellIndex: number): Cell {
         const ringIndex = this.getRingIndex(cellIndex);
         const indexWithinRing = cellIndex - ringIndex * ringIndex;
 

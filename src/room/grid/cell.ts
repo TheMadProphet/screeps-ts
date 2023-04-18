@@ -31,20 +31,7 @@ export class Cell {
     }
 
     public draw() {
-        let movingPosition = new MovingPosition({
-            x: this.center.x,
-            y: this.center.y - (CELL_SIZE - 1) / 2 - CELL_SPACING,
-            direction: BOTTOM_RIGHT
-        });
-
-        for (let i = 0; i < 16; i++) {
-            if (i > 0 && i % Math.ceil(CELL_SIZE / 2) === 0) {
-                movingPosition.rotateClockwise();
-            }
-
-            movingPosition.move(1);
-            this.room.visual.structure(movingPosition.x, movingPosition.y, STRUCTURE_ROAD);
-        }
+        this.getPositionsAround().forEach(it => this.room.visual.structure(it.x, it.y, STRUCTURE_ROAD));
     }
 
     private getAllPositions(): Position[] {
@@ -57,6 +44,27 @@ export class Cell {
 
         for (let y = this.center.y - offset; y <= this.center.y + offset; y++) {
             result.push({x: this.center.x, y: y});
+        }
+
+        return result;
+    }
+
+    public getPositionsAround(): Position[] {
+        const result: Position[] = [];
+
+        let movingPosition = new MovingPosition({
+            x: this.center.x,
+            y: this.center.y - (CELL_SIZE - 1) / 2 - CELL_SPACING,
+            direction: BOTTOM_RIGHT
+        });
+
+        for (let i = 0; i < 16; i++) {
+            if (i > 0 && i % Math.ceil(CELL_SIZE / 2) === 0) {
+                movingPosition.rotateClockwise();
+            }
+
+            movingPosition.move(1);
+            result.push(movingPosition.getPosition());
         }
 
         return result;

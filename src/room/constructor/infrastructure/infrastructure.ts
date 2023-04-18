@@ -1,5 +1,6 @@
 import roomScanner from "../../../creep/roomScanner";
 import {buildInfrastructureForSources, rebuildSourceInfrastructure} from "./sourceInfrastructure";
+import roomGrid from "../../grid/roomGrid";
 
 declare global {
     interface RoomMemory {
@@ -33,7 +34,7 @@ function buildEnergyInfrastructure(room: Room) {
     }
 }
 
-function buildControllerInfrastructure(room: Room) {
+function buildRoadToController(room: Room) {
     if (!room.controller) return;
 
     if (!room.memory.hasRoadToController && room.controller.level >= 3 && room.extensionsAreBuilt()) {
@@ -59,15 +60,29 @@ function establishColonies(room: Room) {
 
 class RoomInfrastructure {
     room: Room;
+    controller: StructureController;
 
-    constructor(room: Room) {
+    constructor(room: Room, controller: StructureController) {
         this.room = room;
+        this.controller = controller;
     }
 
     build() {
         buildEnergyInfrastructure(this.room);
-        buildControllerInfrastructure(this.room);
         establishColonies(this.room);
+        buildRoadToController(this.room);
+        this.buildRoadAroundCells();
+    }
+
+    private buildRoadAroundCells() {
+        if (this.controller.level >= 3 && Game.time % 100 === 0) {
+            for (let i = 0; i < this.room.memory.gridExtensionCellIndex; i++) {
+                roomGrid
+                    .getCell(this.room, i)
+                    .getPositionsAround()
+                    .forEach(it => this.room.createConstructionSite(it.x, it.y, STRUCTURE_ROAD));
+            }
+        }
     }
 }
 

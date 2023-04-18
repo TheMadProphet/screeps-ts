@@ -19,7 +19,7 @@ class ExtendedRoom extends Room {
         groupCreeps(this);
 
         new RoomStructures(this).build();
-        new RoomInfrastructure(this).build();
+        new RoomInfrastructure(this, this.controller).build();
 
         this.spawn.automate();
 
