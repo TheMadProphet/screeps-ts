@@ -85,6 +85,10 @@ class WorkerBehavior implements RoleBehavior {
     }
 
     private runRepairerTask(creep: Creep) {
+        if (!creep.isHome()) {
+            return creep.travelToHome();
+        }
+
         const closestStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure => structure.hits / structure.hitsMax <= 0.95
         });
