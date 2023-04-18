@@ -5,42 +5,15 @@ import {CreepRole, roles, WORKER} from "../constants";
 import {Traveler} from "../utils/traveler/traveler";
 
 declare global {
-    interface Room {
-        spawn: StructureSpawn;
-        creepsByRole: {
-            [role in CreepRole]: Creep[];
-        };
-        workersByTask: {
-            [task in WorkerTask]: Creep[];
-        };
-
-        automate(): void;
-
-        buildRoad(from: RoomPosition, to: RoomPosition): void;
-
-        fillersAreEnabled(): boolean;
-
-        hasEnergyEmergency(): boolean;
-
-        getAllColonies(): string[];
-
-        getVisibleColonies(): Room[];
-
-        isBeingReserved(): boolean;
-
-        extensionsAreBuilt(): boolean;
-
-        canBuildStructure(structureType: BuildableStructureConstant): boolean;
-    }
-
     interface RoomMemory {
         sources: Id<Source>[];
         hadInvaderCreepLastTick?: boolean;
     }
 }
 
-(function (this: typeof Room.prototype) {
-    this.automate = function () {
+class ExtendedRoom extends Room {
+    @AddToPrototype
+    automate() {
         if (!this.controller?.my) return;
 
         groupCreeps(this);
@@ -59,9 +32,10 @@ declare global {
             it.memory.hadInvaderCreepLastTick =
                 it.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader").length > 0;
         });
-    };
+    }
 
-    this.buildRoad = function (from, to) {
+    @AddToPrototype
+    buildRoad(from: RoomPosition, to: RoomPosition) {
         const path = Traveler.findTravelPath(from, to, {ignoreCreeps: true}).path;
 
         for (const i in path) {
@@ -71,41 +45,48 @@ declare global {
                 this.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
             }
         }
-    };
+    }
 
-    this.fillersAreEnabled = function () {
-        return Boolean(this.storage); // todo
-    };
+    @AddToPrototype
+    fillersAreEnabled() {
+        return Boolean(this.storage);
+    }
 
-    this.hasEnergyEmergency = function () {
+    @AddToPrototype
+    hasEnergyEmergency() {
         if (!this.storage) return false;
 
         return this.storage.store.getUsedCapacity(RESOURCE_ENERGY) <= this.energyCapacityAvailable * 2;
-    };
+    }
 
-    this.getAllColonies = function () {
+    @AddToPrototype
+    getAllColonies() {
         if (!this.memory.colonies) return [];
 
         return this.memory.colonies;
-    };
+    }
 
-    this.getVisibleColonies = function () {
+    @AddToPrototype
+    getVisibleColonies() {
         if (!this.memory.colonies) return [];
 
         return this.memory.colonies.map(it => Game.rooms[it]).filter(it => Boolean(it));
-    };
+    }
 
-    this.isBeingReserved = function () {
+    @AddToPrototype
+    isBeingReserved() {
         if (!this.controller?.reservation?.ticksToEnd) return false;
 
         return this.controller.reservation.ticksToEnd >= 1;
-    };
+    }
 
-    this.extensionsAreBuilt = function () {
+    @AddToPrototype
+    extensionsAreBuilt() {
         return !this.canBuildStructure(STRUCTURE_EXTENSION);
-    };
+    }
 
-    this.canBuildStructure = function (structureType: BuildableStructureConstant) {
+    @AddToPrototype
+    canBuildStructure(structureType: BuildableStructureConstant) {
         if (!this.controller) return false;
 
         const currentlyBuilt = this.find(FIND_MY_STRUCTURES, {
@@ -115,8 +96,15 @@ declare global {
         const maxAvailable = CONTROLLER_STRUCTURES[structureType][this.controller.level];
 
         return maxAvailable - currentlyBuilt > 0;
+    }
+}
+
+function AddToPrototype(target: any, methodName: string, descriptor: PropertyDescriptor) {
+    // @ts-ignore
+    Creep.prototype[methodName] = function (...args: any[]) {
+        descriptor.value.apply(this, args);
     };
-}).call(Room.prototype);
+}
 
 Object.defineProperty(Room.prototype, "spawn", {
     get: function () {
@@ -150,5 +138,35 @@ function groupCreeps(room: Room) {
         if (creep.memory.role === WORKER) {
             room.workersByTask[creep.memory.task!].push(creep);
         }
+    }
+}
+
+declare global {
+    interface Room {
+        spawn: StructureSpawn;
+        creepsByRole: {
+            [role in CreepRole]: Creep[];
+        };
+        workersByTask: {
+            [task in WorkerTask]: Creep[];
+        };
+
+        automate(): void;
+
+        buildRoad(from: RoomPosition, to: RoomPosition): void;
+
+        fillersAreEnabled(): boolean;
+
+        hasEnergyEmergency(): boolean;
+
+        getAllColonies(): string[];
+
+        getVisibleColonies(): Room[];
+
+        isBeingReserved(): boolean;
+
+        extensionsAreBuilt(): boolean;
+
+        canBuildStructure(structureType: BuildableStructureConstant): boolean;
     }
 }
