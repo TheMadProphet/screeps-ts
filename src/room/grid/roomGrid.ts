@@ -28,7 +28,7 @@ class RoomGrid {
             if (room.lookForAt(LOOK_STRUCTURES, gridCenter.x + 1, gridCenter.y).length === 0) {
                 return {x: gridCenter.x + 1, y: gridCenter.y};
             } else {
-                this.getPositionForMiscStructure(room, structureType);
+                return this.getPositionForMiscStructure(room, structureType);
             }
         } else if (structureType === STRUCTURE_STORAGE) {
             return gridCenter;
@@ -42,7 +42,7 @@ class RoomGrid {
             structureType === STRUCTURE_FACTORY ||
             structureType === STRUCTURE_NUKER
         ) {
-            this.getPositionForMiscStructure(room, structureType);
+            return this.getPositionForMiscStructure(room, structureType);
         }
 
         return undefined;

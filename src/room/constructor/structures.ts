@@ -2,6 +2,7 @@ import roomGrid from "../grid/roomGrid";
 
 const structuresToBuild: BuildableStructureConstant[] = [
     STRUCTURE_EXTENSION,
+    STRUCTURE_SPAWN,
     STRUCTURE_STORAGE,
     STRUCTURE_EXTRACTOR,
     STRUCTURE_TERMINAL,
