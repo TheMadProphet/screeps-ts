@@ -29,6 +29,8 @@ declare global {
         isBeingReserved(): boolean;
 
         extensionsAreBuilt(): boolean;
+
+        canBuildStructure(structureType: BuildableStructureConstant): boolean;
     }
 
     interface RoomMemory {
@@ -72,7 +74,7 @@ declare global {
     };
 
     this.fillersAreEnabled = function () {
-        return Boolean(this.storage) && this.extensionsAreBuilt();
+        return Boolean(this.storage); // todo
     };
 
     this.hasEnergyEmergency = function () {
@@ -100,7 +102,19 @@ declare global {
     };
 
     this.extensionsAreBuilt = function () {
-        return getAvailableStructure(this, STRUCTURE_EXTENSION) === 0;
+        return !this.canBuildStructure(STRUCTURE_EXTENSION);
+    };
+
+    this.canBuildStructure = function (structureType: BuildableStructureConstant) {
+        if (!this.controller) return false;
+
+        const currentlyBuilt = this.find(FIND_MY_STRUCTURES, {
+            filter: structure => structure.structureType === structureType
+        }).length;
+
+        const maxAvailable = CONTROLLER_STRUCTURES[structureType][this.controller.level];
+
+        return maxAvailable - currentlyBuilt > 0;
     };
 }).call(Room.prototype);
 
@@ -118,18 +132,6 @@ Object.defineProperty(Room.prototype, "spawn", {
     enumerable: false,
     configurable: true
 });
-
-function getAvailableStructure(room: Room, structureType: BuildableStructureConstant) {
-    if (!room.controller) return 0;
-
-    const currentlyBuilt = room.find(FIND_MY_STRUCTURES, {
-        filter: structure => structure.structureType === structureType
-    }).length;
-
-    const maxAvailable = CONTROLLER_STRUCTURES[structureType][room.controller.level];
-
-    return maxAvailable - currentlyBuilt;
-}
 
 function groupCreeps(room: Room) {
     room.creepsByRole = roles.reduce((acc, role) => {

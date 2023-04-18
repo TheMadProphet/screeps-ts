@@ -1,67 +1,28 @@
-import {buildRoadAtPositions, getPositionsAround} from "./helper";
+import roomGrid from "../grid/roomGrid";
 
-declare global {
-    interface RoomMemory {
-        ringsize?: number;
+function buildStructure(room: Room, structure: BuildableStructureConstant) {
+    const pos = roomGrid.getPositionForStructure(room, structure);
+    if (!pos) {
+        return console.log(`Cannot find position for ${structure}`);
+    }
+
+    const constructionStatus = room.createConstructionSite(pos.x, pos.y, structure);
+    if (constructionStatus !== OK) {
+        return console.log(`${structure} build failed with status ${constructionStatus}`);
     }
 }
 
-function positionIsNotOccupied(pos: RoomPosition, room: Room) {
-    const lookObjects = room.lookAt(pos);
-    for (const i in lookObjects) {
-        const lookObject = lookObjects[i];
-        if (lookObject.type === LOOK_STRUCTURES || lookObject.type === LOOK_CONSTRUCTION_SITES) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function energySourceIsNotNear(pos: RoomPosition, room: Room) {
-    const area = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1);
-    for (const y in area) {
-        for (const x in area[y]) {
-            const objects = area[y][x];
-            for (const i in objects) {
-                const object = objects[i];
-
-                if (object.type === LOOK_SOURCES) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-function canBuildExtensionAt(pos: RoomPosition, room: Room) {
-    return positionIsNotOccupied(pos, room) && energySourceIsNotNear(pos, room);
-}
-
-function buildExtensions(room: Room) {
-    if (!room.memory.ringsize) room.memory.ringsize = 3;
-
-    const positions = getPositionsAround(room.spawn.pos, room.memory.ringsize);
-    let constructionStarted = false;
-    for (const i in positions) {
-        const pos = room.getPositionAt(positions[i].x, positions[i].y);
-        if (pos && canBuildExtensionAt(pos, room)) {
-            const constructionStatus = room.createConstructionSite(pos.x, pos.y, STRUCTURE_EXTENSION);
-
-            if (constructionStatus === OK) {
-                constructionStarted = true;
-                break;
-            }
-        }
-    }
-
-    if (!constructionStarted) {
-        buildRoadAtPositions(room, getPositionsAround(room.spawn.pos, room.memory.ringsize + 1));
-        room.memory.ringsize += 2;
-    }
-}
+const structuresToBuild: BuildableStructureConstant[] = [
+    STRUCTURE_EXTENSION,
+    STRUCTURE_STORAGE,
+    STRUCTURE_EXTRACTOR,
+    STRUCTURE_TERMINAL,
+    STRUCTURE_LAB,
+    STRUCTURE_FACTORY,
+    STRUCTURE_OBSERVER,
+    STRUCTURE_POWER_SPAWN,
+    STRUCTURE_NUKER
+];
 
 class RoomStructures {
     room: Room;
@@ -71,9 +32,12 @@ class RoomStructures {
     }
 
     build() {
-        if (!this.room.find(FIND_MY_CONSTRUCTION_SITES).length) {
-            if (!this.room.extensionsAreBuilt()) {
-                buildExtensions(this.room);
+        if (!this.room.controller) return;
+        if (this.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) return;
+
+        for (const structure of structuresToBuild) {
+            if (this.room.canBuildStructure(structure)) {
+                buildStructure(this.room, structure);
             }
         }
     }
