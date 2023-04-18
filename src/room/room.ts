@@ -56,7 +56,9 @@ class ExtendedRoom extends Room {
     hasEnergyEmergency() {
         if (!this.storage) return false;
 
-        return this.storage.store.getUsedCapacity(RESOURCE_ENERGY) <= this.energyCapacityAvailable * 2;
+        const threshold = Math.min(this.energyCapacityAvailable * 2, 10000);
+
+        return this.storage.store.getUsedCapacity(RESOURCE_ENERGY) <= threshold;
     }
 
     @AddToPrototype
