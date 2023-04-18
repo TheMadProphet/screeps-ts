@@ -80,6 +80,7 @@ class RoomInfrastructure {
                 roomGrid
                     .getCell(this.room, i)
                     .getPositionsAround()
+                    .filter(it => this.room.lookForAt(LOOK_TERRAIN, it.x, it.y).every(t => t !== "wall"))
                     .forEach(it => this.room.createConstructionSite(it.x, it.y, STRUCTURE_ROAD));
             }
         }
