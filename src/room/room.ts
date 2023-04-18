@@ -101,8 +101,8 @@ class ExtendedRoom extends Room {
 
 function AddToPrototype(target: any, methodName: string, descriptor: PropertyDescriptor) {
     // @ts-ignore
-    Creep.prototype[methodName] = function (...args: any[]) {
-        descriptor.value.apply(this, args);
+    Room.prototype[methodName] = function (...args: any[]) {
+        return descriptor.value.apply(this, args);
     };
 }
 
