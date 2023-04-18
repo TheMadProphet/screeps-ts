@@ -2,6 +2,7 @@ import "utils/traveler/traveler";
 import "utils/sourceMemory";
 import "utils/getOffExit";
 import "utils/excuseMe";
+import "utils/roomVisuals";
 import "creep/creep";
 import "spawner/spawner";
 import "room/tower";
@@ -17,6 +18,9 @@ import {memHack} from "./utils/memHack";
 
 /**
  * TODO:
+ * Haulers being greedy with withdraw
+ * Source pathcost, recalculate
+ * Room spawn abstraction
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     memHack.run();
