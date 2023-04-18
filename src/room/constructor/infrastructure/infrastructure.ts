@@ -1,4 +1,3 @@
-import {buildRoadAtPositions, getPositionsAround} from "../helper";
 import roomScanner from "../../../creep/roomScanner";
 import {buildInfrastructureForSources, rebuildSourceInfrastructure} from "./sourceInfrastructure";
 
@@ -43,18 +42,6 @@ function buildControllerInfrastructure(room: Room) {
     }
 }
 
-function buildSpawnInfrastructure(room: Room) {
-    if (!room.controller) return;
-
-    if (!room.memory.hasRoadAroundSpawn && room.controller.level >= 3 && room.extensionsAreBuilt()) {
-        const positions = getPositionsAround(room.spawn.pos, 1);
-        positions.push(...getPositionsAround(room.spawn.pos, 2));
-        buildRoadAtPositions(room, positions);
-
-        room.memory.hasRoadAroundSpawn = true;
-    }
-}
-
 function establishColonies(room: Room) {
     if (room.memory.colonies) return;
     if (room.controller!.level < 2) return;
@@ -80,7 +67,6 @@ class RoomInfrastructure {
     build() {
         buildEnergyInfrastructure(this.room);
         buildControllerInfrastructure(this.room);
-        buildSpawnInfrastructure(this.room);
         establishColonies(this.room);
     }
 }
