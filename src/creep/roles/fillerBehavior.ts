@@ -18,14 +18,9 @@ class FillerBehavior implements RoleBehavior {
         const room = creep.room;
 
         if (room.energyAvailable !== room.energyCapacityAvailable) {
-            const amountToWithdraw = Math.min(
-                room.energyCapacityAvailable - room.energyAvailable,
-                creep.store.getFreeCapacity()
-            );
-
-            creep.withdrawFrom(storage, RESOURCE_ENERGY, amountToWithdraw);
+            creep.withdrawFrom(storage, RESOURCE_ENERGY);
             if (creep.pos.isNearTo(storage)) creep.memory.working = true;
-        } else if (room.storageLink?.isEmpty() && room.controllerLink?.isEmpty()) {
+        } else if (!room.storageLink?.isFull()) {
             creep.withdrawFrom(storage, RESOURCE_ENERGY);
         } else {
             creep.idle();
@@ -33,6 +28,12 @@ class FillerBehavior implements RoleBehavior {
     }
 
     private fill(creep: Creep, storage: StructureStorage) {
+        const storageLink = creep.room.storageLink;
+        if (storageLink && !storageLink.isFull()) {
+            creep.transferTo(storageLink);
+            return;
+        }
+
         if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
             creep.fillSpawnsWithEnergy();
         } else if (creep.room.terminal && storage.store[RESOURCE_ENERGY] > 250000) {
@@ -46,14 +47,6 @@ class FillerBehavior implements RoleBehavior {
             if (towersWithMissingEnergy.length) {
                 creep.transferTo(towersWithMissingEnergy[0]);
                 return;
-            }
-
-            if (creep.room.controllerLink?.isEmpty()) {
-                const storageLink = creep.room.storageLink;
-                if (storageLink && !storageLink.isFull() && storageLink.cooldown === 0) {
-                    creep.transferTo(storageLink);
-                    return;
-                }
             }
 
             creep.transferTo(storage);
