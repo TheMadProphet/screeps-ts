@@ -1,6 +1,13 @@
 import roomGrid from "../grid/roomGrid";
+import {Traveler} from "../../utils/traveler/traveler";
 
-const structuresToBuild: BuildableStructureConstant[] = [
+declare global {
+    interface RoomMemory {
+        controllerLinkPos?: {x: number; y: number};
+    }
+}
+
+const gridStructures: BuildableStructureConstant[] = [
     STRUCTURE_EXTENSION,
     STRUCTURE_SPAWN,
     STRUCTURE_STORAGE,
@@ -24,9 +31,17 @@ class RoomStructures {
         if (!this.room.controller) return;
         if (this.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) return;
 
-        for (const structure of structuresToBuild) {
+        for (const structure of gridStructures) {
             if (this.room.canBuildStructure(structure)) {
                 this.buildStructure(structure);
+            }
+        }
+
+        if (this.room.canBuildStructure(STRUCTURE_LINK)) {
+            if (!this.room.storageLink) {
+                this.buildStorageLink();
+            } else if (!this.room.controllerLink) {
+                this.buildControllerLink();
             }
         }
     }
@@ -40,6 +55,45 @@ class RoomStructures {
         const constructionStatus = this.room.createConstructionSite(pos.x, pos.y, structure);
         if (constructionStatus !== OK) {
             return console.log(`${structure} build failed with status ${constructionStatus}`);
+        }
+    }
+
+    private buildStorageLink() {
+        const linkPos = {x: this.room.memory.gridCenter.x, y: this.room.memory.gridCenter.y - 1};
+        const structure = this.room.lookForAt(LOOK_STRUCTURES, linkPos.x, linkPos.y)[0];
+        if (structure) {
+            if (structure.structureType === STRUCTURE_LINK) {
+                this.room.memory.storageLinkId = structure.id as Id<StructureLink>;
+            } else {
+                console.error("Position for storage link has been already used");
+            }
+        } else {
+            this.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
+        }
+    }
+
+    private buildControllerLink() {
+        if (!this.room.controller || !this.room.storage) return;
+
+        if (this.room.memory.controllerLinkPos) {
+            const linkPos = this.room.memory.controllerLinkPos;
+            const link = this.room
+                .lookForAt(LOOK_STRUCTURES, linkPos.x, linkPos.y)
+                .find(it => it.structureType === STRUCTURE_LINK);
+
+            if (link) {
+                this.room.memory.controllerLinkId = link.id as Id<StructureLink>;
+                delete this.room.memory.controllerLinkPos;
+            }
+        } else {
+            const path = Traveler.findTravelPath(this.room.storage, this.room.controller, {range: 2}).path;
+            const linkPos = path.pop();
+            if (!linkPos) {
+                console.error("Error finding position for controller link");
+            } else {
+                this.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
+                this.room.memory.controllerLinkPos = linkPos;
+            }
         }
     }
 }
