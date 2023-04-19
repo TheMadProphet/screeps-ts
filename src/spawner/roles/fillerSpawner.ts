@@ -11,7 +11,7 @@ const fillerSpawner: RoleSpawner = {
 
             if (!mainFiller || (mainFiller.ticksToLive && mainFiller.ticksToLive < 100)) {
                 spawner.spawn({
-                    body: new Body(spawner).addParts([CARRY, CARRY, MOVE], 7),
+                    body: new Body(spawner).addParts([CARRY, CARRY, MOVE], 10),
                     memory: {
                         role: FILLER
                     }
