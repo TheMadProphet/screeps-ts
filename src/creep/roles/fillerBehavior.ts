@@ -43,9 +43,17 @@ class FillerBehavior implements RoleBehavior {
 
             if (towersWithMissingEnergy.length) {
                 creep.transferTo(towersWithMissingEnergy[0]);
-            } else {
-                creep.transferTo(storage);
             }
+
+            if (creep.room.controllerLink?.isEmpty()) {
+                const storageLink = creep.room.storageLink;
+                if (storageLink && !storageLink.isFull() && storageLink.cooldown === 0) {
+                    creep.transferTo(storageLink);
+                    return;
+                }
+            }
+
+            creep.transferTo(storage);
         }
     }
 }

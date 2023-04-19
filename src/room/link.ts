@@ -4,6 +4,8 @@ declare global {
     interface StructureLink {
         automate(): void;
 
+        isFull(): boolean;
+
         isEmpty(): boolean;
     }
 }
@@ -49,7 +51,7 @@ class ExtendedLink extends StructureLink {
     }
 
     @AddToPrototype
-    private isFull() {
+    public isFull() {
         return this.store.getFreeCapacity(RESOURCE_ENERGY) === 0;
     }
 
