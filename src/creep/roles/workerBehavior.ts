@@ -29,11 +29,14 @@ class WorkerBehavior implements RoleBehavior {
 
     private gatherEnergy(creep: Creep) {
         if (creep.isHome()) {
-            creep.withdrawEnergy();
-            return;
+            if (creep.memory.task === workerTasks.UPGRADE && creep.room.controllerLink) {
+                creep.withdrawFrom(creep.room.controllerLink);
+            } else {
+                creep.withdrawEnergy();
+            }
+        } else {
+            this.gatherEnergyInRemote(creep);
         }
-
-        this.gatherEnergyInRemote(creep);
     }
 
     private gatherEnergyInRemote(creep: Creep) {
