@@ -37,12 +37,10 @@ class RoomStructures {
             }
         }
 
-        if (this.room.canBuildStructure(STRUCTURE_LINK)) {
-            if (!this.room.storageLink) {
-                this.buildStorageLink();
-            } else if (!this.room.controllerLink) {
-                this.buildControllerLink();
-            }
+        if (!this.room.storageLink) {
+            this.buildStorageLink();
+        } else if (!this.room.controllerLink) {
+            this.buildControllerLink();
         }
     }
 
@@ -67,7 +65,7 @@ class RoomStructures {
             } else {
                 console.error("Position for storage link has been already used");
             }
-        } else {
+        } else if (this.room.canBuildStructure(STRUCTURE_LINK)) {
             this.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
         }
     }
@@ -85,7 +83,7 @@ class RoomStructures {
                 this.room.memory.controllerLinkId = link.id as Id<StructureLink>;
                 delete this.room.memory.controllerLinkPos;
             }
-        } else {
+        } else if (this.room.canBuildStructure(STRUCTURE_LINK)) {
             const path = Traveler.findTravelPath(this.room.storage, this.room.controller, {range: 2}).path;
             const linkPos = path.pop();
             if (!linkPos) {
