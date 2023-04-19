@@ -15,14 +15,18 @@ class FillerBehavior implements RoleBehavior {
     }
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
-        if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
+        const room = creep.room;
+
+        if (room.energyAvailable !== room.energyCapacityAvailable) {
             const amountToWithdraw = Math.min(
-                creep.room.energyCapacityAvailable - creep.room.energyAvailable,
+                room.energyCapacityAvailable - room.energyAvailable,
                 creep.store.getFreeCapacity()
             );
 
             creep.withdrawFrom(storage, RESOURCE_ENERGY, amountToWithdraw);
             if (creep.pos.isNearTo(storage)) creep.memory.working = true;
+        } else if (room.terminal && (room.storage?.store[RESOURCE_ENERGY] ?? 0) > 250000) {
+            creep.transferTo(room.terminal, RESOURCE_ENERGY);
         } else {
             creep.idle();
         }
