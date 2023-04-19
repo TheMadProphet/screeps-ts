@@ -6,6 +6,7 @@ import "utils/roomVisuals";
 import "creep/creep";
 import "spawner/spawner";
 import "room/tower";
+import "room/link";
 import "room/room";
 import {IntentTracker} from "./stats/creepIntentTracker";
 import {ErrorMapper} from "utils/ErrorMapper";

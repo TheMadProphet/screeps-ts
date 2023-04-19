@@ -8,6 +8,8 @@ declare global {
     interface RoomMemory {
         sources: Id<Source>[];
         hadInvaderCreepLastTick?: boolean;
+        storageLinkId?: Id<StructureLink>;
+        controllerLinkId?: Id<StructureLink>;
     }
 }
 
@@ -26,6 +28,10 @@ class ExtendedRoom extends Room {
         this.find<StructureTower>(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_TOWER
         }).forEach(it => it.automate(true));
+
+        this.find<StructureLink>(FIND_MY_STRUCTURES, {
+            filter: structure => structure.structureType === STRUCTURE_LINK
+        }).forEach(it => it.automate());
 
         workerOrganizer.organizeWorkersIn(this);
         this.getVisibleColonies().forEach(it => {
@@ -108,6 +114,36 @@ function AddToPrototype(target: any, methodName: string, descriptor: PropertyDes
     };
 }
 
+Object.defineProperty(Room.prototype, "storageLink", {
+    get: function () {
+        if (!this._storageLink) {
+            if (!this.memory.storageLinkId) {
+                return undefined;
+            }
+            this._storageLink = Game.getObjectById(this.memory.storageLinkId);
+        }
+
+        return this._storageLink;
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Room.prototype, "controllerLink", {
+    get: function () {
+        if (!this._controllerLink) {
+            if (!this.memory.controllerLinkId) {
+                return undefined;
+            }
+            this._controllerLink = Game.getObjectById(this.memory.controllerLinkId);
+        }
+
+        return this._controllerLink;
+    },
+    enumerable: false,
+    configurable: true
+});
+
 Object.defineProperty(Room.prototype, "spawn", {
     get: function () {
         if (!this._spawn) {
@@ -146,6 +182,8 @@ function groupCreeps(room: Room) {
 declare global {
     interface Room {
         spawn: StructureSpawn;
+        storageLink: StructureLink | undefined;
+        controllerLink: StructureLink | undefined;
         creepsByRole: {
             [role in CreepRole]: Creep[];
         };
