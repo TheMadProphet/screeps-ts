@@ -27,7 +27,7 @@ class ExtendedLink extends StructureLink {
         const controllerLink = this.room.controllerLink;
         if (!controllerLink) return;
 
-        if (controllerLink.isEmpty()) {
+        if (controllerLink.isEmpty() && this.isFull()) {
             this.transferEnergy(controllerLink);
         }
     }
