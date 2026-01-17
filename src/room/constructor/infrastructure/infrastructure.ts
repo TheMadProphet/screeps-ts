@@ -49,18 +49,14 @@ function establishColonies(room: Room) {
     if (!roomScanner.isNeighborsScanComplete(room)) return;
 
     const vacantRooms = room.memory.neighborsInfo!.vacantRooms;
-    room.memory.colonies = [...vacantRooms]
-        .sort((a, b) => colonyScore(b) - colonyScore(a))
-        .slice(0, COLONY_LIMIT);
+    room.memory.colonies = [...vacantRooms].sort((a, b) => colonyScore(b) - colonyScore(a)).slice(0, COLONY_LIMIT);
 }
 
 function colonyScore(roomName: string): number {
     const sources = Memory.rooms[roomName]?.sources ?? [];
     if (sources.length === 0) return -Infinity;
 
-    const avgCost =
-        _.sum(sources.map(id => Memory.sources[id]?.pathCost ?? Infinity)) /
-        sources.length;
+    const avgCost = _.sum(sources.map(id => Memory.sources[id]?.pathCost ?? Infinity)) / sources.length;
 
     return sources.length / avgCost;
 }
