@@ -93,7 +93,7 @@ class WorkerBehavior implements RoleBehavior {
         }
 
         const closestStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: structure => structure.hits / structure.hitsMax <= 0.95
+            filter: structure => structure.hits / structure.hitsMax < 0.95 && structure.structureType !== "constructedWall"
         });
 
         if (closestStructure) {

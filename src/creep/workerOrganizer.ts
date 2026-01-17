@@ -51,7 +51,7 @@ class WorkerOrganizer {
     }
 
     private roomNeedsRepairs(room: Room) {
-        return room.find(FIND_STRUCTURES, {filter: structure => structure.hits / structure.hitsMax < 0.95}).length > 0;
+        return room.find(FIND_STRUCTURES, {filter: structure => structure.hits / structure.hitsMax < 0.95 && structure.structureType !== "constructedWall"}).length > 0;
     }
 
     private applyAssignment(room: Room) {
