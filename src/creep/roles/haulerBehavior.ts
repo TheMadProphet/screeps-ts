@@ -84,7 +84,6 @@ class HaulerBehavior implements RoleBehavior {
         const damagedContainers = creep.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: it => it.structureType === STRUCTURE_CONTAINER && it.hitsMax - it.hits > 100
         });
-
         if (damagedContainers.length > 0) {
             creep.repair(damagedContainers[0]);
             return;
@@ -93,9 +92,14 @@ class HaulerBehavior implements RoleBehavior {
         const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
         });
-
         if (damagedRoads.length > 0) {
             creep.repair(damagedRoads[0]);
+            return;
+        }
+
+        const constructionSites = creep.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3);
+        if (constructionSites.length > 0) {
+            creep.build(constructionSites[0]);
         }
     }
 
