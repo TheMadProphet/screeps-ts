@@ -3,8 +3,9 @@ import {WORKER} from "../../constants";
 import {workerTasks} from "../../creep/workerOrganizer";
 
 const ENERGY_PER_SOURCE = 10;
-const ENERGY_EFFICIENCY = 0.8;
-const REMOTE_ENERGY_EFFICIENCY = 0.6;
+const ENERGY_EFFICIENCY = 0.85;
+const REMOTE_ENERGY_EFFICIENCY = 0.7;
+const BUILDER_EFFICIENCY = 0.75; // E.g. a builder builds 75% of the time, rest is gathering/idle
 
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
@@ -15,7 +16,7 @@ const workerSpawner: RoleSpawner = {
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
 
         const upgraderEnergyPerTick = upgraderWorkPartCount;
-        const builderEnergyPerTick = builderWorkPartCount * 5;
+        const builderEnergyPerTick = builderWorkPartCount * 5 * BUILDER_EFFICIENCY;
 
         let sourceCount = _.size(spawner.room.memory.sources);
         let availableEnergyPerTick = sourceCount * ENERGY_PER_SOURCE * ENERGY_EFFICIENCY;
