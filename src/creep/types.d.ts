@@ -20,7 +20,7 @@ declare global {
 
         pickupResource(resource: Resource): ReturnType<typeof Creep.prototype.pickup>;
 
-        transferTo(target: Structure, resource?: ResourceConstant): void;
+        transferTo(target: Structure | AnyCreep, resource?: ResourceConstant): void;
 
         fillSpawnsWithEnergy(): void;
 

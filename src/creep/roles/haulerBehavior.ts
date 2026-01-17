@@ -1,3 +1,9 @@
+declare global {
+    interface CreepMemory {
+        targetWorker?: string;
+    }
+}
+
 class HaulerBehavior implements RoleBehavior {
     public run(creep: Creep) {
         const assignedSource = creep.memory.assignedSource;
@@ -36,6 +42,7 @@ class HaulerBehavior implements RoleBehavior {
 
     private retrieveEnergy(creep: Creep) {
         if (creep.isHome()) {
+            delete creep.memory.targetWorker;
             creep.getOffExit();
 
             if (creep.room.storage) {
@@ -44,7 +51,21 @@ class HaulerBehavior implements RoleBehavior {
                 creep.fillSpawnsWithEnergy();
             }
         } else {
-            creep.travelToHome();
+            const targetWorker =
+                Game.creeps[creep.memory.targetWorker ?? ""] ??
+                creep.pos.findClosestByRange(FIND_MY_CREEPS, {
+                    filter: it => it.store.getFreeCapacity(RESOURCE_ENERGY) > 50 && it.memory.role === "Worker"
+                });
+
+            if (targetWorker && targetWorker.room === creep.room) {
+                creep.memory.targetWorker = targetWorker.name;
+                if (creep.transfer(targetWorker, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.travelTo(targetWorker, {movingTarget: true, range: 1});
+                }
+            } else {
+                delete creep.memory.targetWorker;
+                creep.travelToHome();
+            }
         }
     }
 

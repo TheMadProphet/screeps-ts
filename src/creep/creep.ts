@@ -107,7 +107,7 @@ class ExtendedCreep extends Creep {
     }
 
     @AddToPrototype
-    transferTo(target: Structure, resource = RESOURCE_ENERGY) {
+    transferTo(target: Structure | AnyCreep, resource = RESOURCE_ENERGY) {
         if (this.transfer(target, resource) === ERR_NOT_IN_RANGE) {
             this.travelTo(target);
         }
