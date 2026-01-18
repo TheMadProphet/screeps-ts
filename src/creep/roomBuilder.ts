@@ -12,6 +12,11 @@ class RoomBuilder {
         const closestSite = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
         if (closestSite) return closestSite;
 
+        if (!creep.isHome()) {
+            creep.travelToHome();
+            return;
+        }
+
         const home = Game.rooms[creep.memory.home];
         if (home) {
             return this.findConstructionSiteInColoniesOf(home);
