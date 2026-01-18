@@ -68,6 +68,8 @@ class WorkerBehavior implements RoleBehavior {
             creep.getOffExit();
             if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
                 creep.travelTo(constructionSite, {ignoreCreeps: false, range: 3});
+            } else if (creep.pos.isEqualTo(constructionSite.pos) && creep.isHome()) {
+                creep.suicide();
             }
         } else {
             creep.idle();
