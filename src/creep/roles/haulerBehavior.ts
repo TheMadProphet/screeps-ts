@@ -47,6 +47,19 @@ class HaulerBehavior implements RoleBehavior {
 
             if (creep.room.storage) {
                 creep.transferTo(creep.room.storage);
+
+                // Fill extensions along the way
+                if (!creep.room.storage.pos.inRangeTo(creep.pos, 1)) {
+                    const extensions = creep.pos
+                        .findInRange(FIND_MY_STRUCTURES, 1)
+                        .filter(
+                            (it): it is StructureExtension =>
+                                it.structureType === "extension" && it.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        );
+                    if (extensions.length > 0) {
+                        creep.transfer(extensions[0], RESOURCE_ENERGY);
+                    }
+                }
             } else {
                 creep.fillSpawnsWithEnergy();
             }
