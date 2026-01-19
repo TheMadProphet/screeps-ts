@@ -25,9 +25,14 @@ class ExtendedLink extends StructureLink {
     @AddToPrototype
     private automateStorageLink() {
         const controllerLink = this.room.controllerLink;
-        if (!controllerLink) return;
+        const storage = this.room.storage;
+        if (!controllerLink || !storage) return;
 
-        if (controllerLink.isEmpty() && this.isFull()) {
+        if (
+            controllerLink.isEmpty() &&
+            this.isFull() &&
+            storage.store[RESOURCE_ENERGY] > this.room.energyCapacityAvailable * 2
+        ) {
             this.transferEnergy(controllerLink);
         }
     }
