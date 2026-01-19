@@ -6,6 +6,7 @@ const SOURCE_ENERGY_PER_TICK = 10;
 const ENERGY_FOR_CREEPS_PERCENTAGE = 0.35;
 const AVAILABLE_SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_PER_TICK * (1 - ENERGY_FOR_CREEPS_PERCENTAGE);
 const BUILDER_EFFICIENCY = 0.75; // E.g. a builder builds 75% of the time, rest is gathering/idle
+const WORK_PART_ENERGY_PER_TICK = 5; // Each WORK part contributes 5 energy per tick to building
 
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
@@ -16,7 +17,7 @@ const workerSpawner: RoleSpawner = {
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
 
         const upgraderEnergyPerTick = upgraderWorkPartCount;
-        const builderEnergyPerTick = builderWorkPartCount * 5 * BUILDER_EFFICIENCY;
+        const builderEnergyPerTick = builderWorkPartCount * WORK_PART_ENERGY_PER_TICK * BUILDER_EFFICIENCY;
 
         let sourceCount = _.size(spawner.room.memory.sources);
         let availableEnergyPerTick = sourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
