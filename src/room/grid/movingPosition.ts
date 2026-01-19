@@ -1,4 +1,4 @@
-import {Position} from "./roomGrid";
+import {Position} from "./constants";
 
 const DIRECTIONS: Record<DirectionConstant, number[]> = {
     [TOP]: [0, -1],

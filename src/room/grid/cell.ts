@@ -1,4 +1,4 @@
-import {BETTER_CELL_SIZE, CELL_SIZE, CELL_SPACING, Position} from "./roomGrid";
+import {BETTER_CELL_SIZE, CELL_SIZE, CELL_SPACING, Position} from "./constants";
 import {MovingPosition} from "./movingPosition";
 
 export class Cell {

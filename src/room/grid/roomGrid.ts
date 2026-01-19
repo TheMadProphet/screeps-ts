@@ -1,7 +1,6 @@
 import {MovingPosition} from "./movingPosition";
 import {Cell} from "./cell";
-
-export type Position = {x: number; y: number};
+import {CELL_SIZE, CELL_SPACING, Position} from "./constants";
 
 declare global {
     interface RoomMemory {
@@ -12,10 +11,6 @@ declare global {
 }
 
 type MiscStructure = STRUCTURE_SPAWN | STRUCTURE_OBSERVER | STRUCTURE_POWER_SPAWN | STRUCTURE_FACTORY | STRUCTURE_NUKER;
-
-export const CELL_SIZE = 3;
-export const BETTER_CELL_SIZE = 2;
-export const CELL_SPACING = 1;
 
 class RoomGrid {
     public getPositionForStructure(room: Room, structureType: BuildableStructureConstant): Position | undefined {
