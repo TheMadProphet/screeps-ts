@@ -11,6 +11,8 @@ class HaulerSpawner implements RoleSpawner {
         }
 
         for (const colony of room.getAllColonies()) {
+            if (Memory.rooms[colony].invaderCount ?? 0 > 0) continue;
+
             for (const sourceId of Memory.rooms[colony].sources) {
                 if (this.spawnHaulerForSource(spawner, sourceId, colony, true) === OK) return;
             }
