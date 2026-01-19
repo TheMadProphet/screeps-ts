@@ -31,7 +31,11 @@ class FillerBehavior implements RoleBehavior {
             return;
         }
 
-        const amountToWithdraw = Math.min(totalMissingEnergy, creep.store.getFreeCapacity(RESOURCE_ENERGY));
+        const amountToWithdraw = Math.min(
+            totalMissingEnergy,
+            creep.store.getFreeCapacity(RESOURCE_ENERGY),
+            storage.store.getUsedCapacity(RESOURCE_ENERGY)
+        );
         creep.withdrawFrom(storage, RESOURCE_ENERGY, amountToWithdraw);
         if (creep.pos.isNearTo(storage)) creep.memory.working = true;
     }
