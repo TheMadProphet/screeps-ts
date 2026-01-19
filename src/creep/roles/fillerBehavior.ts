@@ -1,6 +1,4 @@
 class FillerBehavior implements RoleBehavior {
-    towersWithMissingEnergy: StructureTower[] = [];
-
     public run(creep: Creep) {
         if (!creep.room.storage) return;
 
@@ -18,10 +16,10 @@ class FillerBehavior implements RoleBehavior {
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
         const room = creep.room;
-        this.findTowersWithMissingEnergy(creep);
+        const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
 
         const missingEnergyInSpawnsAndExtensions = room.energyCapacityAvailable - room.energyAvailable;
-        const missingEnergyInTowers = _.sum(this.towersWithMissingEnergy, tower =>
+        const missingEnergyInTowers = _.sum(towersWithMissingEnergy, tower =>
             tower.store.getFreeCapacity(RESOURCE_ENERGY)
         );
         const missingEnergyInStorageLink = room.storageLink?.store.getFreeCapacity(RESOURCE_ENERGY) ?? 0;
@@ -47,18 +45,25 @@ class FillerBehavior implements RoleBehavior {
             creep.transferTo(storageLink);
         } else if (creep.room.terminal && storage.store[RESOURCE_ENERGY] > 250000) {
             creep.transferTo(creep.room.terminal, RESOURCE_ENERGY);
-        } else if (this.towersWithMissingEnergy.length > 0) {
-            creep.transferTo(this.towersWithMissingEnergy[0]);
         } else {
-            creep.transferTo(storage);
+            const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
+
+            if (towersWithMissingEnergy.length > 0) {
+                creep.transferTo(towersWithMissingEnergy[0]);
+                this.findTowersWithMissingEnergy(creep);
+            } else {
+                creep.transferTo(storage);
+            }
         }
     }
 
     private findTowersWithMissingEnergy(creep: Creep) {
-        this.towersWithMissingEnergy = creep.room.find(FIND_MY_STRUCTURES, {
-            filter: structure =>
-                structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-        });
+        return creep.room
+            .find(FIND_MY_STRUCTURES, {
+                filter: (structure): structure is StructureTower =>
+                    structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            })
+            .sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY));
     }
 }
 
