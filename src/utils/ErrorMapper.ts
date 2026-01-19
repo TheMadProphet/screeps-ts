@@ -1,5 +1,14 @@
 import {SourceMapConsumer} from "source-map";
 
+// Custom addition: Save error logs to Memory
+declare global {
+    interface Memory {
+        errors?: [number, string, string][];
+    }
+}
+
+const MAX_ERRORS = 25;
+
 export class ErrorMapper {
     // Cache consumer
     private static _consumer?: SourceMapConsumer;
@@ -77,6 +86,23 @@ export class ErrorMapper {
                     if ("sim" in Game.rooms) {
                         const message = `Source maps don't work in the simulator - displaying original error`;
                         console.log(`<span style='color:red'>${message}<br>${_.escape(e.stack)}</span>`);
+
+                        // Custom addition: Save errors to Memory
+                        if (!Memory.errors) {
+                            Memory.errors = [];
+                        }
+                        Memory.errors.push([
+                            Game.time,
+                            new Date().toLocaleString("en-GB", {
+                                timeZone: "Asia/Tbilisi",
+                                hour12: false
+                            }),
+                            `${message}\n${e.stack}`
+                        ]);
+
+                        if (Object.keys(Memory.errors).length > MAX_ERRORS) {
+                            Memory.errors.shift();
+                        }
                     } else {
                         console.log(`<span style='color:red'>${_.escape(this.sourceMappedStackTrace(e))}</span>`);
                     }
