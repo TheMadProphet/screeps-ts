@@ -21,7 +21,7 @@ class ReserverBehavior implements RoleBehavior {
 
             if (creep.memory.excuseMe) {
                 const creepsNudging = creep.pos.fromDirection(creep.memory.excuseMe).lookFor(LOOK_CREEPS);
-                if (creepsNudging.some(it => it.memory.role === RESERVER)) {
+                if (creepsNudging.some(it => it.memory?.role === RESERVER)) {
                     creep.suicide();
                 }
             }
