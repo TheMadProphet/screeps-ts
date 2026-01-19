@@ -54,7 +54,7 @@ class WorkerOrganizer {
         return (
             room.find(FIND_STRUCTURES, {
                 filter: structure =>
-                    structure.hits / structure.hitsMax < 0.95 && structure.structureType !== "constructedWall"
+                    structure.hits / structure.hitsMax < 0.8 && structure.structureType !== "constructedWall"
             }).length > 0
         );
     }
