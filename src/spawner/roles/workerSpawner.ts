@@ -22,10 +22,20 @@ const workerSpawner: RoleSpawner = {
         let sourceCount = _.size(spawner.room.memory.sources);
         let availableEnergyPerTick = sourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         if (spawner.room.memory.colonies) {
-            const remoteSourceCount = _.sum(
-                spawner.room.getAllColonies(),
-                colony => Memory.rooms[colony].sources.length
-            );
+            const remoteSourceCount = _.sum(spawner.room.getAllColonies(), it => {
+                const colonyMemory = Memory.rooms[it];
+                if (!colonyMemory.sources) {
+                    return 0;
+                }
+
+                const colony = Game.rooms[it];
+                if (!colony?.isBeingReserved()) {
+                    // Half the capacity if not reserved
+                    return colonyMemory.sources.length / 2;
+                }
+
+                return colonyMemory.sources.length;
+            });
 
             availableEnergyPerTick += remoteSourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         }
