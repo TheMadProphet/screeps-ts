@@ -17,15 +17,14 @@ class RoomDefense {
     }
 
     public needsDefenseCreep(room: Room): boolean {
-        return room.creepsByRole[DEFENDER].length < 1 && this.isInvaderInColonies(room);
-    }
+        const invadedColonies = this.findColoniesWithInvaders(room);
+        const totalInvaders = _.sum(invadedColonies.map(it => Memory.rooms[it].invaderCount ?? 0));
 
-    private isInvaderInColonies(room: Room) {
-        return this.findColoniesWithInvaders(room).length > 0;
+        return room.creepsByRole[DEFENDER].length < Math.ceil(totalInvaders / 2);
     }
 
     private findColoniesWithInvaders(room: Room) {
-        return room.getAllColonies().filter(it => Memory.rooms[it].hadInvaderCreepLastTick);
+        return room.getAllColonies().filter(it => Memory.rooms[it].invaderCount);
     }
 }
 

@@ -7,7 +7,7 @@ import {Traveler} from "../utils/traveler/traveler";
 declare global {
     interface RoomMemory {
         sources: Id<Source>[];
-        hadInvaderCreepLastTick?: boolean;
+        invaderCount?: number;
         storageLinkId?: Id<StructureLink>;
         controllerLinkId?: Id<StructureLink>;
     }
@@ -35,8 +35,7 @@ class ExtendedRoom extends Room {
 
         workerOrganizer.organizeWorkersIn(this);
         this.getVisibleColonies().forEach(it => {
-            it.memory.hadInvaderCreepLastTick =
-                it.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader").length > 0;
+            it.memory.invaderCount = it.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader").length;
         });
     }
 
