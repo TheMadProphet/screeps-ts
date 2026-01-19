@@ -25,10 +25,24 @@ class DefenderBehavior implements RoleBehavior {
         if (invaders.length < 1) {
             creep.memory.assignedRoom = undefined;
         } else {
-            const target = this.findTargetToAttack(invaders);
+            const target = this.findTargetToAttack(creep, invaders);
             if (target) {
-                creep.travelTo(target, {movingTarget: true});
-                creep.attack(target);
+                const isRanged = creep.getActiveBodyparts(RANGED_ATTACK) > 0;
+                if (isRanged) {
+                    if (creep.pos.getRangeTo(target) > 3) {
+                        creep.travelTo(target, {movingTarget: true, range: 3});
+                    } else {
+                        const direction = creep.pos.getDirectionTo(target);
+                        const oppositeDirection = (((direction + 3) % 8) + 1) as DirectionConstant;
+                        creep.move(oppositeDirection);
+                    }
+
+                    creep.rangedAttack(target);
+                    creep.heal(creep);
+                } else {
+                    creep.travelTo(target, {movingTarget: true});
+                    creep.attack(target);
+                }
             }
         }
     }
