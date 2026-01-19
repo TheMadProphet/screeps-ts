@@ -2,9 +2,9 @@ import Body from "../body";
 import {WORKER} from "../../constants";
 import {workerTasks} from "../../creep/workerOrganizer";
 
-const ENERGY_PER_SOURCE = 10;
-const ENERGY_EFFICIENCY = 0.85;
-const REMOTE_ENERGY_EFFICIENCY = 0.7;
+const SOURCE_ENERGY_PER_TICK = 10;
+const ENERGY_FOR_CREEPS_PERCENTAGE = 0.35;
+const AVAILABLE_SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_PER_TICK * (1 - ENERGY_FOR_CREEPS_PERCENTAGE);
 const BUILDER_EFFICIENCY = 0.75; // E.g. a builder builds 75% of the time, rest is gathering/idle
 
 const workerSpawner: RoleSpawner = {
@@ -19,14 +19,14 @@ const workerSpawner: RoleSpawner = {
         const builderEnergyPerTick = builderWorkPartCount * 5 * BUILDER_EFFICIENCY;
 
         let sourceCount = _.size(spawner.room.memory.sources);
-        let availableEnergyPerTick = sourceCount * ENERGY_PER_SOURCE * ENERGY_EFFICIENCY;
+        let availableEnergyPerTick = sourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         if (spawner.room.memory.colonies) {
             const remoteSourceCount = _.sum(
                 spawner.room.getAllColonies(),
                 colony => Memory.rooms[colony].sources.length
             );
 
-            availableEnergyPerTick += remoteSourceCount * ENERGY_PER_SOURCE * REMOTE_ENERGY_EFFICIENCY;
+            availableEnergyPerTick += remoteSourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         }
 
         if (
