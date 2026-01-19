@@ -55,7 +55,6 @@ class FillerBehavior implements RoleBehavior {
 
             if (towersWithMissingEnergy.length > 0) {
                 creep.transferTo(towersWithMissingEnergy[0]);
-                this.findTowersWithMissingEnergy(creep);
             } else {
                 creep.transferTo(storage);
             }
@@ -66,7 +65,8 @@ class FillerBehavior implements RoleBehavior {
         return creep.room
             .find(FIND_MY_STRUCTURES, {
                 filter: (structure): structure is StructureTower =>
-                    structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                    structure.structureType === STRUCTURE_TOWER &&
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 200
             })
             .sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY));
     }
