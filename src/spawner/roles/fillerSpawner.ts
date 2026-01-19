@@ -8,7 +8,7 @@ const fillerSpawner: RoleSpawner = {
         if (spawner.room.fillersAreEnabled()) {
             const fillers = spawner.room.creepsByRole[FILLER];
             const isFillerAboutToDie = fillers.some(
-                filler => filler.ticksToLive !== undefined && filler.ticksToLive! < 50
+                filler => filler.ticksToLive !== undefined && filler.ticksToLive! < 100
             );
             if (fillers.length < FILLER_AMOUNT || isFillerAboutToDie) {
                 spawner.spawn({
