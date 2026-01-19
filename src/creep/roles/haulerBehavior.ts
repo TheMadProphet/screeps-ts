@@ -113,7 +113,7 @@ class HaulerBehavior implements RoleBehavior {
     }
 
     private maintainInfrastructure(creep: Creep) {
-        // if (creep.isHome()) return;
+        if (creep.isHome()) return;
 
         const damagedContainers = creep.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: it => it.structureType === STRUCTURE_CONTAINER && it.hitsMax - it.hits > 100
