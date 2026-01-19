@@ -2,7 +2,7 @@ import Body from "../body";
 import {WORKER} from "../../constants";
 import {workerTasks} from "../../creep/workerOrganizer";
 
-const SOURCE_ENERGY_PER_TICK = 10;
+const SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME;
 const ENERGY_FOR_CREEPS_PERCENTAGE = 0.35;
 const AVAILABLE_SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_PER_TICK * (1 - ENERGY_FOR_CREEPS_PERCENTAGE);
 const BUILDER_EFFICIENCY = 0.75; // E.g. a builder builds 75% of the time, rest is gathering/idle
