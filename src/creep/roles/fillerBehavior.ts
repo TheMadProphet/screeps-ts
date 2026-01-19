@@ -42,12 +42,13 @@ class FillerBehavior implements RoleBehavior {
 
     private fill(creep: Creep, storage: StructureStorage) {
         const storageLink = creep.room.storageLink;
+        const storageEnergy = storage.store[RESOURCE_ENERGY];
 
         if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
             creep.fillSpawnsWithEnergy();
-        } else if (storageLink && !storageLink.isFull()) {
+        } else if (storageLink && !storageLink.isFull() && storageEnergy > creep.room.energyCapacityAvailable * 5) {
             creep.transferTo(storageLink);
-        } else if (creep.room.terminal && storage.store[RESOURCE_ENERGY] > 250000) {
+        } else if (creep.room.terminal && storageEnergy > 250000) {
             creep.transferTo(creep.room.terminal, RESOURCE_ENERGY);
         } else {
             const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
