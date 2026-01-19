@@ -10,7 +10,7 @@ const fillerSpawner: RoleSpawner = {
             const isFillerAboutToDie = fillers.some(
                 filler => filler.ticksToLive !== undefined && filler.ticksToLive! < 100
             );
-            if (fillers.length < FILLER_AMOUNT || isFillerAboutToDie) {
+            if (fillers.length < FILLER_AMOUNT || (isFillerAboutToDie && fillers.length === FILLER_AMOUNT)) {
                 spawner.spawn({
                     body: new Body(spawner).addParts([CARRY, CARRY, MOVE], 10),
                     memory: {
