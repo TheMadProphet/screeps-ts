@@ -7,6 +7,7 @@ const ENERGY_FOR_CREEPS_PERCENTAGE = 0.35;
 const AVAILABLE_SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_PER_TICK * (1 - ENERGY_FOR_CREEPS_PERCENTAGE);
 const BUILDER_EFFICIENCY = 0.75; // E.g. a builder builds 75% of the time, rest is gathering/idle
 const WORK_PART_ENERGY_PER_TICK = 5; // Each WORK part contributes 5 energy per tick to building
+const FORCE_SPAWN_THRESHOLD = 100000; // If storage has more than this amount, spawn builders regardless
 
 const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
@@ -42,6 +43,7 @@ const workerSpawner: RoleSpawner = {
 
         if (
             availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick ||
+            (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD ||
             spawner.room.creepsByRole[WORKER].length < 4
         ) {
             const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
