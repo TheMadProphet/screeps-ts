@@ -47,15 +47,17 @@ class DefenderBehavior implements RoleBehavior {
         }
     }
 
-    private findTargetToAttack(hostiles: Creep[]): Creep | undefined {
-        const healers = hostiles
-            .filter(it => it.getActiveBodyparts(HEAL) > 0)
-            .sort((a, b) => a.getActiveBodyparts(HEAL) - b.getActiveBodyparts(HEAL));
-        if (healers.length) {
-            return healers[0];
-        }
-
-        return hostiles[0];
+    private findTargetToAttack(creep: Creep, hostiles: Creep[]): Creep | undefined {
+        const pos = creep.pos;
+        return hostiles.sort((a, b) => pos.getRangeTo(a.pos) - pos.getRangeTo(b.pos))[0];
+        // const healers = hostiles
+        //     .filter(it => it.getActiveBodyparts(HEAL) > 0)
+        //     .sort((a, b) => a.getActiveBodyparts(HEAL) - b.getActiveBodyparts(HEAL));
+        // if (healers.length) {
+        //     return healers[0];
+        // }
+        //
+        // return hostiles[0];
     }
 }
 
