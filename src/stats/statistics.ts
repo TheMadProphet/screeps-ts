@@ -26,6 +26,8 @@ declare global {
         spawner: number;
         find: number;
         other: number;
+
+        findPerTarget: Partial<Record<string, number>>;
     }
 
     interface RoomStatistics {
@@ -52,12 +54,13 @@ declare global {
 export class Statistics {
     public static onTickStart() {
         if (!Memory.stats) {
-            Memory.stats = {rooms: {}, userStats: {usedCpu: {}}} as Stats;
+            Memory.stats = {rooms: {}, userStats: {usedCpu: {findPerTarget: {}}}} as Stats;
         }
 
         Memory.stats.userStats.usedCpu.pathfinding = 0;
         Memory.stats.userStats.usedCpu.find = 0;
         Memory.stats.userStats.usedCpu.spawner = 0;
+        Memory.stats.userStats.usedCpu.findPerTarget = {};
     }
 
     public static exportAll() {
@@ -143,8 +146,13 @@ export class Statistics {
         Memory.stats.userStats.usedCpu.pathfinding += cpuUsage;
     }
 
-    static registerFindCpuUsage(cpuUsage: number) {
+    static registerFindCpuUsage(cpuUsage: number, target: string) {
         Memory.stats.userStats.usedCpu.find += cpuUsage;
+
+        if (target) {
+            Memory.stats.userStats.usedCpu.findPerTarget[target] =
+                (Memory.stats.userStats.usedCpu.findPerTarget[target] || 0) + cpuUsage;
+        }
     }
 
     static registerSpawnCpuUsage(cpuUsage: number) {

@@ -1,12 +1,44 @@
 import {Statistics} from "./statistics";
 
+const FIND_NAMES: Record<FindConstant, string> = {
+    [FIND_EXIT_TOP]: "FIND_EXIT_TOP",
+    [FIND_EXIT_RIGHT]: "FIND_EXIT_RIGHT",
+    [FIND_EXIT_BOTTOM]: "FIND_EXIT_BOTTOM",
+    [FIND_EXIT_LEFT]: "FIND_EXIT_LEFT",
+    [FIND_EXIT]: "FIND_EXIT",
+    [FIND_CREEPS]: "FIND_CREEPS",
+    [FIND_MY_CREEPS]: "FIND_MY_CREEPS",
+    [FIND_HOSTILE_CREEPS]: "FIND_HOSTILE_CREEPS",
+    [FIND_SOURCES_ACTIVE]: "FIND_SOURCES_ACTIVE",
+    [FIND_SOURCES]: "FIND_SOURCES",
+    [FIND_DROPPED_RESOURCES]: "FIND_DROPPED_RESOURCES",
+    [FIND_STRUCTURES]: "FIND_STRUCTURES",
+    [FIND_MY_STRUCTURES]: "FIND_MY_STRUCTURES",
+    [FIND_HOSTILE_STRUCTURES]: "FIND_HOSTILE_STRUCTURES",
+    [FIND_FLAGS]: "FIND_FLAGS",
+    [FIND_CONSTRUCTION_SITES]: "FIND_CONSTRUCTION_SITES",
+    [FIND_MY_SPAWNS]: "FIND_MY_SPAWNS",
+    [FIND_HOSTILE_SPAWNS]: "FIND_HOSTILE_SPAWNS",
+    [FIND_MY_CONSTRUCTION_SITES]: "FIND_MY_CONSTRUCTION_SITES",
+    [FIND_HOSTILE_CONSTRUCTION_SITES]: "FIND_HOSTILE_CONSTRUCTION_SITES",
+    [FIND_MINERALS]: "FIND_MINERALS",
+    [FIND_NUKES]: "FIND_NUKES",
+    [FIND_TOMBSTONES]: "FIND_TOMBSTONES",
+    [FIND_POWER_CREEPS]: "FIND_POWER_CREEPS",
+    [FIND_MY_POWER_CREEPS]: "FIND_MY_POWER_CREEPS",
+    [FIND_HOSTILE_POWER_CREEPS]: "FIND_HOSTILE_POWER_CREEPS",
+    [FIND_DEPOSITS]: "FIND_DEPOSITS",
+    [FIND_RUINS]: "FIND_RUINS"
+};
+
 const originalFind = Room.prototype.find;
 
 Room.prototype.find = function (this: any, ...params: any) {
     const cpuStart = Game.cpu.getUsed();
     const returnValue = originalFind.apply(this, params);
 
-    Statistics.registerFindCpuUsage(Game.cpu.getUsed() - cpuStart);
+    const findConstant = params[0] as FindConstant;
+    Statistics.registerFindCpuUsage(Game.cpu.getUsed() - cpuStart, FIND_NAMES[findConstant]);
 
     return returnValue;
 };
