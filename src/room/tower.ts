@@ -4,8 +4,6 @@ declare global {
     interface StructureTower {
         automate(attackOnlyInvaders?: boolean): void;
 
-        autoRepair(): void;
-
         repairAmount(structure: AnyStructure): number;
     }
 }
@@ -25,6 +23,8 @@ declare global {
             this.heal(damagedCreeps[0]);
             return;
         }
+
+        if (Game.time % 10 !== 0) return;
 
         const closestDamagedStructure = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
@@ -50,15 +50,5 @@ declare global {
         }
 
         return Math.floor(repairPower);
-    };
-
-    this.autoRepair = function () {
-        const closestDamagedStructure = this.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: structure => structure.hits < structure.hitsMax
-        });
-
-        if (closestDamagedStructure) {
-            this.repair(closestDamagedStructure);
-        }
     };
 }).call(StructureTower.prototype);

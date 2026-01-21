@@ -64,11 +64,13 @@ class HaulerBehavior implements RoleBehavior {
                 creep.fillSpawnsWithEnergy();
             }
         } else {
-            const targetWorker =
-                Game.creeps[creep.memory.targetWorker ?? ""] ??
-                creep.pos.findClosestByRange(FIND_MY_CREEPS, {
+            let targetWorker: Creep | null = Game.creeps[creep.memory.targetWorker ?? ""];
+
+            if (!targetWorker && Game.time % 5 === 0) {
+                targetWorker = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
                     filter: it => it.store.getFreeCapacity(RESOURCE_ENERGY) > 50 && it.memory.role === "Worker"
                 });
+            }
 
             if (targetWorker && targetWorker.room === creep.room) {
                 creep.memory.targetWorker = targetWorker.name;
@@ -114,6 +116,7 @@ class HaulerBehavior implements RoleBehavior {
 
     private maintainInfrastructure(creep: Creep) {
         if (creep.isHome()) return;
+        if (Game.time % 3 !== 0) return;
 
         const damagedContainers = creep.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: it => it.structureType === STRUCTURE_CONTAINER && it.hitsMax - it.hits > 100
@@ -123,9 +126,11 @@ class HaulerBehavior implements RoleBehavior {
             return;
         }
 
-        const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
-            filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
-        });
+        const damagedRoads = creep.pos
+            .findInRange(FIND_STRUCTURES, 3, {
+                filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits > 100
+            })
+            .sort((a, b) => a.hits - b.hits);
         if (damagedRoads.length > 0) {
             creep.repair(damagedRoads[0]);
             return;

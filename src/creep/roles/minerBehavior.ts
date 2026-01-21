@@ -33,7 +33,7 @@ class MinerBehavior implements RoleBehavior {
             creep.withdraw(source.container, RESOURCE_ENERGY);
         } else if (source.container.hitsMax - source.container.hits > 1000) {
             creep.repair(source.container);
-        } else {
+        } else if (Game.time % 5 === 0) {
             const damagedRoads = creep.pos.findInRange(FIND_STRUCTURES, 3, {
                 filter: it => it.structureType === STRUCTURE_ROAD && it.hitsMax - it.hits >= 500
             });

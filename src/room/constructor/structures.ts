@@ -29,6 +29,7 @@ class RoomStructures {
 
     build() {
         if (!this.room.controller) return;
+        if (Game.time % 5 !== 0) return;
         if (this.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) return;
 
         for (const structure of gridStructures) {
