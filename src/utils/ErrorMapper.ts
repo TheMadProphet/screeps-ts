@@ -82,31 +82,31 @@ export class ErrorMapper {
             try {
                 loop();
             } catch (e) {
+                if (!Memory.errors) {
+                    Memory.errors = [];
+                }
+                const time = new Date().toLocaleString("en-GB", {
+                    timeZone: "Asia/Tbilisi",
+                    hour12: false
+                });
+
                 if (e instanceof Error) {
                     if ("sim" in Game.rooms) {
                         const message = `Source maps don't work in the simulator - displaying original error`;
                         console.log(`<span style='color:red'>${message}<br>${_.escape(e.stack)}</span>`);
-
-                        // Custom addition: Save errors to Memory
-                        if (!Memory.errors) {
-                            Memory.errors = [];
-                        }
-                        Memory.errors.push([
-                            Game.time,
-                            new Date().toLocaleString("en-GB", {
-                                timeZone: "Asia/Tbilisi",
-                                hour12: false
-                            }),
-                            `${message}\n${e.stack}`
-                        ]);
-
-                        if (Object.keys(Memory.errors).length > MAX_ERRORS) {
-                            Memory.errors.shift();
-                        }
                     } else {
                         console.log(`<span style='color:red'>${_.escape(this.sourceMappedStackTrace(e))}</span>`);
                     }
+
+                    Memory.errors.push([Game.time, time, _.escape(this.sourceMappedStackTrace(e))]);
+                    if (Object.keys(Memory.errors).length > MAX_ERRORS) {
+                        Memory.errors.shift();
+                    }
                 } else {
+                    Memory.errors.push([Game.time, time, `${e}`]);
+                    if (Object.keys(Memory.errors).length > MAX_ERRORS) {
+                        Memory.errors.shift();
+                    }
                     // can't handle it
                     throw e;
                 }
