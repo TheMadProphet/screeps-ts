@@ -12,6 +12,8 @@ const roomReserver = {
         const reservers = room.creepsByRole[RESERVER];
 
         for (const colony of room.memory.colonies) {
+            if (Memory.rooms[colony].invaderCount ?? 0 > 0) continue;
+
             const roomReservers = reservers.filter(it => it.memory.assignedRoom === colony);
             if (!roomReservers?.length) {
                 return colony;
