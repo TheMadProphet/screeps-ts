@@ -1,5 +1,6 @@
 import {WorkerTask, workerTasks} from "../workerOrganizer";
 import roomBuilder from "../roomBuilder";
+import roomRepairer from "../roomRepairer";
 
 declare global {
     interface CreepMemory {
@@ -98,14 +99,10 @@ class WorkerBehavior implements RoleBehavior {
             return creep.travelToHome();
         }
 
-        const closestStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: structure =>
-                structure.hits / structure.hitsMax < 0.8 && structure.structureType !== "constructedWall"
-        });
-
-        if (closestStructure) {
-            if (creep.repair(closestStructure) === ERR_NOT_IN_RANGE) {
-                creep.travelTo(closestStructure, {range: 3});
+        const toRepair = roomRepairer.findStructureToRepair(creep);
+        if (toRepair) {
+            if (creep.repair(toRepair) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(toRepair, {range: 3});
             }
         }
     }

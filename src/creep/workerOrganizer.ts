@@ -1,5 +1,6 @@
 import {WORKER} from "../constants";
 import roomBuilder from "./roomBuilder";
+import roomRepairer from "./roomRepairer";
 
 export const workerTasks = {
     BUILD: 0,
@@ -19,7 +20,7 @@ class WorkerOrganizer {
 
         this.resetData();
 
-        if (this.roomNeedsRepairs(room)) {
+        if (roomRepairer.roomNeedsRepairs(room)) {
             this.reserveOneWorkerFor(workerTasks.REPAIR);
         }
 
@@ -48,15 +49,6 @@ class WorkerOrganizer {
 
     private roomHasNoWorkers(room: Room) {
         return !room.spawn || room.creepsByRole[WORKER].length === 0;
-    }
-
-    private roomNeedsRepairs(room: Room) {
-        return (
-            room.find(FIND_STRUCTURES, {
-                filter: structure =>
-                    structure.hits / structure.hitsMax < 0.8 && structure.structureType !== "constructedWall"
-            }).length > 0
-        );
     }
 
     private applyAssignment(room: Room) {
