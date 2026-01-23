@@ -20,8 +20,12 @@ import {memHack} from "./utils/memHack";
 /**
  * TODO:
  * Haulers being greedy with withdraw
+ * Extract mineral logic
+ * More robust defense logic based on threat (kiting, healing, squads)
  * Source pathcost, recalculate
  * Room spawn abstraction
+ * Lab/Factory management
+ * Market orders
  */
 export const loop = ErrorMapper.wrapLoop(() => {
     memHack.run();
