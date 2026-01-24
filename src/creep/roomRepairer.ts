@@ -1,8 +1,6 @@
 declare global {
     interface RoomMemory {
-        inMaintenanceMode?: boolean;
-        inMaintenanceSince?: number;
-        maintenanceTriggeredBy?: string;
+        structuresInMaintenance?: Id<AnyStructure>[];
     }
 }
 
@@ -81,51 +79,75 @@ class RoomRepairer {
 
     private createRoomCache(room: Room): RoomCache {
         const structures = room.find(FIND_STRUCTURES);
-        this.updateMaintenanceMode(room, structures);
-        const inMaintenanceMode = Memory.rooms[room.name].inMaintenanceMode;
+        const memory = Memory.rooms[room.name];
+
+        const maintenanceSet = new Set<Id<AnyStructure>>(memory.structuresInMaintenance || []);
+        this.updateStructureMaintenance(structures, maintenanceSet);
+        memory.structuresInMaintenance = maintenanceSet.size > 0 ? Array.from(maintenanceSet) : undefined;
+
         const newCache: RoomCache = {
             tick: Game.time,
-            structures: structures.filter(it => this.shouldRepair(it, inMaintenanceMode)).map(it => it.id)
+            structures: structures.filter(it => this.shouldRepair(it, maintenanceSet)).map(it => it.id)
         };
         this.cache[room.name] = newCache;
         return newCache;
     }
 
-    private shouldRepair(structure: Structure, toUpperLimit?: boolean): boolean {
+    private shouldRepair(structure: Structure, structuresInMaintenance: Set<Id<AnyStructure>>): boolean {
         if (structure.structureType === STRUCTURE_WALL) {
             return false;
         }
 
+        const inMaintenance = structuresInMaintenance.has(structure.id as Id<AnyStructure>);
+
         if (structure.structureType === STRUCTURE_RAMPART) {
             const rcl = structure.room.controller?.level ?? 0;
             const targetHits = RAMPART_TARGETS[rcl] || 0;
-            const limit = toUpperLimit ? LIMITS[STRUCTURE_RAMPART].upper : LIMITS[STRUCTURE_RAMPART].lower;
+            const limit = inMaintenance ? LIMITS[STRUCTURE_RAMPART].upper : LIMITS[STRUCTURE_RAMPART].lower;
             return structure.hits < targetHits * limit;
         }
 
         const limits = LIMITS[structure.structureType] || LIMITS.default;
-        const limit = toUpperLimit ? limits.upper : limits.lower;
+        const limit = inMaintenance ? limits.upper : limits.lower;
         return structure.hits < structure.hitsMax * limit;
     }
 
-    private updateMaintenanceMode(room: Room, structures: AnyStructure[]) {
-        const memory = Memory.rooms[room.name];
+    private updateStructureMaintenance(structures: AnyStructure[], maintenanceSet: Set<Id<AnyStructure>>): void {
+        const existingIds = new Set(structures.map(s => s.id as Id<AnyStructure>));
 
-        if (memory.inMaintenanceMode) {
-            // Check if we can exit maintenance mode
-            const structuresNeedingRepair = structures.filter(it => this.shouldRepair(it, true));
-            if (structuresNeedingRepair.length === 0) {
-                memory.inMaintenanceMode = false;
-                memory.inMaintenanceSince = undefined;
-                memory.maintenanceTriggeredBy = undefined;
+        for (const id of maintenanceSet) {
+            if (!existingIds.has(id)) {
+                maintenanceSet.delete(id);
             }
-        } else {
-            // Check if we should enter maintenance mode
-            const structuresNeedingRepair = structures.filter(it => this.shouldRepair(it, false));
-            if (structuresNeedingRepair.length > 0) {
-                memory.inMaintenanceMode = true;
-                memory.inMaintenanceSince = Game.time;
-                memory.maintenanceTriggeredBy = structuresNeedingRepair[0].structureType;
+        }
+
+        // Update maintenance status for each structure
+        for (const structure of structures) {
+            if (structure.structureType === STRUCTURE_WALL) {
+                continue;
+            }
+
+            const id: Id<AnyStructure> = structure.id;
+            const inMaintenance = maintenanceSet.has(id);
+
+            let hitsRatio: number;
+            let limits: {upper: number; lower: number};
+            let maxHits = structure.hitsMax;
+
+            if (structure.structureType === STRUCTURE_RAMPART) {
+                const rcl = structure.room.controller?.level ?? 0;
+                maxHits = RAMPART_TARGETS[rcl] || 0;
+            }
+
+            hitsRatio = maxHits > 0 ? structure.hits / maxHits : 1;
+            limits = LIMITS[structure.structureType] || LIMITS.default;
+
+            if (inMaintenance && hitsRatio >= limits.upper) {
+                // Exit maintenance: structure reached upper limit
+                maintenanceSet.delete(id);
+            } else if (!inMaintenance && hitsRatio < limits.lower) {
+                // Enter maintenance: structure dropped below lower limit
+                maintenanceSet.add(id);
             }
         }
     }
