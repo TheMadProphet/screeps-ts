@@ -41,6 +41,7 @@ declare global {
         storageEnergy: number;
         containerEnergy: number;
         towerEnergy: number;
+        structuresMaintenance?: Record<StructureConstant, number>;
         hostileCreeps: HostileCreeps;
         hostileCreepsInColonies: Record<string, HostileCreeps>;
         creeps: Record<CreepRole, number>;
@@ -82,6 +83,15 @@ export class Statistics {
         }) as StructureTower[];
         const towerEnergy = _.sum(towers, t => t.store.energy);
 
+        const structuresMaintenance = room.memory.structuresInMaintenance?.reduce((acc, id) => {
+            const structure = Game.getObjectById<AnyStructure>(id);
+            if (structure) {
+                const type = structure.structureType;
+                acc[type] = (acc[type] || 0) + 1;
+            }
+            return acc;
+        }, {} as Record<string, number>);
+
         Memory.stats.rooms[room.name] = {
             rcl: room.controller?.level,
             rclProgress: room.controller.progress,
@@ -92,6 +102,7 @@ export class Statistics {
             storageEnergy: room.storage?.store?.energy || 0,
             containerEnergy,
             towerEnergy,
+            structuresMaintenance,
             hostileCreeps: this.getHostileCreepsIn(room),
             hostileCreepsInColonies: room
                 .getVisibleColonies()
