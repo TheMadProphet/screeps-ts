@@ -1,5 +1,3 @@
-import roomRepairer from "../creep/roomRepairer";
-
 export {};
 
 declare global {
@@ -30,15 +28,11 @@ declare global {
 
         const closestDamagedStructure = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure => {
-                if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
-                    return false;
-                }
-
                 if (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_CONTAINER) {
                     return structure.hitsMax - structure.hits >= this.repairAmount(structure);
                 }
 
-                return roomRepairer.structureNeedsRepair(structure);
+                return false;
             }
         });
         if (closestDamagedStructure) {
