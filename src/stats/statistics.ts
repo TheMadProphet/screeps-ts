@@ -12,6 +12,7 @@ declare global {
 
     interface UserStatistics {
         time: number;
+        unixTime: number;
         usedCpu: UsedCpuStatistics;
         bucket: number;
         maxCpu: number;
@@ -133,6 +134,7 @@ export class Statistics {
             memory: RawMemory.get().length,
             gcl: Game.gcl.level,
             time: Game.time,
+            unixTime: new Date().getTime(),
             usedCpu: {
                 ...usedCpu,
                 intents: intents,
