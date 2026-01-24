@@ -1,4 +1,25 @@
-type RoomCache = {tick: number; structures: Id<AnyStructure>[]};
+declare global {
+    interface RoomMemory {
+        inMaintenanceMode?: boolean;
+        inMaintenanceSince?: number;
+        maintenanceTriggeredBy?: string;
+    }
+}
+
+interface RoomCache {
+    tick: number;
+    structures: Id<AnyStructure>[];
+}
+
+// Structures will be repaired when their hits fall below the lower limit
+// and will stop being repaired when they reach the upper limit
+const LIMITS: Record<string, {upper: number; lower: number}> = {
+    [STRUCTURE_WALL]: {upper: 0, lower: 0},
+    [STRUCTURE_RAMPART]: {upper: 1, lower: 0.9},
+    [STRUCTURE_ROAD]: {upper: 0.9, lower: 0.75},
+    [STRUCTURE_CONTAINER]: {upper: 0.9, lower: 0.75},
+    default: {upper: 1, lower: 0.9}
+};
 
 const CACHE_DURATION = 5;
 const RAMPART_TARGETS: {[rclLevel: number]: number} = {
@@ -55,18 +76,22 @@ class RoomRepairer {
             return roomCache;
         }
 
+        return this.createRoomCache(room);
+    }
+
+    private createRoomCache(room: Room): RoomCache {
+        const structures = room.find(FIND_STRUCTURES);
+        this.updateMaintenanceMode(room, structures);
+        const inMaintenanceMode = Memory.rooms[room.name].inMaintenanceMode;
         const newCache: RoomCache = {
             tick: Game.time,
-            structures: room
-                .find(FIND_STRUCTURES)
-                .filter(this.structureNeedsRepair)
-                .map(it => it.id)
+            structures: structures.filter(it => this.shouldRepair(it, inMaintenanceMode)).map(it => it.id)
         };
         this.cache[room.name] = newCache;
         return newCache;
     }
 
-    public structureNeedsRepair(structure: Structure): boolean {
+    private shouldRepair(structure: Structure, toUpperLimit?: boolean): boolean {
         if (structure.structureType === STRUCTURE_WALL) {
             return false;
         }
@@ -74,14 +99,35 @@ class RoomRepairer {
         if (structure.structureType === STRUCTURE_RAMPART) {
             const rcl = structure.room.controller?.level ?? 0;
             const targetHits = RAMPART_TARGETS[rcl] || 0;
-            return structure.hits < targetHits * 0.8;
+            const limit = toUpperLimit ? LIMITS[STRUCTURE_RAMPART].upper : LIMITS[STRUCTURE_RAMPART].lower;
+            return structure.hits < targetHits * limit;
         }
 
-        if (structure.structureType === STRUCTURE_CONTAINER || structure.structureType === STRUCTURE_ROAD) {
-            return structure.hits / structure.hitsMax < 0.8;
-        }
+        const limits = LIMITS[structure.structureType] || LIMITS.default;
+        const limit = toUpperLimit ? limits.upper : limits.lower;
+        return structure.hits < structure.hitsMax * limit;
+    }
 
-        return structure.hits / structure.hitsMax < 0.9;
+    private updateMaintenanceMode(room: Room, structures: AnyStructure[]) {
+        const memory = Memory.rooms[room.name];
+
+        if (memory.inMaintenanceMode) {
+            // Check if we can exit maintenance mode
+            const structuresNeedingRepair = structures.filter(it => this.shouldRepair(it, true));
+            if (structuresNeedingRepair.length === 0) {
+                memory.inMaintenanceMode = false;
+                memory.inMaintenanceSince = undefined;
+                memory.maintenanceTriggeredBy = undefined;
+            }
+        } else {
+            // Check if we should enter maintenance mode
+            const structuresNeedingRepair = structures.filter(it => this.shouldRepair(it, false));
+            if (structuresNeedingRepair.length > 0) {
+                memory.inMaintenanceMode = true;
+                memory.inMaintenanceSince = Game.time;
+                memory.maintenanceTriggeredBy = structuresNeedingRepair[0].structureType;
+            }
+        }
     }
 }
 
