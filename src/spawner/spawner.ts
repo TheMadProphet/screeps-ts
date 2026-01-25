@@ -1,6 +1,17 @@
 import fillerSpawner from "./roles/fillerSpawner";
 import minerSpawner from "./roles/minerSpawner";
-import {CreepRole, DEFENDER, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
+import {
+    CreepRole,
+    DEFENDER,
+    EMERGENCY_UNIT,
+    EXTRACTOR,
+    FILLER,
+    HAULER,
+    MINER,
+    RESERVER,
+    SCOUT,
+    WORKER
+} from "../constants";
 import haulerSpawner from "./roles/haulerSpawner";
 import workerSpawner from "./roles/workerSpawner";
 import scoutSpawner from "./roles/scoutSpawner";
@@ -8,6 +19,7 @@ import reserverSpawner from "./roles/reserverSpawner";
 import emergencyUnitSpawner from "./roles/emergencyUnitSpawner";
 import defenderSpawner from "./roles/defenderSpawner";
 import {Statistics} from "../stats/statistics";
+import extractorSpawner from "./roles/extractorSpawner";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
@@ -16,6 +28,7 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [RESERVER]: reserverSpawner,
     [HAULER]: haulerSpawner,
     [MINER]: minerSpawner,
+    [EXTRACTOR]: extractorSpawner,
     [SCOUT]: scoutSpawner,
     [WORKER]: workerSpawner
 };

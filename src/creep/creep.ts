@@ -1,5 +1,16 @@
 import fillerBehavior from "./roles/fillerBehavior";
-import {CreepRole, DEFENDER, EMERGENCY_UNIT, FILLER, HAULER, MINER, RESERVER, SCOUT, WORKER} from "../constants";
+import {
+    CreepRole,
+    DEFENDER,
+    EMERGENCY_UNIT,
+    EXTRACTOR,
+    FILLER,
+    HAULER,
+    MINER,
+    RESERVER,
+    SCOUT,
+    WORKER
+} from "../constants";
 import minerBehavior from "./roles/minerBehavior";
 import haulerBehavior from "./roles/haulerBehavior";
 import workerBehavior from "./roles/workerBehavior";
@@ -7,6 +18,7 @@ import scoutBehavior from "./roles/scoutBehavior";
 import reserverBehavior from "./roles/reserverBehavior";
 import emergencyUnitBehavior from "./roles/emergencyUnitBehavior";
 import defenderBehavior from "./roles/defenderBehavior";
+import extractorBehavior from "./roles/extractorBehavior";
 
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [EMERGENCY_UNIT]: emergencyUnitBehavior,
@@ -16,7 +28,8 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [FILLER]: fillerBehavior,
     [SCOUT]: scoutBehavior,
     [RESERVER]: reserverBehavior,
-    [DEFENDER]: defenderBehavior
+    [DEFENDER]: defenderBehavior,
+    [EXTRACTOR]: extractorBehavior
 };
 
 class ExtendedCreep extends Creep {

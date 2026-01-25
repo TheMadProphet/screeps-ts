@@ -7,6 +7,7 @@ import {Traveler} from "../utils/traveler/traveler";
 declare global {
     interface RoomMemory {
         sources: Id<Source>[];
+        mineral?: Id<Mineral>;
         invaderCount?: number;
         storageLinkId?: Id<StructureLink>;
         controllerLinkId?: Id<StructureLink>;

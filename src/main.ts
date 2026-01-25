@@ -1,5 +1,6 @@
 import "utils/traveler/traveler";
 import "utils/memory/sourceMemory";
+import "utils/memory/mineralMemory";
 import "utils/getOffExit";
 import "utils/excuseMe";
 import "utils/roomVisuals";

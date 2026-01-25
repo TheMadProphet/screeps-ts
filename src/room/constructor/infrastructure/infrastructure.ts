@@ -1,6 +1,7 @@
 import roomScanner from "../../../creep/roomScanner";
 import {buildInfrastructureForSources, rebuildSourceInfrastructure} from "./sourceInfrastructure";
 import roomGrid from "../../grid/roomGrid";
+import {buildInfrastructureForMineral, rebuildMineralInfrastructure} from "./mineralInfrastructure";
 
 declare global {
     interface RoomMemory {
@@ -16,9 +17,7 @@ function buildEnergyInfrastructure(room: Room) {
     if (!room.controller) return;
 
     if (!room.memory.sources) {
-        room.memory.sources = roomScanner
-            .scanSources(room, room.spawn)
-            .sort((a, b) => Memory.sources[a].pathCost - Memory.sources[b].pathCost);
+        roomScanner.scanSources(room, room.spawn);
     }
 
     if (room.extensionsAreBuilt()) {
@@ -30,6 +29,22 @@ function buildEnergyInfrastructure(room: Room) {
         } else if (room.controller.level >= 5 && room.storage && Game.time % 25 === 0) {
             const remoteSources = _.flatten(room.getVisibleColonies().map(it => it.memory.sources));
             rebuildSourceInfrastructure([...room.memory.sources, ...remoteSources], room.storage);
+        }
+    }
+}
+
+function buildMineralInfrastructure(room: Room) {
+    if (!room.controller) return;
+
+    if (!room.memory.mineral) {
+        roomScanner.scanMineral(room);
+    }
+
+    if (room.memory.mineral && room.extensionsAreBuilt() && room.controller.level === 6) {
+        buildInfrastructureForMineral(room.memory.mineral);
+
+        if (Game.time % 25 === 0) {
+            rebuildMineralInfrastructure(room.memory.mineral);
         }
     }
 }
@@ -72,6 +87,7 @@ class RoomInfrastructure {
 
     build() {
         buildEnergyInfrastructure(this.room);
+        buildMineralInfrastructure(this.room);
         establishColonies(this.room);
         buildRoadToController(this.room);
         this.buildRoadAroundCells();
