@@ -7,6 +7,7 @@ import {
     FILLER,
     HAULER,
     MINER,
+    MINERAL_HAULER,
     RESERVER,
     SCOUT,
     WORKER
@@ -19,6 +20,7 @@ import reserverBehavior from "./roles/reserverBehavior";
 import emergencyUnitBehavior from "./roles/emergencyUnitBehavior";
 import defenderBehavior from "./roles/defenderBehavior";
 import extractorBehavior from "./roles/extractorBehavior";
+import mineralHaulerBehavior from "./roles/mineralHaulerBehavior";
 
 const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [EMERGENCY_UNIT]: emergencyUnitBehavior,
@@ -29,7 +31,8 @@ const roleBehaviors: Record<CreepRole, RoleBehavior> = {
     [SCOUT]: scoutBehavior,
     [RESERVER]: reserverBehavior,
     [DEFENDER]: defenderBehavior,
-    [EXTRACTOR]: extractorBehavior
+    [EXTRACTOR]: extractorBehavior,
+    [MINERAL_HAULER]: mineralHaulerBehavior
 };
 
 class ExtendedCreep extends Creep {
