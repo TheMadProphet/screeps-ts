@@ -1,5 +1,5 @@
 import "utils/traveler/traveler";
-import "utils/sourceMemory";
+import "utils/memory/sourceMemory";
 import "utils/getOffExit";
 import "utils/excuseMe";
 import "utils/roomVisuals";
@@ -15,7 +15,7 @@ import {clearNudges} from "./utils/excuseMe";
 import {Statistics} from "./stats/statistics";
 import "stats/pathfindingMonitor";
 import "stats/findMonitor";
-import {memHack} from "./utils/memHack";
+import {memHack} from "./utils/memory/memHack";
 
 /**
  * TODO:

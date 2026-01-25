@@ -1,4 +1,4 @@
-import {getAvailablePositionsAround} from "../creep/roomScanner";
+import {getAvailablePositionsAround} from "../../creep/roomScanner";
 
 export {};
 
