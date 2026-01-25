@@ -45,8 +45,7 @@ const workerSpawner: RoleSpawner = {
 
         if (
             availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick ||
-            (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD ||
-            spawner.room.creepsByRole[WORKER].length < 4
+            (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD
         ) {
             const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
             spawner.spawn({
