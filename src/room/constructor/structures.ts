@@ -58,6 +58,8 @@ class RoomStructures {
     }
 
     private buildStorageLink() {
+        if (!this.room.storage || !this.room.memory.gridCenter) return;
+
         const linkPos = {x: this.room.memory.gridCenter.x, y: this.room.memory.gridCenter.y - 1};
         const structure = this.room.lookForAt(LOOK_STRUCTURES, linkPos.x, linkPos.y)[0];
         if (structure) {
