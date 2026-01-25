@@ -4,7 +4,9 @@ import {workerTasks} from "../../creep/workerOrganizer";
 
 const SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME;
 const ENERGY_FOR_CREEPS_PERCENTAGE = 0.35;
-const AVAILABLE_SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_PER_TICK * (1 - ENERGY_FOR_CREEPS_PERCENTAGE);
+const RESERVED_ENERGY_PERCENTAGE = 0.1;
+const AVAILABLE_SOURCE_ENERGY_PER_TICK =
+    SOURCE_ENERGY_PER_TICK * (1 - ENERGY_FOR_CREEPS_PERCENTAGE - RESERVED_ENERGY_PERCENTAGE);
 const BUILDER_EFFICIENCY = 0.75; // E.g. a builder builds 75% of the time, rest is gathering/idle
 const WORK_PART_ENERGY_PER_TICK = 5; // Each WORK part contributes 5 energy per tick to building
 const FORCE_SPAWN_THRESHOLD = 100000; // If storage has more than this amount, spawn builders regardless
