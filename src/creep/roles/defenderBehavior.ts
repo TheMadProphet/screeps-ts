@@ -29,9 +29,10 @@ class DefenderBehavior implements RoleBehavior {
             if (target) {
                 const isRanged = creep.getActiveBodyparts(RANGED_ATTACK) > 0;
                 if (isRanged) {
-                    if (creep.pos.getRangeTo(target) > 3) {
+                    const distance = creep.pos.getRangeTo(target);
+                    if (distance > 3) {
                         creep.travelTo(target, {movingTarget: true, range: 3});
-                    } else {
+                    } else if (distance <= 2) {
                         const direction = creep.pos.getDirectionTo(target);
                         const oppositeDirection = (((direction + 3) % 8) + 1) as DirectionConstant;
                         creep.move(oppositeDirection);
