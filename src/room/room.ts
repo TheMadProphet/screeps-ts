@@ -24,7 +24,13 @@ class ExtendedRoom extends Room {
         new RoomStructures(this).build();
         new RoomInfrastructure(this, this.controller).build();
 
-        this.spawn.automate();
+        for (const spawn of this.spawns) {
+            spawn.automate();
+
+            if (!spawn.spawning) {
+                break;
+            }
+        }
 
         this.find<StructureTower>(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_TOWER
@@ -146,14 +152,19 @@ Object.defineProperty(Room.prototype, "controllerLink", {
 
 Object.defineProperty(Room.prototype, "spawn", {
     get: function () {
-        if (!this._spawn) {
-            if (!this.memory.spawnId) {
-                this.memory.spawnId = this.find(FIND_MY_SPAWNS)[0].id;
-            }
-            this._spawn = Game.getObjectById(this.memory.spawnId);
+        return this.spawns[0];
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Room.prototype, "spawns", {
+    get: function () {
+        if (!this._spawns || Game.time % 10 === 0) {
+            this._spawns = this.find(FIND_MY_SPAWNS);
         }
 
-        return this._spawn;
+        return this._spawns;
     },
     enumerable: false,
     configurable: true
@@ -182,6 +193,7 @@ function groupCreeps(room: Room) {
 declare global {
     interface Room {
         spawn: StructureSpawn;
+        spawns: StructureSpawn[];
         storageLink: StructureLink | undefined;
         controllerLink: StructureLink | undefined;
         creepsByRole: {
