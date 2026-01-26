@@ -49,7 +49,7 @@ class MineralHaulerSpawner implements RoleSpawner {
         // However, the extractor spawner uses up to 20 WORK parts (10 sets of [WORK, WORK, MOVE])
         // Actual rate: 1 mineral per WORK per 6 ticks (5 cooldown + 1 harvest) = ~3.3 minerals/tick for 20 WORK
         const mineralsGeneratedPerTick = 3.3;
-        const pathCost = mineralMemory.pathCost;  // TODO: Divide by 2 or no?
+        const pathCost = mineralMemory.pathCost; // TODO: Divide by 2 or no?
         const roundTripTicks = pathCost * 2;
 
         // Capacity needed = minerals generated during round trip
