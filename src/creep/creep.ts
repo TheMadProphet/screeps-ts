@@ -66,7 +66,9 @@ class ExtendedCreep extends Creep {
         if (energyRepository && !this.room.hasEnergyEmergency()) {
             this.withdrawFrom(energyRepository);
         } else {
-            const closestDroppedResource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+            const closestDroppedResource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+                filter: it => it.resourceType === RESOURCE_ENERGY
+            });
             if (closestDroppedResource) {
                 this.pickupResource(closestDroppedResource);
             } else {
