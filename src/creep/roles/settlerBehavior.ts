@@ -1,0 +1,117 @@
+export const settlerTasks = {
+    HAUL: "haul",
+    WORK: "work",
+    CLAIM: "claim"
+} as const;
+
+export type SettlerTask = (typeof settlerTasks)[keyof typeof settlerTasks];
+
+declare global {
+    interface CreepMemory {
+        settlerTask?: SettlerTask;
+    }
+}
+
+class SettlerBehavior implements RoleBehavior {
+    run(creep: Creep): void {
+        switch (creep.memory.settlerTask) {
+            case settlerTasks.HAUL:
+                this.runHaulTask(creep);
+                break;
+            case settlerTasks.WORK:
+                this.runWorkTask(creep);
+                break;
+            case settlerTasks.CLAIM:
+                this.runClaimTask(creep);
+                break;
+        }
+
+        creep.giveWay();
+    }
+
+    private runWorkTask(creep: Creep) {
+        if (!creep.isInAssignedRoom()) return creep.travelToAssignedRoom();
+        creep.getOffExit();
+
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+            const droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+                filter: it => it.resourceType === RESOURCE_ENERGY
+            });
+            if (droppedResource) {
+                creep.pickupResource(droppedResource);
+            } else {
+                creep.say("Energy?");
+                creep.travelTo(this.getSettleFlag(creep), {range: 2});
+            }
+
+            return;
+        }
+
+        const controller = creep.room.controller!;
+        if (controller.my && controller.ticksToDowngrade < 1000) {
+            if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(controller);
+            }
+            return;
+        }
+
+        const constructionSite = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+        if (constructionSite) {
+            if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(constructionSite, {ignoreCreeps: false, range: 3});
+            }
+            return;
+        }
+
+        const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+        if (!spawn) {
+            creep.room.createConstructionSite(this.getSettleFlag(creep).pos, STRUCTURE_SPAWN);
+            return;
+        }
+
+        creep.say("⚠");
+    }
+
+    private runHaulTask(creep: Creep) {
+        if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
+        if (!creep.isInAssignedRoom()) return creep.travelToAssignedRoom();
+        const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+
+        if (spawn && spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+            creep.transferTo(spawn);
+            return;
+        }
+
+        const nearbyWorker = creep.room.find(FIND_MY_CREEPS, {
+            filter: it => it.memory.settlerTask === settlerTasks.WORK
+        })[0];
+
+        if (nearbyWorker) {
+            creep.transferTo(nearbyWorker);
+        } else {
+            const flag = this.getSettleFlag(creep);
+            if (creep.pos.inRangeTo(flag, 1)) {
+                creep.drop(RESOURCE_ENERGY);
+            } else {
+                creep.travelTo(flag, {range: 1});
+            }
+        }
+    }
+
+    private runClaimTask(creep: Creep) {
+        if (!creep.isInAssignedRoom()) return creep.travelToAssignedRoom();
+        const controller = creep.room.controller!;
+
+        if (creep.claimController(controller) === ERR_NOT_IN_RANGE) {
+            creep.travelTo(controller);
+        }
+    }
+
+    private getSettleFlag(creep: Creep): Flag {
+        const flagName = `settle_from_${creep.memory.home}`;
+        return Game.flags[flagName];
+    }
+}
+
+const workerBehavior = new SettlerBehavior();
+export default workerBehavior;

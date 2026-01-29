@@ -25,6 +25,12 @@ class Kingdom {
         }
     }
 
+    public getRoomToSettle(room: Room): string | undefined {
+        const flagName = `settle_from_${room.name}`;
+        const flag = Game.flags[flagName];
+        return flag?.pos?.roomName;
+    }
+
     private initialize() {
         if (Memory.kingdom) return;
 

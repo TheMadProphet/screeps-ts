@@ -8,6 +8,7 @@ export const EMERGENCY_UNIT = "Emergency";
 export const DEFENDER = "Defender";
 export const EXTRACTOR = "Extractor";
 export const MINERAL_HAULER = "MineralHauler";
+export const SETTLER = "Settler";
 
 export const roles = [
     MINER,
@@ -19,7 +20,8 @@ export const roles = [
     EMERGENCY_UNIT,
     DEFENDER,
     EXTRACTOR,
-    MINERAL_HAULER
+    MINERAL_HAULER,
+    SETTLER
 ] as const;
 
 export type CreepRole = (typeof roles)[number];
