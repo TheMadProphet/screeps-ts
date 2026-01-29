@@ -58,24 +58,6 @@ function buildRoadToController(room: Room) {
     }
 }
 
-function establishColonies(room: Room) {
-    if (room.memory.colonies) return;
-    if (room.controller!.level < 2) return;
-    if (!roomScanner.isNeighborsScanComplete(room)) return;
-
-    const vacantRooms = room.memory.neighborsInfo!.vacantRooms;
-    room.memory.colonies = [...vacantRooms].sort((a, b) => colonyScore(b) - colonyScore(a)).slice(0, COLONY_LIMIT);
-}
-
-function colonyScore(roomName: string): number {
-    const sources = Memory.rooms[roomName]?.sources ?? [];
-    if (sources.length === 0) return -Infinity;
-
-    const avgCost = _.sum(sources.map(id => Memory.sources[id]?.pathCost ?? Infinity)) / sources.length;
-
-    return sources.length / avgCost;
-}
-
 class RoomInfrastructure {
     room: Room;
     controller: StructureController;
@@ -88,7 +70,6 @@ class RoomInfrastructure {
     build() {
         buildEnergyInfrastructure(this.room);
         buildMineralInfrastructure(this.room);
-        establishColonies(this.room);
         buildRoadToController(this.room);
         this.buildRoadAroundCells();
     }

@@ -17,6 +17,7 @@ import {Statistics} from "./stats/statistics";
 import "stats/pathfindingMonitor";
 import "stats/findMonitor";
 import {memHack} from "./utils/memory/memHack";
+import kingdom from "./kingdom/kingdom";
 
 /**
  * TODO:
@@ -42,6 +43,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
     }
 
+    kingdom.tick();
     _.forEach(Game.rooms, room => room.automate());
     _.forEach(Game.creeps, creep => creep.runRole());
 
