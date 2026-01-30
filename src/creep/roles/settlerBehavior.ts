@@ -74,7 +74,7 @@ class SettlerBehavior implements RoleBehavior {
         if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
         const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
 
-        if (spawn && spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        if (spawn) {
             creep.transferTo(spawn);
             return;
         }
