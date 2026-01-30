@@ -44,9 +44,10 @@ const settlerSpawner: RoleSpawner = {
 
         // Finally spawn claimer
         const claimers = settlers.filter(it => it.memory.settlerTask === settlerTasks.CLAIM);
-        if (claimers.length < CLAIMER_AMOUNT) {
+        const alreadyClaimed = Game.rooms[roomToSettle]?.controller?.my;
+        if (claimers.length < CLAIMER_AMOUNT && !alreadyClaimed) {
             spawner.spawn({
-                body: new Body(spawner).addParts([CLAIM, MOVE], 2),
+                body: new Body(spawner).addParts([CLAIM, MOVE], 1),
                 memory: {
                     role: SETTLER,
                     settlerTask: settlerTasks.CLAIM,
