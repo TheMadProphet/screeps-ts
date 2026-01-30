@@ -25,8 +25,6 @@ class SettlerBehavior implements RoleBehavior {
                 this.runClaimTask(creep);
                 break;
         }
-
-        creep.giveWay();
     }
 
     private runWorkTask(creep: Creep) {
