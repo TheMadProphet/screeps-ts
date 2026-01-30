@@ -92,13 +92,15 @@ class SettlerBehavior implements RoleBehavior {
 
         if (nearbyWorker) {
             creep.transferTo(nearbyWorker);
-        } else {
+        } else if (this.getSettleFlag(creep)) {
             const flag = this.getSettleFlag(creep);
             if (creep.pos.inRangeTo(flag, 1)) {
                 creep.drop(RESOURCE_ENERGY);
             } else {
                 creep.travelTo(flag, {range: 1});
             }
+        } else {
+            creep.idle();
         }
     }
 
