@@ -34,14 +34,11 @@ export function getAvailablePositionsAround(source: Source) {
 }
 
 function isVacant(room: Room) {
-    if (room.controller?.my) return true;
+    if (!room.controller) return false;
 
-    if (room.controller) {
-        if (room.controller.owner?.username) return false;
-        if (room.controller.reservation?.username) return false;
-    }
-
-    return room.find(FIND_HOSTILE_CREEPS).length == 0;
+    const isOwned = room.controller.owner?.username;
+    const isReserved = room.controller.reservation?.username;
+    return !isOwned && !isReserved;
 }
 
 const roomScanner = {
