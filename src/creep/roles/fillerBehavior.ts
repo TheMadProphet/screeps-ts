@@ -10,8 +10,6 @@ class FillerBehavior implements RoleBehavior {
         } else {
             this.fill(creep, creep.room.storage);
         }
-
-        creep.giveWay();
     }
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
