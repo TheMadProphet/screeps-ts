@@ -30,8 +30,7 @@ class SettlerBehavior implements RoleBehavior {
     }
 
     private runWorkTask(creep: Creep) {
-        if (!creep.isInAssignedRoom()) return creep.travelToAssignedRoom();
-        creep.getOffExit();
+        if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
 
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
             const droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
@@ -74,7 +73,7 @@ class SettlerBehavior implements RoleBehavior {
 
     private runHaulTask(creep: Creep) {
         if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
-        if (!creep.isInAssignedRoom()) return creep.travelToAssignedRoom();
+        if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
         const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
 
         if (spawn && spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
@@ -99,12 +98,16 @@ class SettlerBehavior implements RoleBehavior {
     }
 
     private runClaimTask(creep: Creep) {
-        if (!creep.isInAssignedRoom()) return creep.travelToAssignedRoom();
+        if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
         const controller = creep.room.controller!;
 
         if (creep.claimController(controller) === ERR_NOT_IN_RANGE) {
             creep.travelTo(controller);
         }
+    }
+
+    private travelToTargetRoom(creep: Creep) {
+        creep.travelTo(this.getSettleFlag(creep) || Game.rooms[creep.memory.assignedRoom!].controller, {range: 2});
     }
 
     private getSettleFlag(creep: Creep): Flag {
