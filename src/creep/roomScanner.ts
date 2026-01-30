@@ -81,7 +81,7 @@ const roomScanner = {
         if (neighbors.scannedRooms.includes(roomToScan.name)) return;
 
         this.scanSources(roomToScan, home.spawn);
-        this.scanMineral(roomToScan)
+        this.scanMineral(roomToScan, home.spawn);
         neighbors.scannedRooms.push(roomToScan.name);
         if (isVacant(roomToScan)) {
             neighbors.vacantRooms.push(roomToScan.name);
@@ -102,12 +102,12 @@ const roomScanner = {
         room.memory.sources = sources.sort((a, b) => a.memory.pathCost - b.memory.pathCost).map(it => it.id);
     },
 
-    scanMineral(room: Room) {
+    scanMineral(room: Room, spawn: StructureSpawn) {
         const mineral = room.find(FIND_MINERALS)[0];
         room.memory.mineral = mineral?.id;
 
         if (mineral) {
-            mineral.memory.pathCost = Traveler.findTravelPath(room.spawn.pos, mineral.pos).cost;
+            mineral.memory.pathCost = Traveler.findTravelPath(spawn.pos, mineral.pos).cost;
         }
     }
 };

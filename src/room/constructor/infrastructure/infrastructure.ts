@@ -37,7 +37,7 @@ function buildMineralInfrastructure(room: Room) {
     if (!room.controller) return;
 
     if (!room.memory.mineral) {
-        roomScanner.scanMineral(room);
+        roomScanner.scanMineral(room, room.spawn);
     }
 
     if (room.memory.mineral && room.extensionsAreBuilt() && room.controller.level === 6) {
