@@ -66,6 +66,13 @@ class SettlerBehavior implements RoleBehavior {
             return;
         }
 
+        if (controller.my) {
+            if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(controller);
+            }
+            return;
+        }
+
         creep.say("⚠");
     }
 
