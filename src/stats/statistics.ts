@@ -98,7 +98,7 @@ export class Statistics {
             rclProgressTotal: room.controller.progressTotal,
             spawnEnergy: room.energyAvailable,
             spawnEnergyMax: room.energyCapacityAvailable,
-            spawning: room.spawn.spawning ? 1 : 0,
+            spawning: room.spawn?.spawning ? 1 : 0,
             storageEnergy: room.storage?.store?.energy || 0,
             containerEnergy,
             towerEnergy,
