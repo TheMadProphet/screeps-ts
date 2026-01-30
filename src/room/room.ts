@@ -152,7 +152,7 @@ Object.defineProperty(Room.prototype, "controllerLink", {
 
 Object.defineProperty(Room.prototype, "spawn", {
     get: function () {
-        return this.spawns[0];
+        return this.find(FIND_MY_SPAWNS)[0];
     },
     enumerable: false,
     configurable: true
@@ -160,11 +160,7 @@ Object.defineProperty(Room.prototype, "spawn", {
 
 Object.defineProperty(Room.prototype, "spawns", {
     get: function () {
-        if (!this._spawns || Game.time % 10 === 0) {
-            this._spawns = this.find(FIND_MY_SPAWNS);
-        }
-
-        return this._spawns;
+        return this.find(FIND_MY_SPAWNS);
     },
     enumerable: false,
     configurable: true
