@@ -68,6 +68,8 @@ class RoomInfrastructure {
     }
 
     build() {
+        if (!this.room.spawn) return;
+
         buildEnergyInfrastructure(this.room);
         buildMineralInfrastructure(this.room);
         buildRoadToController(this.room);
