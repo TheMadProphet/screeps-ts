@@ -32,7 +32,7 @@ const settlerSpawner: RoleSpawner = {
         const workers = settlers.filter(it => it.memory.settlerTask === settlerTasks.WORK);
         if (workers.length < WORKER_AMOUNT) {
             spawner.spawn({
-                body: new Body(spawner).addParts([WORK, CARRY, MOVE], 15),
+                body: new Body(spawner).addParts([WORK, CARRY, MOVE, MOVE], 10),
                 memory: {
                     role: SETTLER,
                     settlerTask: settlerTasks.WORK,
