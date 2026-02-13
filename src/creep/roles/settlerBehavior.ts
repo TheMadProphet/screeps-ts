@@ -30,6 +30,14 @@ class SettlerBehavior implements RoleBehavior {
     private runWorkTask(creep: Creep) {
         if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
 
+        const enemyStructures = creep.room.find(FIND_HOSTILE_STRUCTURES);
+        if (enemyStructures[0]) {
+            if (creep.dismantle(enemyStructures[0]) === ERR_NOT_IN_RANGE) {
+                creep.travelTo(enemyStructures[0]);
+            }
+            return;
+        }
+
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
             const droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                 filter: it => it.resourceType === RESOURCE_ENERGY
