@@ -17,7 +17,7 @@ declare global {
 class ExtendedRoom extends Room {
     @AddToPrototype
     automate() {
-        if (!this.controller?.my) return;
+        if (!this.controller?.my || !this.spawn) return;
 
         groupCreeps(this);
 
