@@ -91,10 +91,14 @@ class SettlerBehavior implements RoleBehavior {
     private runHaulTask(creep: Creep) {
         if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
         if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
-        const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
 
-        if (spawn) {
-            creep.transferTo(spawn);
+        if (creep.room.energyCapacityAvailable !== creep.room.energyAvailable) {
+            creep.fillSpawnsWithEnergy();
+            return;
+        }
+
+        if (creep.room.storage) {
+            creep.transferTo(creep.room.storage);
             return;
         }
 
