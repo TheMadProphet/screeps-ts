@@ -93,7 +93,9 @@ const roomScanner = {
         const sources = room.find(FIND_SOURCES).filter(it => getAvailablePositionsAround(it).length > 0);
 
         sources.forEach(it => {
-            it.memory.pathCost = Traveler.findTravelPath(spawn.pos, it.pos).cost;
+            if (!it.memory.pathCost || it.memory.pathCost === Infinity) {
+                it.memory.pathCost = Traveler.findTravelPath(spawn.pos, it.pos).cost;
+            }
         });
 
         room.memory.sources = sources.sort((a, b) => a.memory.pathCost - b.memory.pathCost).map(it => it.id);
