@@ -39,6 +39,10 @@ class SettlerBehavior implements RoleBehavior {
         }
 
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+            if (creep.room.spawn && creep.room.spawn.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
+                creep.withdrawFrom(creep.room.spawn);
+                return;
+            }
             const droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                 filter: it => it.resourceType === RESOURCE_ENERGY
             });
