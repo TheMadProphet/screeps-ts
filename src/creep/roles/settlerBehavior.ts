@@ -124,6 +124,9 @@ class SettlerBehavior implements RoleBehavior {
         if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
         const controller = creep.room.controller!;
 
+        if (controller.my && !creep.room.spawn) {
+            creep.room.createConstructionSite(this.getSettleFlag(creep).pos, STRUCTURE_SPAWN);
+        }
         if (creep.claimController(controller) === ERR_NOT_IN_RANGE) {
             creep.travelTo(controller);
         }
