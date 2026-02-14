@@ -40,6 +40,10 @@ class ExtendedRoom extends Room {
             filter: structure => structure.structureType === STRUCTURE_LINK
         }).forEach(it => it.automate());
 
+        if (this.terminal) {
+            this.terminal.automate();
+        }
+
         workerOrganizer.organizeWorkersIn(this);
         this.getVisibleColonies().forEach(it => {
             it.memory.invaderCount = it.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader").length;
