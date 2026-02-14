@@ -17,6 +17,7 @@ declare global {
         bucket: number;
         maxCpu: number;
         memory: number;
+        credits: number;
         gcl: number;
     }
 
@@ -143,6 +144,7 @@ export class Statistics {
             bucket: Game.cpu.bucket,
             maxCpu: Game.cpu.limit,
             memory: RawMemory.get().length,
+            credits: Game.market.credits,
             gcl: Game.gcl.level,
             time: Game.time,
             unixTime: new Date().getTime(),
