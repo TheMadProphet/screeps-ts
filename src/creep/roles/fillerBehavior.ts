@@ -1,5 +1,5 @@
 // Amount of minerals to keep in storage before filling terminal with them
-const MINERAL_THRESHOLD = 10000;
+const MINERAL_THRESHOLD = 25000;
 
 class FillerBehavior implements RoleBehavior {
     public run(creep: Creep) {
@@ -15,6 +15,8 @@ class FillerBehavior implements RoleBehavior {
                 this.gatherEnergy(creep, storage);
             } else if (terminal && terminal.store.getFreeCapacity() > 0) {
                 this.gatherMinerals(creep, storage, terminal);
+            } else {
+                creep.idle();
             }
         } else {
             if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
@@ -24,27 +26,13 @@ class FillerBehavior implements RoleBehavior {
                     terminal,
                     creep.store.getUsedCapacity() > 0 ? (Object.keys(creep.store)[0] as ResourceConstant) : undefined
                 );
+            } else {
+                creep.idle();
             }
         }
     }
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
-        const room = creep.room;
-        const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
-
-        const missingEnergyInSpawnsAndExtensions = room.energyCapacityAvailable - room.energyAvailable;
-        const missingEnergyInTowers = _.sum(towersWithMissingEnergy, tower =>
-            tower.store.getFreeCapacity(RESOURCE_ENERGY)
-        );
-        const missingEnergyInStorageLink = room.storageLink?.store.getFreeCapacity(RESOURCE_ENERGY) ?? 0;
-        const totalMissingEnergy =
-            missingEnergyInSpawnsAndExtensions + missingEnergyInTowers + missingEnergyInStorageLink;
-
-        if (totalMissingEnergy === 0) {
-            creep.idle();
-            return;
-        }
-
         creep.withdrawFrom(storage);
         if (creep.pos.isNearTo(storage)) creep.memory.working = true;
     }
