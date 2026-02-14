@@ -16,7 +16,7 @@ interface ResourcePrices {
 const RESOURCE_PRICES: Partial<Record<MarketResourceConstant, ResourcePrices>> = {
     [RESOURCE_LEMERGIUM]: {
         // sell: 825,
-        sellOrder: 900
+        sellOrder: 925
     }
 };
 
@@ -46,10 +46,14 @@ class ExtendedTerminal extends StructureTerminal {
                 continue;
             }
 
-            const orderExists = Object.values(Game.market.orders).some(
+            const existingOrder = Object.values(Game.market.orders).find(
                 order => order.resourceType === resourceType && order.roomName === this.room.name
             );
-            if (orderExists) {
+            if (existingOrder) {
+                if (existingOrder.price != RESOURCE_PRICES[resource]?.sellOrder) {
+                    Game.market.changeOrderPrice(existingOrder.id, RESOURCE_PRICES[resource]?.sellOrder || 0);
+                }
+
                 continue;
             }
 
