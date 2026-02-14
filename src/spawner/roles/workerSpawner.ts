@@ -43,10 +43,12 @@ const workerSpawner: RoleSpawner = {
             availableEnergyPerTick += remoteSourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         }
 
-        if (
-            availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick ||
-            (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD
-        ) {
+        let forceSpawn = (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD;
+        if (spawner.room.controller!.level === 8) {
+            forceSpawn = false;
+        }
+
+        if (availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick || forceSpawn) {
             const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
             spawner.spawn({
                 body: new Body(spawner).addParts(template, 10),
