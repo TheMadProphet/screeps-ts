@@ -16,7 +16,13 @@ interface ResourcePrices {
 const RESOURCE_PRICES: Partial<Record<MarketResourceConstant, ResourcePrices>> = {
     [RESOURCE_LEMERGIUM]: {
         // sell: 825,
-        sellOrder: 925
+        sellOrder: 975
+    },
+    [RESOURCE_HYDROGEN]: {
+        sellOrder: 495
+    },
+    [RESOURCE_OXYGEN]: {
+        sellOrder: 700
     }
 };
 
@@ -50,6 +56,11 @@ class ExtendedTerminal extends StructureTerminal {
                 order => order.resourceType === resourceType && order.roomName === this.room.name
             );
             if (existingOrder) {
+                if (existingOrder.remainingAmount < 1000) {
+                    Game.market.cancelOrder(existingOrder.id);
+                    continue;
+                }
+
                 if (existingOrder.price != RESOURCE_PRICES[resource]?.sellOrder) {
                     Game.market.changeOrderPrice(existingOrder.id, RESOURCE_PRICES[resource]?.sellOrder || 0);
                 }
