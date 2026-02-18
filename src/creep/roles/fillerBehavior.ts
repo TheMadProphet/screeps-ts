@@ -126,7 +126,7 @@ class FillerBehavior implements RoleBehavior {
             .find(FIND_MY_STRUCTURES, {
                 filter: (structure): structure is StructureTower =>
                     structure.structureType === STRUCTURE_TOWER &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 200
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 500
             })
             .sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY));
     }
