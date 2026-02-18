@@ -65,25 +65,35 @@ class FillerBehavior implements RoleBehavior {
 
         if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
             creep.fillSpawnsWithEnergy();
-        } else if (storageLink && !storageLink.isFull()) {
-            creep.transferTo(storageLink);
-        } else if (terminal && storage.store[RESOURCE_ENERGY] > 250000) {
-            creep.transferTo(terminal, RESOURCE_ENERGY);
-        } else {
-            const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
-
-            if (towersWithMissingEnergy.length > 0) {
-                creep.transferTo(towersWithMissingEnergy[0]);
-            } else if (
-                terminal &&
-                terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
-                terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3
-            ) {
-                creep.transferTo(terminal, RESOURCE_ENERGY);
-            } else {
-                creep.transferTo(storage);
-            }
+            return;
         }
+
+        if (storageLink && !storageLink.isFull()) {
+            creep.transferTo(storageLink);
+            return;
+        }
+
+        const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
+        if (towersWithMissingEnergy.length > 0) {
+            creep.transferTo(towersWithMissingEnergy[0]);
+            return;
+        }
+
+        if (
+            terminal &&
+            terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
+            terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3
+        ) {
+            creep.transferTo(terminal, RESOURCE_ENERGY);
+            return;
+        }
+
+        if (terminal && storage.store[RESOURCE_ENERGY] > 750000) {
+            creep.transferTo(terminal, RESOURCE_ENERGY);
+            return;
+        }
+
+        creep.transferTo(storage);
     }
 
     private shouldFillEnergy(creep: Creep, storage: StructureStorage): boolean {
@@ -103,7 +113,8 @@ class FillerBehavior implements RoleBehavior {
             storage.store.getUsedCapacity(RESOURCE_ENERGY) > creep.room.energyCapacityAvailable * 2 &&
             terminal &&
             terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
-            terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3
+            (terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3 ||
+                storage.store[RESOURCE_ENERGY] > 750000)
         )
             return true;
 
