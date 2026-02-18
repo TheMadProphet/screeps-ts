@@ -16,13 +16,16 @@ interface ResourcePrices {
 const RESOURCE_PRICES: Partial<Record<MarketResourceConstant, ResourcePrices>> = {
     [RESOURCE_LEMERGIUM]: {
         // sell: 825,
-        sellOrder: 975
+        sellOrder: 950
     },
     [RESOURCE_HYDROGEN]: {
         sellOrder: 495
     },
     [RESOURCE_OXYGEN]: {
         sellOrder: 700
+    },
+    [RESOURCE_ENERGY]: {
+        // sell: 90
     }
 };
 
@@ -89,7 +92,8 @@ class ExtendedTerminal extends StructureTerminal {
     private sellResources() {
         for (const resourceType in this.store) {
             const resource = resourceType as ResourceConstant;
-            if (resourceType === RESOURCE_ENERGY || this.store[resource] <= 0) continue;
+            if (this.store[resource] <= 0) continue;
+            if (resourceType === RESOURCE_ENERGY && this.store[resource] * 2 < this.store.getUsedCapacity()) continue;
 
             const price = RESOURCE_PRICES[resource]?.sell;
             if (!price) continue;
