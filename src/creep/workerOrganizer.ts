@@ -19,6 +19,15 @@ class WorkerOrganizer {
         if (this.roomHasNoWorkers(room)) return;
 
         this.resetData();
+        const gettingNuked = room.find(FIND_NUKES).length > 0;
+        if (gettingNuked && roomRepairer.roomNeedsRepairs(room)) {
+            if (roomBuilder.constructionSitesAreAvailable(room)) {
+                this.reserveOneWorkerFor(workerTasks.BUILD);
+            }
+            this.reserveRemainingWorkersFor(workerTasks.REPAIR);
+
+            return this.applyAssignment(room);
+        }
 
         if (roomRepairer.roomNeedsRepairs(room)) {
             this.reserveOneWorkerFor(workerTasks.REPAIR);
