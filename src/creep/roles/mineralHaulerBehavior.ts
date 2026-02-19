@@ -41,7 +41,12 @@ class MineralHaulerBehavior implements RoleBehavior {
 
         if (mineral.container) {
             if (creep.pos.isNearTo(mineral.container)) {
-                creep.withdraw(mineral.container, mineral.mineralType);
+                // In case energy got in there somehow
+                if (mineral.container.store.getUsedCapacity(RESOURCE_ENERGY)) {
+                    creep.withdraw(mineral.container, RESOURCE_ENERGY);
+                } else {
+                    creep.withdraw(mineral.container, mineral.mineralType);
+                }
             } else {
                 creep.travelTo(mineral.container);
             }
