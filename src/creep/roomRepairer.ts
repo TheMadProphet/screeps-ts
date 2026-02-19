@@ -12,7 +12,7 @@ interface RoomCache {
 // Structures will be repaired when their hits fall below the lower limit
 // and will stop being repaired when they reach the upper limit
 const LIMITS: Record<string, {upper: number; lower: number}> = {
-    [STRUCTURE_WALL]: {upper: 0, lower: 0},
+    [STRUCTURE_WALL]: {upper: 1, lower: 0.9},
     [STRUCTURE_RAMPART]: {upper: 1, lower: 0.9},
     [STRUCTURE_ROAD]: {upper: 0.9, lower: 0.75},
     [STRUCTURE_CONTAINER]: {upper: 0.9, lower: 0.75},
@@ -23,14 +23,19 @@ const CACHE_DURATION = 5;
 const RAMPART_TARGETS: {[rclLevel: number]: number} = {
     0: 0,
     1: 0,
-    2: 100000,
-    3: 250000,
-    4: 500000,
-    5: 1000000,
-    6: 2000000,
+    2: 50000,
+    3: 150000,
+    4: 250000,
+    5: 500000,
+    6: 5000000,
     7: 5000000,
     8: 10000000
 };
+
+const WALL_TARGETS: {[rclLevel: number]: number} = Object.entries(RAMPART_TARGETS).reduce((acc, [rcl, hits]) => {
+    acc[Number(rcl)] = hits * 2;
+    return acc;
+}, {} as {[rclLevel: number]: number});
 
 class RoomRepairer {
     cache: {[roomName: string]: RoomCache} = {};
@@ -94,16 +99,17 @@ class RoomRepairer {
     }
 
     private shouldRepair(structure: Structure, structuresInMaintenance: Set<Id<AnyStructure>>): boolean {
-        if (structure.structureType === STRUCTURE_WALL) {
-            return false;
-        }
-
         const inMaintenance = structuresInMaintenance.has(structure.id as Id<AnyStructure>);
 
         if (structure.structureType === STRUCTURE_RAMPART) {
             const rcl = structure.room.controller?.level ?? 0;
             const targetHits = RAMPART_TARGETS[rcl] || 0;
             const limit = inMaintenance ? LIMITS[STRUCTURE_RAMPART].upper : LIMITS[STRUCTURE_RAMPART].lower;
+            return structure.hits < targetHits * limit;
+        } else if (structure.structureType === STRUCTURE_WALL) {
+            const rcl = structure.room.controller?.level ?? 0;
+            const targetHits = WALL_TARGETS[rcl] || 0;
+            const limit = inMaintenance ? LIMITS[STRUCTURE_WALL].upper : LIMITS[STRUCTURE_WALL].lower;
             return structure.hits < targetHits * limit;
         }
 
@@ -123,10 +129,6 @@ class RoomRepairer {
 
         // Update maintenance status for each structure
         for (const structure of structures) {
-            if (structure.structureType === STRUCTURE_WALL) {
-                continue;
-            }
-
             const id: Id<AnyStructure> = structure.id;
             const inMaintenance = maintenanceSet.has(id);
 
@@ -137,6 +139,9 @@ class RoomRepairer {
             if (structure.structureType === STRUCTURE_RAMPART) {
                 const rcl = structure.room.controller?.level ?? 0;
                 maxHits = RAMPART_TARGETS[rcl] || 0;
+            } else if (structure.structureType === STRUCTURE_WALL) {
+                const rcl = structure.room.controller?.level ?? 0;
+                maxHits = WALL_TARGETS[rcl] || 0;
             }
 
             hitsRatio = maxHits > 0 ? structure.hits / maxHits : 1;
