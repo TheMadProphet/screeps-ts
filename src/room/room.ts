@@ -3,6 +3,7 @@ import RoomStructures from "./constructor/structures";
 import workerOrganizer, {WorkerTask, workerTasks} from "../creep/workerOrganizer";
 import {CreepRole, roles, WORKER} from "../constants";
 import {Traveler} from "../utils/traveler/traveler";
+import roomDefense from "../creep/roomDefense";
 
 declare global {
     interface RoomMemory {
@@ -48,6 +49,10 @@ class ExtendedRoom extends Room {
         this.getVisibleColonies().forEach(it => {
             it.memory.invaderCount = it.find(FIND_HOSTILE_CREEPS).filter(it => it.owner.username === "Invader").length;
         });
+
+        if (roomDefense.shouldActivateSafeMode(this)) {
+            this.controller.activateSafeMode();
+        }
     }
 
     @AddToPrototype
