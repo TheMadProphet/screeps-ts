@@ -33,8 +33,13 @@ class FillerBehavior implements RoleBehavior {
     }
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
-        creep.withdrawFrom(storage);
-        if (creep.pos.isNearTo(storage)) creep.memory.working = true;
+        let target: StructureStorage | StructureTerminal = storage;
+        if (this.shouldTakeFromTerminal(creep, storage)) {
+            target = creep.room.terminal!;
+        }
+
+        creep.withdrawFrom(target);
+        if (creep.pos.isNearTo(target)) creep.memory.working = true;
     }
 
     private gatherMinerals(creep: Creep, storage: StructureStorage, terminal: StructureTerminal) {
@@ -118,7 +123,21 @@ class FillerBehavior implements RoleBehavior {
         )
             return true;
 
+        // Take from terminal if it has a lot of energy
+        if (this.shouldTakeFromTerminal(creep, storage)) return true;
+
         return false;
+    }
+
+    private shouldTakeFromTerminal(creep: Creep, storage: StructureStorage): boolean {
+        const terminal = creep.room.terminal;
+        if (!terminal) return false;
+
+        // Take from terminal if it has a lot of energy and storage has little energy
+        return (
+            terminal.store.getUsedCapacity(RESOURCE_ENERGY) > terminal.store.getUsedCapacity() / 3 &&
+            storage.store.getUsedCapacity(RESOURCE_ENERGY) < 750000
+        );
     }
 
     private findTowersWithMissingEnergy(creep: Creep) {
