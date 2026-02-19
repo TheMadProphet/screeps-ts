@@ -1,5 +1,7 @@
 // Amount of minerals to keep in storage before filling terminal with them
 const MINERAL_THRESHOLD = 25000;
+// Amount of energy to keep in storage before filling terminal with them
+const ENERGY_THRESHOLD = 500000;
 
 class FillerBehavior implements RoleBehavior {
     public run(creep: Creep) {
@@ -20,7 +22,11 @@ class FillerBehavior implements RoleBehavior {
             }
         } else {
             if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                this.fill(creep, storage);
+                const filled = this.fill(creep, storage);
+
+                if (filled && creep.pos.isNearTo(storage)) {
+                    creep.withdraw(storage, RESOURCE_ENERGY);
+                }
             } else if (terminal) {
                 creep.transferTo(
                     terminal,
@@ -64,24 +70,25 @@ class FillerBehavior implements RoleBehavior {
         }
     }
 
+    // Returns true if it filled something, false if it fallbacked to storage
     private fill(creep: Creep, storage: StructureStorage) {
         const storageLink = creep.room.storageLink;
         const terminal = creep.room.terminal;
 
         if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
             creep.fillSpawnsWithEnergy();
-            return;
+            return true;
         }
 
         if (storageLink && !storageLink.isFull()) {
             creep.transferTo(storageLink);
-            return;
+            return true;
         }
 
         const towersWithMissingEnergy = this.findTowersWithMissingEnergy(creep);
         if (towersWithMissingEnergy.length > 0) {
             creep.transferTo(towersWithMissingEnergy[0]);
-            return;
+            return true;
         }
 
         if (
@@ -90,15 +97,16 @@ class FillerBehavior implements RoleBehavior {
             terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3
         ) {
             creep.transferTo(terminal, RESOURCE_ENERGY);
-            return;
+            return true;
         }
 
-        if (terminal && storage.store[RESOURCE_ENERGY] > 750000) {
+        if (terminal && storage.store[RESOURCE_ENERGY] > ENERGY_THRESHOLD * 0.95) {
             creep.transferTo(terminal, RESOURCE_ENERGY);
-            return;
+            return true;
         }
 
         creep.transferTo(storage);
+        return false;
     }
 
     private shouldFillEnergy(creep: Creep, storage: StructureStorage): boolean {
@@ -119,7 +127,7 @@ class FillerBehavior implements RoleBehavior {
             terminal &&
             terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
             (terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3 ||
-                storage.store[RESOURCE_ENERGY] > 750000)
+                storage.store[RESOURCE_ENERGY] > ENERGY_THRESHOLD)
         )
             return true;
 
@@ -136,7 +144,7 @@ class FillerBehavior implements RoleBehavior {
         // Take from terminal if it has a lot of energy and storage has little energy
         return (
             terminal.store.getUsedCapacity(RESOURCE_ENERGY) > terminal.store.getUsedCapacity() / 3 &&
-            storage.store.getUsedCapacity(RESOURCE_ENERGY) < 750000
+            storage.store.getUsedCapacity(RESOURCE_ENERGY) < ENERGY_THRESHOLD
         );
     }
 
