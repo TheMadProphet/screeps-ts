@@ -15,11 +15,14 @@ const workerSpawner: RoleSpawner = {
     spawn(spawner: StructureSpawn) {
         const upgraders = spawner.room.workersByTask[workerTasks.UPGRADE];
         const builders = spawner.room.workersByTask[workerTasks.BUILD];
+        const repairers = spawner.room.workersByTask[workerTasks.REPAIR];
 
         const upgraderWorkPartCount = (upgraders[0]?.getActiveBodyparts(WORK) ?? 0) * upgraders.length;
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
+        const repairerWorkPartCount = (repairers[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
 
         const upgraderEnergyPerTick = upgraderWorkPartCount;
+        const repairerEnergyPerTick = repairerWorkPartCount;
         const builderEnergyPerTick = builderWorkPartCount * WORK_PART_ENERGY_PER_TICK * BUILDER_EFFICIENCY;
 
         let sourceCount = _.size(spawner.room.memory.sources);
@@ -48,7 +51,10 @@ const workerSpawner: RoleSpawner = {
             forceSpawn = false;
         }
 
-        if (availableEnergyPerTick > upgraderEnergyPerTick + builderEnergyPerTick || forceSpawn) {
+        if (
+            availableEnergyPerTick > upgraderEnergyPerTick + repairerEnergyPerTick + builderEnergyPerTick ||
+            forceSpawn
+        ) {
             const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
             spawner.spawn({
                 body: new Body(spawner).addParts(template, 10),
