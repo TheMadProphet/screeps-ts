@@ -1,4 +1,5 @@
 import roomScanner from "../creep/roomScanner";
+import kingdomEconomy from "./kingdomEconomy";
 
 declare global {
     interface Memory {
@@ -8,6 +9,7 @@ declare global {
     interface KingdomMemory {
         rooms: string[];
         roomColonies: {[roomName: string]: string[]};
+        energyNeeds: {[roomName: string]: boolean};
     }
 }
 
@@ -22,6 +24,7 @@ class Kingdom {
             if (!room) continue;
 
             this.establishColonies(room);
+            kingdomEconomy.exchangeEnergies(room);
         }
     }
 
@@ -36,7 +39,8 @@ class Kingdom {
 
         Memory.kingdom = {
             rooms: [],
-            roomColonies: {}
+            roomColonies: {},
+            energyNeeds: {}
         };
 
         if (Memory.kingdom.rooms.length === 0) {
