@@ -24,6 +24,7 @@ import {Statistics} from "../stats/statistics";
 import extractorSpawner from "./roles/extractorSpawner";
 import mineralHaulerSpawner from "./roles/mineralHaulerSpawner";
 import settlerSpawner from "./roles/settlerSpawner";
+import Body from "./body";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
@@ -48,11 +49,12 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         spawnWasIssued = false;
 
         if (!this.spawning) {
-            for (const roleSpawner of Object.values(roleSpawners)) {
-                roleSpawner.spawn(this);
+            const shouldStop = this.spawnForNuke();
+            if (!shouldStop) {
+                for (const roleSpawner of Object.values(roleSpawners)) {
+                    roleSpawner.spawn(this);
 
-                if (spawnWasIssued) {
-                    break;
+                    if (spawnWasIssued) break;
                 }
             }
         }
@@ -60,6 +62,29 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
         this.displayVisuals();
 
         Statistics.registerSpawnCpuUsage(Game.cpu.getUsed() - cpuUsed);
+    };
+
+    this.spawnForNuke = function () {
+        const nukes = this.room.find(FIND_NUKES);
+        if (nukes.length > 0) {
+            const body = new Body(this).addParts([CARRY, CARRY, MOVE], 50 / 3);
+            // Time to spawn filler 2 ticks after nuke lands
+            if (nukes[0].timeToLand < body.getParts().length * 3 + 2) {
+                this.spawn({
+                    body: body,
+                    memory: {
+                        role: FILLER
+                    }
+                });
+                return true;
+            } else if (nukes[0].timeToLand < 500) {
+                // Stop spawning creeps except for fillers
+                roleSpawners[FILLER]!.spawn(this);
+                return true;
+            }
+        }
+
+        return false;
     };
 
     this.spawn = function ({body, memory}) {

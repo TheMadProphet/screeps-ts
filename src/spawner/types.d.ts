@@ -6,6 +6,8 @@ declare global {
     interface StructureSpawn {
         automate(): void;
 
+        spawnForNuke(): boolean;
+
         spawn(request: CreepSpawnRequest): ScreepsReturnCode;
 
         displayVisuals(): void;
