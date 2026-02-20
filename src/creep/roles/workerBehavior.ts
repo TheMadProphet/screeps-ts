@@ -35,6 +35,7 @@ class WorkerBehavior implements RoleBehavior {
             } else {
                 creep.withdrawEnergy();
             }
+            creep.giveWay();
         } else {
             this.gatherEnergyInRemote(creep);
         }
