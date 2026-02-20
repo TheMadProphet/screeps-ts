@@ -12,30 +12,33 @@ class FillerBehavior implements RoleBehavior {
         if (creep.memory.working && creep.store.getUsedCapacity() === 0) creep.memory.working = false;
         if (!creep.memory.working && creep.store.getFreeCapacity() === 0) creep.memory.working = true;
 
+        // Energy work
         if (!creep.memory.working) {
             if (this.shouldFillEnergy(creep, storage)) {
                 this.gatherEnergy(creep, storage);
-            } else if (terminal && terminal.store.getFreeCapacity() > 0) {
-                this.gatherMinerals(creep, storage, terminal);
-            } else {
-                creep.idle();
+                return;
             }
-        } else {
-            if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                const filled = this.fill(creep, storage);
-
-                if (filled && creep.pos.isNearTo(storage)) {
-                    creep.withdraw(storage, RESOURCE_ENERGY);
-                }
-            } else if (terminal) {
-                creep.transferTo(
-                    terminal,
-                    creep.store.getUsedCapacity() > 0 ? (Object.keys(creep.store)[0] as ResourceConstant) : undefined
-                );
-            } else {
-                creep.idle();
+        } else if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+            const shouldGetEnergyFromStorage = this.fill(creep, storage);
+            if (shouldGetEnergyFromStorage && creep.pos.isNearTo(storage)) {
+                creep.withdraw(storage, RESOURCE_ENERGY);
             }
+            return;
         }
+
+        // Mineral work
+        if (!creep.memory.working) {
+            if (terminal && terminal.store.getFreeCapacity() > 0) {
+                const withdrew = this.gatherMinerals(creep, storage, terminal);
+                if (withdrew) return;
+            }
+        } else if (terminal) {
+            creep.transferTo(terminal, Object.keys(creep.store)[0] as ResourceConstant);
+            return;
+        }
+
+        // No work to do, idle
+        creep.idle();
     }
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
@@ -51,7 +54,7 @@ class FillerBehavior implements RoleBehavior {
     private gatherMinerals(creep: Creep, storage: StructureStorage, terminal: StructureTerminal) {
         const energy = storage.store.getUsedCapacity(RESOURCE_ENERGY);
         const totalMinerals = storage.store.getUsedCapacity() - energy;
-        if (totalMinerals < MINERAL_THRESHOLD) return;
+        if (totalMinerals < MINERAL_THRESHOLD) return false;
 
         for (const resourceType in storage.store) {
             const amount = storage.store[resourceType as ResourceConstant];
@@ -65,12 +68,14 @@ class FillerBehavior implements RoleBehavior {
                         terminal.store.getFreeCapacity(resourceType as ResourceConstant)
                     )
                 );
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
-    // Returns true if it filled something, false if it fallbacked to storage
+    // Returns true if it should pickup energy from storage
     private fill(creep: Creep, storage: StructureStorage) {
         const storageLink = creep.room.storageLink;
         const terminal = creep.room.terminal;
@@ -97,12 +102,12 @@ class FillerBehavior implements RoleBehavior {
             terminal.store.getUsedCapacity(RESOURCE_ENERGY) < terminal.store.getUsedCapacity() / 3
         ) {
             creep.transferTo(terminal, RESOURCE_ENERGY);
-            return true;
+            return false;
         }
 
         if (terminal && storage.store[RESOURCE_ENERGY] > ENERGY_THRESHOLD * 0.95) {
             creep.transferTo(terminal, RESOURCE_ENERGY);
-            return true;
+            return false;
         }
 
         creep.transferTo(storage);
@@ -144,7 +149,7 @@ class FillerBehavior implements RoleBehavior {
         // Take from terminal if it has a lot of energy and storage has little energy
         return (
             terminal.store.getUsedCapacity(RESOURCE_ENERGY) > terminal.store.getUsedCapacity() / 3 &&
-            storage.store.getUsedCapacity(RESOURCE_ENERGY) < ENERGY_THRESHOLD
+            storage.store.getUsedCapacity(RESOURCE_ENERGY) < 100000
         );
     }
 
