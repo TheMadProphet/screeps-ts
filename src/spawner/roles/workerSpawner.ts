@@ -19,7 +19,7 @@ const workerSpawner: RoleSpawner = {
 
         const upgraderWorkPartCount = (upgraders[0]?.getActiveBodyparts(WORK) ?? 0) * upgraders.length;
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
-        const repairerWorkPartCount = (repairers[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
+        const repairerWorkPartCount = (repairers[0]?.getActiveBodyparts(WORK) ?? 0) * repairers.length;
 
         const upgraderEnergyPerTick = upgraderWorkPartCount;
         const repairerEnergyPerTick = repairerWorkPartCount;
