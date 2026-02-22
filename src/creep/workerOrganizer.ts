@@ -5,7 +5,8 @@ import roomRepairer from "./roomRepairer";
 export const workerTasks = {
     BUILD: 0,
     UPGRADE: 1,
-    REPAIR: 2
+    REPAIR: 2,
+    DECONSTRUCT: 3
 } as const;
 
 export type WorkerTask = (typeof workerTasks)[keyof typeof workerTasks];
@@ -25,6 +26,15 @@ class WorkerOrganizer {
                 this.reserveOneWorkerFor(workerTasks.BUILD);
             }
             this.reserveRemainingWorkersFor(workerTasks.REPAIR);
+
+            return this.applyAssignment(room);
+        }
+
+        if (Game.flags[`${room.name}-deconstruct`]) {
+            if (roomBuilder.constructionSitesAreAvailable(room)) this.reserveOneWorkerFor(workerTasks.BUILD);
+            if (roomRepairer.roomNeedsRepairs(room)) this.reserveOneWorkerFor(workerTasks.REPAIR);
+
+            this.reserveRemainingWorkersFor(workerTasks.DECONSTRUCT);
 
             return this.applyAssignment(room);
         }

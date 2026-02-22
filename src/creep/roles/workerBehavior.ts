@@ -10,6 +10,11 @@ declare global {
 
 class WorkerBehavior implements RoleBehavior {
     run(creep: Creep): void {
+        if (creep.memory.task === workerTasks.DECONSTRUCT) {
+            this.runDeconstructTask(creep);
+            return;
+        }
+
         if (creep.store.getUsedCapacity() === 0) return this.gatherEnergy(creep);
 
         // TODO: Ignore roads if 1:1 move parts
@@ -105,6 +110,35 @@ class WorkerBehavior implements RoleBehavior {
             if (creep.repair(toRepair) === ERR_NOT_IN_RANGE) {
                 creep.travelTo(toRepair, {range: 3});
             }
+        }
+    }
+
+    private runDeconstructTask(creep: Creep) {
+        if (creep.store.getFreeCapacity() === 0) {
+            creep.transferTo(creep.room.storage!);
+            return;
+        }
+
+        const flag = Game.flags[`${creep.room.name}-deconstruct`];
+        if (!flag) {
+            creep.idle();
+            creep.say("⚠");
+            return;
+        }
+
+        if (!creep.pos.isNearTo(flag)) {
+            creep.travelTo(flag, {range: 1});
+            return;
+        }
+
+        const structure = flag.pos.lookFor(LOOK_STRUCTURES)[0];
+        if (structure) {
+            if (creep.dismantle(structure) !== OK) {
+                creep.say("?");
+            }
+        } else {
+            creep.idle();
+            creep.say(`⚠`);
         }
     }
 }

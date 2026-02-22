@@ -16,6 +16,11 @@ const workerSpawner: RoleSpawner = {
         const upgraders = spawner.room.workersByTask[workerTasks.UPGRADE];
         const builders = spawner.room.workersByTask[workerTasks.BUILD];
         const repairers = spawner.room.workersByTask[workerTasks.REPAIR];
+        const deconstructors = spawner.room.workersByTask[workerTasks.DECONSTRUCT];
+
+        if (deconstructors.length > 5) {
+            return;
+        }
 
         const upgraderWorkPartCount = (upgraders[0]?.getActiveBodyparts(WORK) ?? 0) * upgraders.length;
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
