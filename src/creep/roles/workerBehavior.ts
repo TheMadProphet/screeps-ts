@@ -1,6 +1,7 @@
 import {WorkerTask, workerTasks} from "../workerOrganizer";
 import roomBuilder from "../roomBuilder";
 import roomRepairer from "../roomRepairer";
+import {offsetX, offsetY} from "../../utils/excuseMe";
 
 declare global {
     interface CreepMemory {
@@ -95,8 +96,26 @@ class WorkerBehavior implements RoleBehavior {
             return;
         }
 
-        if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
-            creep.travelTo(controller, {ignoreCreeps: false, range: 3});
+        if (!creep.pos.inRangeTo(controller, 3)) {
+            creep.travelTo(controller, {range: 3});
+            return;
+        }
+
+        creep.upgradeController(controller);
+
+        // Move closer to controller
+        if (!creep.pos.isNearTo(controller)) {
+            const dir = creep.pos.getDirectionTo(controller);
+            const nextX = creep.pos.x + offsetX[dir];
+            const nextY = creep.pos.y + offsetY[dir];
+
+            const terrain = creep.room.lookForAt(LOOK_TERRAIN, nextX, nextY);
+            if (terrain.some(it => it === "wall")) return;
+
+            const creeps = creep.room.lookForAt(LOOK_CREEPS, nextX, nextY);
+            if (creeps.length > 0) return;
+
+            creep.move(dir);
         }
     }
 

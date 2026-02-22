@@ -36,8 +36,8 @@ declare global {
 /*
  * some utils that I'm using
  */
-const offsetX = [0, 0, 1, 1, 1, 0, -1, -1, -1];
-const offsetY = [0, -1, -1, 0, 1, 1, 1, 0, -1];
+export const offsetX = [0, 0, 1, 1, 1, 0, -1, -1, -1];
+export const offsetY = [0, -1, -1, 0, 1, 1, 1, 0, -1];
 
 function getOppositeDir(dir: DirectionConstant) {
     return (((dir + 3) % 8) + 1) as DirectionConstant;
