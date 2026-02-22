@@ -113,12 +113,6 @@ class ExtendedTerminal extends StructureTerminal {
 
                 const result = Game.market.deal(order.id, amountToSell, this.room.name);
                 if (result === OK) {
-                    console.log(
-                        `Terminal in ${this.room.name} sold ${amountToSell} of ${resource} at price ${
-                            order.price
-                        } for a total of ${amountToSell * price} credits (transaction cost: ${transactionCost})`
-                    );
-
                     break;
                 }
             }
