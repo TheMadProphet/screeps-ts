@@ -103,7 +103,6 @@ class HaulerBehavior implements RoleBehavior {
 
         const source = Game.getObjectById(sourceId);
         if (source) {
-            this.pickupEnergyNearSource(creep, source);
             if (source.container) {
                 if (creep.pos.isNearTo(source.container)) {
                     creep.withdraw(source.container, RESOURCE_ENERGY);
@@ -111,6 +110,7 @@ class HaulerBehavior implements RoleBehavior {
                     creep.travelTo(source.container, {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
                 }
             }
+            this.pickupEnergyNearSource(creep, source);
         } else {
             creep.travelToAssignedRoom();
         }
