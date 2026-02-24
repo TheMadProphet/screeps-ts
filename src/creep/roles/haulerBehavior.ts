@@ -96,11 +96,6 @@ class HaulerBehavior implements RoleBehavior {
     private gatherEnergy(creep: Creep, sourceId: Id<Source>) {
         creep.getOffExit();
 
-        if (!creep.isInAssignedRoom()) {
-            creep.travelToAssignedRoom();
-            return;
-        }
-
         const source = Game.getObjectById(sourceId);
         if (source) {
             if (source.container) {
