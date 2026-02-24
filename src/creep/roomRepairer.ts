@@ -20,10 +20,10 @@ const LIMITS: Record<string, {upper: number; lower: number}> = {
 };
 
 const CACHE_DURATION = 5;
-const RAMPART_TARGETS: {[rclLevel: number]: number} = {
+const DEFENSE_TARGETS: {[rclLevel: number]: number} = {
     0: 0,
     1: 0,
-    2: 50000,
+    2: 10000,
     3: 150000,
     4: 250000,
     5: 500000,
@@ -31,11 +31,6 @@ const RAMPART_TARGETS: {[rclLevel: number]: number} = {
     7: 5000000,
     8: 10000000
 };
-
-const WALL_TARGETS: {[rclLevel: number]: number} = Object.entries(RAMPART_TARGETS).reduce((acc, [rcl, hits]) => {
-    acc[Number(rcl)] = hits * 2;
-    return acc;
-}, {} as {[rclLevel: number]: number});
 
 const STRUCTURES_TO_DEFEND_FROM_NUKES: StructureConstant[] = [STRUCTURE_SPAWN, STRUCTURE_STORAGE, STRUCTURE_TERMINAL];
 
@@ -101,28 +96,17 @@ class RoomRepairer {
         return newCache;
     }
 
-    private shouldRepair(structure: Structure, structuresInMaintenance: Set<Id<AnyStructure>>, nukes: Nuke[]): boolean {
+    private shouldRepair(
+        structure: AnyStructure,
+        structuresInMaintenance: Set<Id<AnyStructure>>,
+        nukes: Nuke[]
+    ): boolean {
         const inMaintenance = structuresInMaintenance.has(structure.id as Id<AnyStructure>);
-
-        if (structure.structureType === STRUCTURE_RAMPART) {
-            const rcl = structure.room.controller?.level ?? 0;
-            let targetHits = RAMPART_TARGETS[rcl] || 0;
-            if (rcl >= 6 && nukes.length > 0) {
-                const hitsForNuke = this.getRampartHitpointsAgainstNukes(structure as StructureRampart, nukes);
-                targetHits = Math.max(targetHits, hitsForNuke);
-            }
-            const limit = inMaintenance ? LIMITS[STRUCTURE_RAMPART].upper : LIMITS[STRUCTURE_RAMPART].lower;
-            return structure.hits < targetHits * limit;
-        } else if (structure.structureType === STRUCTURE_WALL) {
-            const rcl = structure.room.controller?.level ?? 0;
-            const targetHits = WALL_TARGETS[rcl] || 0;
-            const limit = inMaintenance ? LIMITS[STRUCTURE_WALL].upper : LIMITS[STRUCTURE_WALL].lower;
-            return structure.hits < targetHits * limit;
-        }
-
+        const targetHits = this.getStructureTargetHits(structure, nukes);
         const limits = LIMITS[structure.structureType] || LIMITS.default;
         const limit = inMaintenance ? limits.upper : limits.lower;
-        return structure.hits < structure.hitsMax * limit;
+
+        return structure.hits < targetHits * limit;
     }
 
     private updateStructureMaintenance(
@@ -143,25 +127,9 @@ class RoomRepairer {
             const id: Id<AnyStructure> = structure.id;
             const inMaintenance = maintenanceSet.has(id);
 
-            let hitsRatio: number;
-            let limits: {upper: number; lower: number};
-            let maxHits = structure.hitsMax;
-
-            if (structure.structureType === STRUCTURE_RAMPART) {
-                const rcl = structure.room.controller?.level ?? 0;
-                maxHits = RAMPART_TARGETS[rcl] || 0;
-
-                if (rcl >= 6 && nukes.length > 0) {
-                    const hitsForNuke = this.getRampartHitpointsAgainstNukes(structure as StructureRampart, nukes);
-                    maxHits = Math.max(maxHits, hitsForNuke);
-                }
-            } else if (structure.structureType === STRUCTURE_WALL) {
-                const rcl = structure.room.controller?.level ?? 0;
-                maxHits = WALL_TARGETS[rcl] || 0;
-            }
-
-            hitsRatio = maxHits > 0 ? structure.hits / maxHits : 1;
-            limits = LIMITS[structure.structureType] || LIMITS.default;
+            const maxHits = this.getStructureTargetHits(structure, nukes);
+            const hitsRatio = maxHits > 0 ? structure.hits / maxHits : 1;
+            const limits = LIMITS[structure.structureType] || LIMITS.default;
 
             if (inMaintenance && hitsRatio >= limits.upper) {
                 // Exit maintenance: structure reached upper limit
@@ -190,6 +158,31 @@ class RoomRepairer {
         }
 
         return maxHits > 0 ? maxHits * 1.2 : -1;
+    }
+
+    private getStructureTargetHits(structure: AnyStructure, nukes: Nuke[]) {
+        if (structure.structureType === STRUCTURE_RAMPART || structure.structureType === STRUCTURE_WALL) {
+            return this.getDefenseTargetHits(structure as StructureRampart | StructureWall, nukes);
+        }
+
+        return structure.hitsMax;
+    }
+
+    private getDefenseTargetHits(defense: StructureRampart | StructureWall, nukes: Nuke[]) {
+        const rcl = defense.room.controller?.level ?? 0;
+        let targetHits = DEFENSE_TARGETS[rcl] || 0;
+        if (defense.room.memory.targetDefenseHits) targetHits = defense.room.memory.targetDefenseHits;
+
+        if (defense.structureType === STRUCTURE_RAMPART) {
+            if (rcl >= 6 && nukes.length > 0) {
+                const hitsForNuke = this.getRampartHitpointsAgainstNukes(defense, nukes);
+                targetHits = Math.max(targetHits, hitsForNuke);
+            }
+        } else {
+            targetHits *= 2;
+        }
+
+        return targetHits;
     }
 }
 
