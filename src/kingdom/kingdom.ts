@@ -34,6 +34,21 @@ class Kingdom {
         return flag?.pos?.roomName;
     }
 
+    public onRoomClaimed(newRoom: Room, spawnPos: RoomPosition) {
+        // Remove the new room from colonies
+        for (const roomName of Memory.kingdom.rooms) {
+            if (Game.rooms[roomName].getAllColonies().includes(newRoom.name)) {
+                Memory.rooms[roomName].colonies = Memory.rooms[roomName].colonies?.filter(it => it !== newRoom.name);
+            }
+        }
+
+        if (!Memory.kingdom.rooms.includes(newRoom.name)) {
+            Memory.kingdom.rooms.push(newRoom.name);
+        }
+
+        newRoom.onClaimed(spawnPos);
+    }
+
     private initialize() {
         if (Memory.kingdom) return;
 

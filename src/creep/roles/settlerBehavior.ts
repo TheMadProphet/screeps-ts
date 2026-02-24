@@ -1,3 +1,5 @@
+import kingdom from "../../kingdom/kingdom";
+
 export const settlerTasks = {
     HAUL: "haul",
     WORK: "work",
@@ -124,10 +126,10 @@ class SettlerBehavior implements RoleBehavior {
         if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
         const controller = creep.room.controller!;
 
-        if (controller.my && !creep.room.spawn) {
-            creep.room.createConstructionSite(this.getSettleFlag(creep).pos, STRUCTURE_SPAWN);
-        }
-        if (creep.claimController(controller) === ERR_NOT_IN_RANGE) {
+        const status = creep.claimController(controller);
+        if (status === OK) {
+            kingdom.onRoomClaimed(creep.room, this.getSettleFlag(creep).pos);
+        } else if (status === ERR_NOT_IN_RANGE) {
             creep.travelTo(controller);
         }
     }

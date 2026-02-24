@@ -43,9 +43,10 @@ class RoomGrid {
         return undefined;
     }
 
-    private initializeGridMemory(room: Room) {
+    public initializeGridMemory(room: Room, spawnPos?: RoomPosition) {
         if (!room.memory.gridCenter) {
-            room.memory.gridCenter = {x: room.spawn.pos.x + 1, y: room.spawn.pos.y};
+            const pos = spawnPos ?? room.spawn.pos;
+            room.memory.gridCenter = {x: pos.x + 1, y: pos.y};
         }
 
         if (!room.memory.gridMiscCellIndex) {

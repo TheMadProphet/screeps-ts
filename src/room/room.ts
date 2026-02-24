@@ -59,6 +59,12 @@ class ExtendedRoom extends Room {
     }
 
     @AddToPrototype
+    onClaimed(spawnPos: RoomPosition) {
+        roomGrid.initializeGridMemory(this, spawnPos);
+        spawnPos.createConstructionSite(STRUCTURE_SPAWN);
+    }
+
+    @AddToPrototype
     buildRoad(from: RoomPosition, to: RoomPosition) {
         const path = Traveler.findTravelPath(from, to, {ignoreCreeps: true}).path;
 
@@ -212,21 +218,14 @@ declare global {
         };
 
         automate(): void;
-
+        onClaimed(spawnPos: RoomPosition): void;
         buildRoad(from: RoomPosition, to: RoomPosition): void;
-
         fillersAreEnabled(): boolean;
-
         hasEnergyEmergency(): boolean;
-
         getAllColonies(): string[];
-
         getVisibleColonies(): Room[];
-
         isBeingReserved(): boolean;
-
         extensionsAreBuilt(): boolean;
-
         canBuildStructure(structureType: BuildableStructureConstant): boolean;
     }
 }
