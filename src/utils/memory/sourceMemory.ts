@@ -16,6 +16,7 @@ declare global {
     interface Source {
         memory: SourceMemory;
         container: StructureContainer | undefined;
+        link: StructureLink | undefined;
     }
 }
 
@@ -44,6 +45,17 @@ Object.defineProperty(Source.prototype, "container", {
         if (!containerId) return undefined;
 
         return Game.getObjectById(containerId) ?? undefined;
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Source.prototype, "link", {
+    get: function () {
+        const linkId = this.memory.linkId;
+        if (!linkId) return undefined;
+
+        return Game.getObjectById(linkId) ?? undefined;
     },
     enumerable: false,
     configurable: true

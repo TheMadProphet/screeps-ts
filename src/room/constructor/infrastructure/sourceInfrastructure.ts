@@ -1,4 +1,5 @@
 import {Traveler} from "../../../utils/traveler/traveler";
+import {getAvailablePositionsAround} from "../../../creep/roomScanner";
 
 declare global {
     interface SourceMemory {
@@ -6,6 +7,8 @@ declare global {
         roadConstructionStarted?: boolean;
         containerId?: Id<StructureContainer>;
         containerConstructionStarted?: boolean;
+        linkId?: Id<StructureLink>;
+        linkConstructionStarted?: boolean;
     }
 }
 
@@ -23,6 +26,9 @@ class SourceInfrastructure {
 
         this.buildContainer(path);
         this.buildRoad(path);
+        if ((this.source.room.controller?.level ?? 0) >= 6) {
+            this.buildLink();
+        }
     }
 
     public rebuild(fromStructure: AnyStructure) {
@@ -54,6 +60,87 @@ class SourceInfrastructure {
         }
     }
 
+    private buildLink() {
+        if (this.source.memory.linkId) return;
+
+        if (this.source.memory.linkConstructionStarted) {
+            const linkId = this.findLinkNearby();
+            if (linkId) {
+                this.source.memory.linkId = linkId;
+                delete this.source.memory.linkConstructionStarted;
+                return;
+            }
+        }
+
+        if (!this.source.room.canBuildStructure(STRUCTURE_LINK)) return;
+        if (!this.isBestSourceForLink()) return;
+
+        const linkPos = this.getLinkPlacementPos();
+        if (!linkPos) return console.error(`Cannot find position for source link near source ${this.source.id}`);
+
+        const status = this.source.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
+        if (status === OK) {
+            this.source.memory.linkConstructionStarted = true;
+        } else {
+            console.error(
+                `Failed to create construction site for source link near source ${this.source.id} with status ${status}`
+            );
+        }
+    }
+
+    private isBestSourceForLink(): boolean {
+        const centerPos = this.source.room.memory.gridCenter;
+        const center = this.source.room.getPositionAt(centerPos.x, centerPos.y)!;
+        const sources = this.source.room.find(FIND_SOURCES);
+
+        const costForThisSource = Traveler.findTravelPath(center, this.source).cost;
+        for (const source of sources) {
+            if (source.id === this.source.id) continue;
+            if (source.link || source.memory.linkConstructionStarted) continue;
+
+            const cost = Traveler.findTravelPath(center, source).cost;
+            if (cost > costForThisSource) {
+                return false; // There is a source which is farther from the center
+            }
+        }
+
+        return true;
+    }
+
+    private getLinkPlacementPos(): {x: number; y: number} | null {
+        const center = this.source.room.memory.gridCenter;
+        let bestPos: {x: number; y: number} | null = null;
+        let bestDist = Infinity;
+        for (const miningPos of getAvailablePositionsAround(this.source)) {
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    const x = miningPos.x + dx,
+                        y = miningPos.y + dy;
+
+                    if (this.source.pos.getRangeTo(x, y) !== 2) continue;
+
+                    const dist = Math.max(Math.abs(x - center.x), Math.abs(y - center.y));
+                    if (dist >= bestDist) continue;
+
+                    const isBlocked = this.source.room
+                        .lookAt(x, y)
+                        .some(
+                            obj =>
+                                (obj.type === LOOK_TERRAIN && obj.terrain === "wall") ||
+                                obj.type === LOOK_STRUCTURES ||
+                                obj.type === LOOK_CONSTRUCTION_SITES
+                        );
+                    if (isBlocked) continue;
+
+                    bestPos = {x, y};
+                    bestDist = dist;
+                }
+            }
+        }
+
+        return bestPos;
+    }
+
     private findContainerNearby(): Id<StructureContainer> | undefined {
         const findResult = this.source.room
             .lookForAtArea(
@@ -69,6 +156,16 @@ class SourceInfrastructure {
         if (!findResult) return undefined;
 
         return findResult.structure.id as Id<StructureContainer>;
+    }
+
+    private findLinkNearby(): Id<StructureLink> | undefined {
+        const findResult = this.source.pos
+            .findInRange(FIND_MY_STRUCTURES, 2)
+            .find(it => it.structureType === STRUCTURE_LINK);
+
+        if (!findResult) return undefined;
+
+        return findResult.id as Id<StructureLink>;
     }
 
     private buildRoad(path: RoomPosition[]) {
@@ -94,8 +191,9 @@ class SourceInfrastructure {
     private rebuildContainer(path: RoomPosition[]) {
         if (this.source.memory.containerId && !this.source.container) {
             delete this.source.memory.containerId;
-            this.buildContainer(path);
-        } else if (!this.source.memory.containerId) {
+        }
+
+        if (!this.source.memory.containerId) {
             this.buildContainer(path);
         }
     }
@@ -132,7 +230,7 @@ export function buildInfrastructureForSources(sourceIds: Id<Source>[], fromStruc
     for (const source of sources) {
         new SourceInfrastructure(source).build(fromStructure);
 
-        if (source.memory.roadConstructionStarted) {
+        if (source.memory.roadConstructionStarted || source.memory.containerConstructionStarted) {
             break; // Skip others while construction is not done
         }
     }
