@@ -58,24 +58,20 @@ class RoomGrid {
     }
 
     public drawGridForRoom(room: Room, cellCount = 9) {
-        if (!room.memory.gridCenter) {
-            room.memory.gridCenter = {x: room.spawn.pos.x + 1, y: room.spawn.pos.y};
-        }
-
         for (let i = 0; i < cellCount; i++) {
-            this.getCell(room, i).draw();
+            this.getCell(room, i, Game.flags["draw-grid"]?.pos).draw();
         }
 
         room.visual.connectRoads();
     }
 
-    public getCell(room: Room, cellIndex: number): Cell {
+    public getCell(room: Room, cellIndex: number, center?: Position): Cell {
         const ringIndex = this.getRingIndex(cellIndex);
         const indexWithinRing = cellIndex - ringIndex * ringIndex;
 
         let movingPosition = new MovingPosition({
-            x: room.memory.gridCenter.x,
-            y: room.memory.gridCenter.y - ringIndex * (CELL_SIZE + CELL_SPACING),
+            x: center?.x ?? room.memory.gridCenter.x,
+            y: (center?.y ?? room.memory.gridCenter.y) - ringIndex * (CELL_SIZE + CELL_SPACING),
             direction: BOTTOM_RIGHT
         });
 

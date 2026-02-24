@@ -4,6 +4,7 @@ import workerOrganizer, {WorkerTask, workerTasks} from "../creep/workerOrganizer
 import {CreepRole, roles, WORKER} from "../constants";
 import {Traveler} from "../utils/traveler/traveler";
 import roomDefense from "../creep/roomDefense";
+import roomGrid from "./grid/roomGrid";
 
 declare global {
     interface RoomMemory {
@@ -19,6 +20,7 @@ declare global {
 class ExtendedRoom extends Room {
     @AddToPrototype
     automate() {
+        if (Game.flags["draw-grid"]) roomGrid.drawGridForRoom(this, 9);
         if (!this.controller?.my || !this.spawn) return;
 
         groupCreeps(this);
