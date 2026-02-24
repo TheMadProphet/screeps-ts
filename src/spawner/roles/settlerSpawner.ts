@@ -1,5 +1,5 @@
 import Body from "../body";
-import {SETTLER} from "../../constants";
+import {RESERVER, SETTLER} from "../../constants";
 import kingdom from "../../kingdom/kingdom";
 import {settlerTasks} from "../../creep/roles/settlerBehavior";
 
@@ -46,15 +46,22 @@ const settlerSpawner: RoleSpawner = {
         const claimers = settlers.filter(it => it.memory.settlerTask === settlerTasks.CLAIM);
         const alreadyClaimed = Game.rooms[roomToSettle]?.controller?.my;
         if (claimers.length < CLAIMER_AMOUNT && !alreadyClaimed) {
-            spawner.spawn({
-                body: new Body(spawner).addParts([CLAIM, MOVE], 1),
-                memory: {
-                    role: SETTLER,
-                    settlerTask: settlerTasks.CLAIM,
-                    assignedRoom: roomToSettle
-                }
-            });
-            return;
+            const reservers = spawner.room.creepsByRole[RESERVER];
+            const reserverInRoom = reservers.find(it => it.memory.assignedRoom === roomToSettle);
+            if (reserverInRoom) {
+                reserverInRoom.memory.role = SETTLER;
+                reserverInRoom.memory.settlerTask = settlerTasks.CLAIM;
+                reserverInRoom.memory.assignedRoom = roomToSettle;
+            } else {
+                spawner.spawn({
+                    body: new Body(spawner).addParts([CLAIM, MOVE], 1),
+                    memory: {
+                        role: SETTLER,
+                        settlerTask: settlerTasks.CLAIM,
+                        assignedRoom: roomToSettle
+                    }
+                });
+            }
         }
     }
 };
