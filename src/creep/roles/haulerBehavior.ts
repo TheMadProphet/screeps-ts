@@ -62,6 +62,15 @@ class HaulerBehavior implements RoleBehavior {
                 }
             } else {
                 creep.fillSpawnsWithEnergy();
+
+                // Transfer to worker creeps along the way
+                if (!creep.room.spawn.memory.hasEnoughEnergy) return;
+                const workers = creep.pos
+                    .findInRange(FIND_MY_CREEPS, 1)
+                    .filter(it => it.store.getFreeCapacity(RESOURCE_ENERGY) >= 25 && it.memory.role === "Worker");
+                if (workers[0]) {
+                    creep.transfer(workers[0], RESOURCE_ENERGY);
+                }
             }
         } else {
             let targetWorker: Creep | null = Game.creeps[creep.memory.targetWorker ?? ""];
