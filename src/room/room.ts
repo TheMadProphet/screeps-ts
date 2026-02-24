@@ -12,6 +12,7 @@ declare global {
         invaderCount?: number;
         storageLinkId?: Id<StructureLink>;
         controllerLinkId?: Id<StructureLink>;
+        targetDefenseHits?: number;
     }
 }
 
