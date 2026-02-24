@@ -106,16 +106,16 @@ class WorkerBehavior implements RoleBehavior {
         // Move closer to controller
         if (!creep.pos.isNearTo(controller)) {
             const dir = creep.pos.getDirectionTo(controller);
-            const nextX = creep.pos.x + offsetX[dir];
-            const nextY = creep.pos.y + offsetY[dir];
+            const prev = dir === 1 ? 8 : ((dir - 1) as DirectionConstant);
+            const next = dir === 8 ? 1 : ((dir + 1) as DirectionConstant);
 
-            const terrain = creep.room.lookForAt(LOOK_TERRAIN, nextX, nextY);
-            if (terrain.some(it => it === "wall")) return;
-
-            const creeps = creep.room.lookForAt(LOOK_CREEPS, nextX, nextY);
-            if (creeps.length > 0) return;
-
-            creep.move(dir);
+            if (this.canMoveInDirection(creep, dir)) {
+                creep.move(dir);
+            } else if (this.canMoveInDirection(creep, prev)) {
+                creep.move(prev);
+            } else if (this.canMoveInDirection(creep, next)) {
+                creep.move(next);
+            }
         }
     }
 
@@ -159,6 +159,24 @@ class WorkerBehavior implements RoleBehavior {
             creep.idle();
             creep.say(`⚠`);
         }
+    }
+
+    private canMoveInDirection(creep: Creep, dir: DirectionConstant) {
+        const nextX = creep.pos.x + offsetX[dir];
+        const nextY = creep.pos.y + offsetY[dir];
+
+        const terrain = creep.room.lookForAt(LOOK_TERRAIN, nextX, nextY);
+        if (terrain.some(it => it === "wall")) return false;
+
+        const creeps = creep.room.lookForAt(LOOK_CREEPS, nextX, nextY);
+        if (creeps.length > 0) return false;
+
+        const structures = creep.room
+            .lookForAt(LOOK_STRUCTURES, nextX, nextY)
+            .filter(it => it.structureType !== STRUCTURE_RAMPART && it.structureType !== STRUCTURE_ROAD);
+        if (structures.length > 0) return false;
+
+        return true;
     }
 }
 
