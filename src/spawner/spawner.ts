@@ -2,6 +2,7 @@ import fillerSpawner from "./roles/fillerSpawner";
 import minerSpawner from "./roles/minerSpawner";
 import {
     CreepRole,
+    CUSTOM_UNIT,
     DEFENDER,
     EMERGENCY_UNIT,
     EXTRACTOR,
@@ -25,6 +26,7 @@ import extractorSpawner from "./roles/extractorSpawner";
 import mineralHaulerSpawner from "./roles/mineralHaulerSpawner";
 import settlerSpawner from "./roles/settlerSpawner";
 import Body from "./body";
+import customUnitSpawner from "./roles/customUnitSpawner";
 
 const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [EMERGENCY_UNIT]: emergencyUnitSpawner,
@@ -37,7 +39,8 @@ const roleSpawners: Partial<Record<CreepRole, RoleSpawner>> = {
     [MINERAL_HAULER]: mineralHaulerSpawner,
     [SCOUT]: scoutSpawner,
     [WORKER]: workerSpawner,
-    [SETTLER]: settlerSpawner
+    [SETTLER]: settlerSpawner,
+    [CUSTOM_UNIT]: customUnitSpawner
 };
 
 (function (this: typeof StructureSpawn.prototype) {
