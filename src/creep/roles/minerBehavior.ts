@@ -14,6 +14,10 @@ class MinerBehavior implements RoleBehavior {
     }
 
     private mineSource(creep: Creep, source: Source) {
+        if (source.link && source.memory.linkMiningPos) {
+            return this.mineSourceWithLink(creep, source, source.link, source.memory.linkMiningPos);
+        }
+
         if (source.container && !creep.pos.isEqualTo(source.container)) {
             creep.travelTo(source.container, {maxRooms: creep.isInAssignedRoom() ? 1 : undefined});
         } else if (!creep.pos.isNearTo(source)) {
@@ -40,6 +44,27 @@ class MinerBehavior implements RoleBehavior {
 
             if (damagedRoads.length) {
                 creep.repair(damagedRoads[0]);
+            }
+        }
+    }
+
+    private mineSourceWithLink(creep: Creep, source: Source, link: StructureLink, miningPos: {x: number; y: number}) {
+        if (creep.pos.isEqualTo(miningPos.x, miningPos.y)) {
+            if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) creep.transfer(link, RESOURCE_ENERGY);
+
+            if (link.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
+                creep.say("⚠ Link");
+                return;
+            }
+
+            if (source.energy > 0) creep.harvest(source);
+        } else {
+            const miningPosition = source.room.getPositionAt(miningPos.x, miningPos.y);
+            if (miningPosition) {
+                creep.travelTo(miningPosition);
+            } else {
+                creep.travelTo(source, {range: 1});
+                creep.say("⚠ Pos");
             }
         }
     }

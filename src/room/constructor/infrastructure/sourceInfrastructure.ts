@@ -9,6 +9,7 @@ declare global {
         containerConstructionStarted?: boolean;
         linkId?: Id<StructureLink>;
         linkConstructionStarted?: boolean;
+        linkMiningPos?: {x: number; y: number};
     }
 }
 
@@ -75,12 +76,14 @@ class SourceInfrastructure {
         if (!this.source.room.canBuildStructure(STRUCTURE_LINK)) return;
         if (!this.isBestSourceForLink()) return;
 
-        const linkPos = this.getLinkPlacementPos();
-        if (!linkPos) return console.error(`Cannot find position for source link near source ${this.source.id}`);
+        const [linkPos, miningPos] = this.getLinkPlacementPos();
+        if (!linkPos || !miningPos)
+            return console.error(`Cannot find position for source link near source ${this.source.id}`);
 
         const status = this.source.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
         if (status === OK) {
             this.source.memory.linkConstructionStarted = true;
+            this.source.memory.linkMiningPos = miningPos;
         } else {
             console.error(
                 `Failed to create construction site for source link near source ${this.source.id} with status ${status}`
@@ -107,15 +110,16 @@ class SourceInfrastructure {
         return true;
     }
 
-    private getLinkPlacementPos(): {x: number; y: number} | null {
+    private getLinkPlacementPos(): ({x: number; y: number} | null)[] {
         const center = this.source.room.memory.gridCenter;
         let bestPos: {x: number; y: number} | null = null;
+        let miningPos: {x: number; y: number} | null = null;
         let bestDist = Infinity;
-        for (const miningPos of getAvailablePositionsAround(this.source)) {
+        for (const miningPosition of getAvailablePositionsAround(this.source)) {
             for (let dx = -1; dx <= 1; dx++) {
                 for (let dy = -1; dy <= 1; dy++) {
-                    const x = miningPos.x + dx,
-                        y = miningPos.y + dy;
+                    const x = miningPosition.x + dx,
+                        y = miningPosition.y + dy;
 
                     if (this.source.pos.getRangeTo(x, y) !== 2) continue;
 
@@ -133,12 +137,13 @@ class SourceInfrastructure {
                     if (isBlocked) continue;
 
                     bestPos = {x, y};
+                    miningPos = miningPosition;
                     bestDist = dist;
                 }
             }
         }
 
-        return bestPos;
+        return [bestPos, miningPos];
     }
 
     private findContainerNearby(): Id<StructureContainer> | undefined {

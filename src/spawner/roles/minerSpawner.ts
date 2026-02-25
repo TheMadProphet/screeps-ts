@@ -5,11 +5,17 @@ class MinerSpawner implements RoleSpawner {
     spawn(spawner: StructureSpawn) {
         const sourceId = this.findSourceWithMissingMiner(spawner.room.memory.sources, spawner);
         if (sourceId) {
-            spawner.spawn({
-                body: new Body(spawner).addParts([WORK, WORK, MOVE], 3),
-                memory: {role: MINER, assignedSource: sourceId as Id<Source>, assignedRoom: spawner.room.name}
-            });
+            let body = new Body(spawner).addParts([WORK, WORK, MOVE], 3);
 
+            const source = Game.getObjectById(sourceId);
+            if (source?.link && source.memory.linkMiningPos) {
+                body = new Body(spawner).addParts([WORK], 10).addParts([CARRY], 2).addParts([MOVE], 5);
+            }
+
+            spawner.spawn({
+                body: body,
+                memory: {role: MINER, assignedSource: sourceId, assignedRoom: spawner.room.name}
+            });
             return;
         }
 
