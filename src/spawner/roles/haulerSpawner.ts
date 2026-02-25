@@ -26,6 +26,9 @@ class HaulerSpawner implements RoleSpawner {
         isRemote = false
     ): OK | false {
         const sourceMemory = Memory.sources[sourceId];
+
+        if (sourceMemory.linkId && sourceMemory.linkMiningPos) return false;
+
         const totalWorkParts = this.getAssignedWorkPartsForSource(sourceId, spawner.room);
         const requiredCarryParts = this.calculateRequiredCarryParts(sourceMemory, totalWorkParts);
 
