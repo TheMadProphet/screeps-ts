@@ -40,6 +40,16 @@ class SettlerBehavior implements RoleBehavior {
             return;
         }
 
+        if (creep.memory.working) {
+            if (creep.store.getFreeCapacity() === 0) {
+                creep.memory.working = false;
+            } else {
+                const source = creep.pos.findClosestByPath(FIND_SOURCES)!;
+                creep.harvestFrom(source);
+                return;
+            }
+        }
+
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
             if (creep.room.spawn && creep.room.spawn.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
                 creep.withdrawFrom(creep.room.spawn);
@@ -51,8 +61,7 @@ class SettlerBehavior implements RoleBehavior {
             if (droppedResource) {
                 creep.pickupResource(droppedResource);
             } else {
-                creep.say("Energy?");
-                creep.travelTo(this.getSettleFlag(creep), {range: 2});
+                creep.memory.working = true;
             }
 
             return;
