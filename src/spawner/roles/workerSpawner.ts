@@ -26,8 +26,8 @@ const workerSpawner: RoleSpawner = {
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
         const repairerWorkPartCount = (repairers[0]?.getActiveBodyparts(WORK) ?? 0) * repairers.length;
 
-        const upgraderEnergyPerTick = upgraderWorkPartCount;
-        const repairerEnergyPerTick = repairerWorkPartCount;
+        const upgraderEnergyPerTick = upgraderWorkPartCount * BUILDER_EFFICIENCY;
+        const repairerEnergyPerTick = repairerWorkPartCount * BUILDER_EFFICIENCY;
         const builderEnergyPerTick = builderWorkPartCount * WORK_PART_ENERGY_PER_TICK * BUILDER_EFFICIENCY;
 
         let sourceCount = _.size(spawner.room.memory.sources);
