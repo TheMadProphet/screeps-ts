@@ -1,3 +1,5 @@
+import linkManager from "../../room/linkManager";
+
 // Amount of minerals to keep in storage before filling terminal with them
 const MINERAL_THRESHOLD = 25000;
 // Amount of energy to keep in storage before filling terminal with them
@@ -42,8 +44,11 @@ class FillerBehavior implements RoleBehavior {
     }
 
     private gatherEnergy(creep: Creep, storage: StructureStorage) {
-        let target: StructureStorage | StructureTerminal = storage;
-        if (this.shouldTakeFromTerminal(creep, storage)) {
+        let target: StructureStorage | StructureTerminal | StructureLink = storage;
+
+        if (linkManager.shouldEmptyStorageLink(creep.room)) {
+            target = creep.room.storageLink!;
+        } else if (this.shouldTakeFromTerminal(creep, storage)) {
             target = creep.room.terminal!;
         }
 
@@ -77,7 +82,6 @@ class FillerBehavior implements RoleBehavior {
 
     // Returns true if it should pickup energy from storage
     private fill(creep: Creep, storage: StructureStorage) {
-        const storageLink = creep.room.storageLink;
         const terminal = creep.room.terminal;
 
         if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
@@ -91,8 +95,8 @@ class FillerBehavior implements RoleBehavior {
             return true;
         }
 
-        if (storageLink && !storageLink.isFull()) {
-            creep.transferTo(storageLink);
+        if (linkManager.shouldFillStorageLink(creep.room)) {
+            creep.transferTo(creep.room.storageLink!);
             return true;
         }
 
@@ -124,7 +128,7 @@ class FillerBehavior implements RoleBehavior {
         if (this.findTowersWithMissingEnergy(creep).length > 0) return true;
 
         // Fill storage link
-        if (creep.room.storageLink && !creep.room.storageLink.isFull()) return true;
+        if (linkManager.shouldFillStorageLink(creep.room)) return true;
 
         // Fill terminal if storage has a lot of energy
         if (

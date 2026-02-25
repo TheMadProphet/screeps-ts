@@ -68,6 +68,8 @@ class SourceInfrastructure {
             const linkId = this.findLinkNearby();
             if (linkId) {
                 this.source.memory.linkId = linkId;
+                this.source.room.memory.sourceLinkIds = this.source.room.memory.sourceLinkIds ?? [];
+                this.source.room.memory.sourceLinkIds.push(linkId);
                 delete this.source.memory.linkConstructionStarted;
                 return;
             }

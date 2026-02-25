@@ -5,6 +5,7 @@ import {CreepRole, roles, WORKER} from "../constants";
 import {Traveler} from "../utils/traveler/traveler";
 import roomDefense from "../creep/roomDefense";
 import roomGrid from "./grid/roomGrid";
+import linkManager from "./linkManager";
 
 declare global {
     interface RoomMemory {
@@ -13,6 +14,7 @@ declare global {
         invaderCount?: number;
         storageLinkId?: Id<StructureLink>;
         controllerLinkId?: Id<StructureLink>;
+        sourceLinkIds?: Id<StructureLink>[];
         targetDefenseHits?: number;
     }
 }
@@ -40,9 +42,7 @@ class ExtendedRoom extends Room {
             filter: structure => structure.structureType === STRUCTURE_TOWER
         }).forEach(it => it.automate(true));
 
-        this.find<StructureLink>(FIND_MY_STRUCTURES, {
-            filter: structure => structure.structureType === STRUCTURE_LINK
-        }).forEach(it => it.automate());
+        linkManager.automate(this);
 
         if (this.terminal) {
             this.terminal.automate();
