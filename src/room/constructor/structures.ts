@@ -14,10 +14,10 @@ const gridStructures: BuildableStructureConstant[] = [
     // STRUCTURE_EXTRACTOR,
     STRUCTURE_TERMINAL,
     // STRUCTURE_LAB,
-    STRUCTURE_FACTORY,
-    STRUCTURE_OBSERVER,
+    // STRUCTURE_FACTORY,
+    // STRUCTURE_OBSERVER,
     STRUCTURE_POWER_SPAWN,
-    STRUCTURE_NUKER
+    // STRUCTURE_NUKER
 ];
 
 class RoomStructures {
