@@ -33,6 +33,16 @@ class SourceInfrastructure {
     }
 
     private buildContainer(path: RoomPosition[]) {
+        if (this.source.link) {
+            if (this.source.memory.containerId && this.source.container) {
+                const container = this.source.container;
+                container.destroy();
+                delete this.source.memory.containerId;
+            }
+
+            return;
+        }
+
         if (this.source.memory.containerId) return this.rebuildContainer(path);
 
         if (this.source.memory.containerConstructionStarted) {
