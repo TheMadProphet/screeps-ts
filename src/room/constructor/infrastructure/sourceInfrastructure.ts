@@ -178,6 +178,8 @@ class SourceInfrastructure {
     }
 
     private buildRoad(path: RoomPosition[]) {
+        if (this.source.link) return;
+
         const trimmedPath = path.slice(0, -1); // Don't build road on last position
         if (this.source.memory.hasRoad) return this.rebuildRoad(trimmedPath);
 
