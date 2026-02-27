@@ -25,6 +25,7 @@ class LinkManager {
 
     public shouldFillStorageLink(room: Room) {
         if (!room.storageLink) return false;
+        if (this.shouldFillControllerLink(room)) return true;
 
         return !this.roomHasSourceLinks(room) && !room.storageLink.isFull();
     }
