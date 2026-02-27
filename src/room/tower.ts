@@ -24,7 +24,7 @@ declare global {
             return;
         }
 
-        if (Game.time % 10 !== 0) return;
+        if (Game.time % this.room.controller!.level !== 0) return;
 
         const closestDamagedStructure = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure => {
