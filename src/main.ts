@@ -10,6 +10,7 @@ import "room/tower";
 import "room/link";
 import "room/terminal";
 import "room/room";
+import "utils/commands";
 import {IntentTracker} from "./stats/creepIntentTracker";
 import {ErrorMapper} from "utils/ErrorMapper";
 import {improveLog} from "utils/console";
