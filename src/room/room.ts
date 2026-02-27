@@ -17,6 +17,7 @@ declare global {
         sourceLinkIds?: Id<StructureLink>[];
         targetDefenseHits?: number;
         controllerDist?: number;
+        limitWorker?: number;
     }
 }
 

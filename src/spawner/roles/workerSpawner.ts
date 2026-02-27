@@ -14,6 +14,8 @@ const FORCE_SPAWN_THRESHOLD = 100000; // If storage has more than this amount, s
 
 class WorkerSpawner implements RoleSpawner {
     spawn(spawner: StructureSpawn) {
+        if (spawner.room.creepsByRole[WORKER].length >= (spawner.room.memory.limitWorker ?? Infinity)) return;
+
         const deconstructors = spawner.room.workersByTask[workerTasks.DECONSTRUCT];
         if (deconstructors.length > 5) return;
 
