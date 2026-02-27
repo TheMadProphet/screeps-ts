@@ -178,7 +178,8 @@ class SourceInfrastructure {
     }
 
     private buildRoad(path: RoomPosition[]) {
-        if (this.source.memory.hasRoad) return this.rebuildRoad(path);
+        const trimmedPath = path.slice(0, -1); // Don't build road on last position
+        if (this.source.memory.hasRoad) return this.rebuildRoad(trimmedPath);
 
         if (this.source.memory.roadConstructionStarted) {
             const roadConstructionsAreBuilt = this.source.room
@@ -190,7 +191,7 @@ class SourceInfrastructure {
                 delete this.source.memory.roadConstructionStarted;
             }
         } else {
-            _.forEach(path, pos => {
+            _.forEach(trimmedPath, pos => {
                 pos.createConstructionSite(STRUCTURE_ROAD);
             });
             this.source.memory.roadConstructionStarted = true;
