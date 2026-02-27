@@ -1,5 +1,5 @@
 import roomScanner from "../../../creep/roomScanner";
-import {buildInfrastructureForSources, rebuildSourceInfrastructure} from "./sourceInfrastructure";
+import {buildInfrastructureForSources} from "./sourceInfrastructure";
 import roomGrid from "../../grid/roomGrid";
 import {buildInfrastructureForMineral, rebuildMineralInfrastructure} from "./mineralInfrastructure";
 
@@ -23,12 +23,9 @@ function buildEnergyInfrastructure(room: Room) {
     if (room.extensionsAreBuilt()) {
         if (room.controller.level === 3) {
             buildInfrastructureForSources(room.memory.sources, room.spawn);
-        } else if (room.controller.level === 4) {
-            const sources = _.flatten(room.getVisibleColonies().map(it => it.memory.sources));
-            buildInfrastructureForSources(sources, room.storage ?? room.spawn);
-        } else if (room.controller.level >= 5 && room.storage && Game.time % 25 === 0) {
+        } else if (room.controller.level >= 4 && Game.time % 25 === 0 && room.storage) {
             const remoteSources = _.flatten(room.getVisibleColonies().map(it => it.memory.sources));
-            rebuildSourceInfrastructure([...room.memory.sources, ...remoteSources], room.storage);
+            buildInfrastructureForSources([...room.memory.sources, ...remoteSources], room.storage);
         }
     }
 }

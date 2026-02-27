@@ -66,7 +66,7 @@ class RoomStructures {
             if (structure.structureType === STRUCTURE_LINK) {
                 this.room.memory.storageLinkId = structure.id as Id<StructureLink>;
             } else {
-                console.error("Position for storage link has been already used");
+                console.log("Position for storage link has been already used");
             }
         } else if (this.room.canBuildStructure(STRUCTURE_LINK)) {
             this.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
@@ -90,7 +90,7 @@ class RoomStructures {
             const path = Traveler.findTravelPath(this.room.storage, this.room.controller, {range: 2}).path;
             const linkPos = path.pop();
             if (!linkPos) {
-                console.error("Error finding position for controller link");
+                console.log("Error finding position for controller link");
             } else {
                 this.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
                 this.room.memory.controllerLinkPos = linkPos;

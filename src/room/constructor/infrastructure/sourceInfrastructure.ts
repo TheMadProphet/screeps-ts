@@ -32,17 +32,8 @@ class SourceInfrastructure {
         }
     }
 
-    public rebuild(fromStructure: AnyStructure) {
-        const path = Traveler.findTravelPath(fromStructure, this.source, {
-            roomCallback: this.getRoomCallbackForRoadPath()
-        }).path;
-
-        this.rebuildContainer(path);
-        this.rebuildRoad(path);
-    }
-
     private buildContainer(path: RoomPosition[]) {
-        if (this.source.memory.containerId) return;
+        if (this.source.memory.containerId) return this.rebuildContainer(path);
 
         if (this.source.memory.containerConstructionStarted) {
             const containerId = this.findContainerNearby();
@@ -71,8 +62,9 @@ class SourceInfrastructure {
                 this.source.room.memory.sourceLinkIds = this.source.room.memory.sourceLinkIds ?? [];
                 this.source.room.memory.sourceLinkIds.push(linkId);
                 delete this.source.memory.linkConstructionStarted;
-                return;
             }
+
+            return;
         }
 
         if (!this.source.room.canBuildStructure(STRUCTURE_LINK)) return;
@@ -80,14 +72,14 @@ class SourceInfrastructure {
 
         const [linkPos, miningPos] = this.getLinkPlacementPos();
         if (!linkPos || !miningPos)
-            return console.error(`Cannot find position for source link near source ${this.source.id}`);
+            return console.log(`Cannot find position for source link near source ${this.source.id}`);
 
         const status = this.source.room.createConstructionSite(linkPos.x, linkPos.y, STRUCTURE_LINK);
         if (status === OK) {
             this.source.memory.linkConstructionStarted = true;
             this.source.memory.linkMiningPos = miningPos;
         } else {
-            console.error(
+            console.log(
                 `Failed to create construction site for source link near source ${this.source.id} with status ${status}`
             );
         }
@@ -176,7 +168,7 @@ class SourceInfrastructure {
     }
 
     private buildRoad(path: RoomPosition[]) {
-        if (this.source.memory.hasRoad) return;
+        if (this.source.memory.hasRoad) return this.rebuildRoad(path);
 
         if (this.source.memory.roadConstructionStarted) {
             const roadConstructionsAreBuilt = this.source.room
@@ -240,13 +232,5 @@ export function buildInfrastructureForSources(sourceIds: Id<Source>[], fromStruc
         if (source.memory.roadConstructionStarted || source.memory.containerConstructionStarted) {
             break; // Skip others while construction is not done
         }
-    }
-}
-
-export function rebuildSourceInfrastructure(sourceIds: Id<Source>[], fromStructure: AnyStructure) {
-    const sources = sourceIds.map(it => Game.getObjectById(it)).filter((it): it is Source => Boolean(it));
-
-    for (const source of sources) {
-        new SourceInfrastructure(source).rebuild(fromStructure);
     }
 }
