@@ -150,9 +150,10 @@ class FillerBehavior implements RoleBehavior {
         const terminal = creep.room.terminal;
         if (!terminal) return false;
 
+        const creepCapacity = creep.store.getCapacity(RESOURCE_ENERGY);
         // Take from terminal if it has a lot of energy and storage has little energy
         return (
-            terminal.store.getUsedCapacity(RESOURCE_ENERGY) > terminal.store.getUsedCapacity() / 3 &&
+            terminal.store.getUsedCapacity(RESOURCE_ENERGY) > terminal.store.getUsedCapacity() / 3 + creepCapacity &&
             storage.store.getUsedCapacity(RESOURCE_ENERGY) < 100000
         );
     }
