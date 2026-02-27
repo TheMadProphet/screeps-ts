@@ -125,9 +125,13 @@ class ExtendedRoom extends Room {
             filter: structure => structure.structureType === structureType
         }).length;
 
+        const currentlyUnderConstruction = this.find(FIND_MY_CONSTRUCTION_SITES, {
+            filter: site => site.structureType === structureType
+        }).length;
+
         const maxAvailable = CONTROLLER_STRUCTURES[structureType][this.controller.level];
 
-        return maxAvailable - currentlyBuilt > 0;
+        return maxAvailable - currentlyBuilt - currentlyUnderConstruction > 0;
     }
 }
 
