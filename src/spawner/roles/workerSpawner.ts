@@ -11,16 +11,27 @@ const BUILDER_EFFICIENCY = 0.8; // E.g. a builder builds 80% of the time, rest i
 const WORK_PART_ENERGY_PER_TICK = 5; // Each WORK part contributes 5 energy per tick to building
 const FORCE_SPAWN_THRESHOLD = 100000; // If storage has more than this amount, spawn builders regardless
 
-const workerSpawner: RoleSpawner = {
+class WorkerSpawner implements RoleSpawner {
     spawn(spawner: StructureSpawn) {
+        const deconstructors = spawner.room.workersByTask[workerTasks.DECONSTRUCT];
+        if (deconstructors.length > 5) return;
+
+        if (
+            this.getAvailableEnergyPerTick(spawner) > this.getEnergyUsedPerTick(spawner) ||
+            this.shouldForceSpawn(spawner)
+        ) {
+            const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
+            spawner.spawn({
+                body: new Body(spawner).addParts(template, 10),
+                memory: {role: WORKER, task: workerTasks.BUILD}
+            });
+        }
+    }
+
+    private getEnergyUsedPerTick(spawner: StructureSpawn) {
         const upgraders = spawner.room.workersByTask[workerTasks.UPGRADE];
         const builders = spawner.room.workersByTask[workerTasks.BUILD];
         const repairers = spawner.room.workersByTask[workerTasks.REPAIR];
-        const deconstructors = spawner.room.workersByTask[workerTasks.DECONSTRUCT];
-
-        if (deconstructors.length > 5) {
-            return;
-        }
 
         const upgraderWorkPartCount = (upgraders[0]?.getActiveBodyparts(WORK) ?? 0) * upgraders.length;
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
@@ -30,6 +41,10 @@ const workerSpawner: RoleSpawner = {
         const repairerEnergyPerTick = repairerWorkPartCount * BUILDER_EFFICIENCY;
         const builderEnergyPerTick = builderWorkPartCount * WORK_PART_ENERGY_PER_TICK * BUILDER_EFFICIENCY;
 
+        return upgraderEnergyPerTick + repairerEnergyPerTick + builderEnergyPerTick;
+    }
+
+    private getAvailableEnergyPerTick(spawner: StructureSpawn) {
         let sourceCount = _.size(spawner.room.memory.sources);
         let availableEnergyPerTick = sourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         if (spawner.room.memory.colonies) {
@@ -51,22 +66,17 @@ const workerSpawner: RoleSpawner = {
             availableEnergyPerTick += remoteSourceCount * AVAILABLE_SOURCE_ENERGY_PER_TICK;
         }
 
-        let forceSpawn = (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD;
-        if (spawner.room.controller!.level === 8) {
-            forceSpawn = false;
-        }
-
-        if (
-            availableEnergyPerTick > upgraderEnergyPerTick + repairerEnergyPerTick + builderEnergyPerTick ||
-            forceSpawn
-        ) {
-            const template = spawner.room.controller!.level > 4 ? [WORK, CARRY, MOVE] : [WORK, CARRY, MOVE, MOVE];
-            spawner.spawn({
-                body: new Body(spawner).addParts(template, 10),
-                memory: {role: WORKER, task: workerTasks.BUILD}
-            });
-        }
+        return availableEnergyPerTick;
     }
-};
 
+    private shouldForceSpawn(spawner: StructureSpawn) {
+        if (spawner.room.controller!.level === 8) {
+            return false;
+        }
+
+        return (spawner.room.storage?.store?.getUsedCapacity(RESOURCE_ENERGY) ?? 0) > FORCE_SPAWN_THRESHOLD;
+    }
+}
+
+const workerSpawner = new WorkerSpawner();
 export default workerSpawner;
