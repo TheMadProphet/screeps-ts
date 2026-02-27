@@ -52,7 +52,10 @@ class MinerBehavior implements RoleBehavior {
         if (creep.pos.isEqualTo(miningPos.x, miningPos.y)) {
             if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) creep.transfer(link, RESOURCE_ENERGY);
 
-            if (link.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
+            if (
+                link.store.getFreeCapacity(RESOURCE_ENERGY) === 0 &&
+                creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0
+            ) {
                 creep.say("⚠ Link");
                 return;
             }
