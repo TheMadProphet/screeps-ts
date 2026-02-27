@@ -16,13 +16,13 @@ interface ResourcePrices {
 const RESOURCE_PRICES: Partial<Record<MarketResourceConstant, ResourcePrices>> = {
     [RESOURCE_LEMERGIUM]: {
         // sell: 825,
-        sellOrder: 950
+        // sellOrder: 950
     },
     [RESOURCE_HYDROGEN]: {
-        sellOrder: 495
+        // sellOrder: 495
     },
     [RESOURCE_OXYGEN]: {
-        sellOrder: 700
+        // sellOrder: 700
     },
     [RESOURCE_ENERGY]: {
         // sell: 90
