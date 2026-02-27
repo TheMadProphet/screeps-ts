@@ -1,6 +1,7 @@
 import Body from "../body";
 import {WORKER} from "../../constants";
 import {workerTasks} from "../../creep/workerOrganizer";
+import {Traveler} from "../../utils/traveler/traveler";
 
 const SOURCE_ENERGY_PER_TICK = SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME;
 const ENERGY_FOR_CREEPS_PERCENTAGE = 0.35;
@@ -37,11 +38,32 @@ class WorkerSpawner implements RoleSpawner {
         const builderWorkPartCount = (builders[0]?.getActiveBodyparts(WORK) ?? 0) * builders.length;
         const repairerWorkPartCount = (repairers[0]?.getActiveBodyparts(WORK) ?? 0) * repairers.length;
 
-        const upgraderEnergyPerTick = upgraderWorkPartCount * BUILDER_EFFICIENCY;
+        const upgraderEnergyPerTick = upgraderWorkPartCount * this.getUpgraderEfficiency(spawner);
         const repairerEnergyPerTick = repairerWorkPartCount * BUILDER_EFFICIENCY;
         const builderEnergyPerTick = builderWorkPartCount * WORK_PART_ENERGY_PER_TICK * BUILDER_EFFICIENCY;
 
         return upgraderEnergyPerTick + repairerEnergyPerTick + builderEnergyPerTick;
+    }
+
+    private getUpgraderEfficiency(spawner: StructureSpawn) {
+        if (spawner.room.controllerLink) return 1;
+
+        const upgrader = spawner.room.workersByTask[workerTasks.UPGRADE][0];
+        const controller = spawner.room.controller;
+        if (!controller || !upgrader) return 0;
+
+        const workPartCount = upgrader.getActiveBodyparts(WORK) || 0.1;
+        const carryCapacity = upgrader.store.getCapacity();
+        let distance = spawner.room.memory.controllerDist;
+        if (!distance) {
+            distance = Traveler.findTravelPath(spawner, controller).path.length;
+            spawner.room.memory.controllerDist = distance;
+        }
+
+        const ticksSpentAtController = carryCapacity / (UPGRADE_CONTROLLER_POWER * workPartCount);
+        const ticksSpentGathering = distance * 2;
+
+        return ticksSpentAtController / (ticksSpentAtController + ticksSpentGathering);
     }
 
     private getAvailableEnergyPerTick(spawner: StructureSpawn) {

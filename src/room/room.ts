@@ -16,6 +16,7 @@ declare global {
         controllerLinkId?: Id<StructureLink>;
         sourceLinkIds?: Id<StructureLink>[];
         targetDefenseHits?: number;
+        controllerDist?: number;
     }
 }
 
