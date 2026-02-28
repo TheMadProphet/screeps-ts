@@ -24,6 +24,8 @@ declare global {
 
         fillSpawnsWithEnergy(): void;
 
+        fillTowersWithEnergy(): boolean;
+
         isHome(): boolean;
 
         isInAssignedRoom(): boolean;

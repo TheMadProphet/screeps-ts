@@ -108,6 +108,8 @@ class SettlerBehavior implements RoleBehavior {
             return;
         }
 
+        if (creep.fillTowersWithEnergy()) return;
+
         if (creep.room.storage) {
             creep.transferTo(creep.room.storage);
             return;

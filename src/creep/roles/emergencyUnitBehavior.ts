@@ -6,13 +6,7 @@ class EmergencyUnitBehavior implements RoleBehavior {
         if (creep.memory.working) {
             this.gatherEnergy(creep);
         } else {
-            if (creep.room.energyCapacityAvailable !== creep.room.energyAvailable) {
-                creep.fillSpawnsWithEnergy();
-            } else if (creep.room.storage) {
-                creep.transferTo(creep.room.storage);
-            } else {
-                creep.idle();
-            }
+            this.fillStructures(creep);
         }
     }
 
@@ -37,6 +31,21 @@ class EmergencyUnitBehavior implements RoleBehavior {
         } else {
             this.mineSources(creep);
         }
+    }
+
+    private fillStructures(creep: Creep) {
+        if (creep.room.energyCapacityAvailable !== creep.room.energyAvailable) {
+            return creep.fillSpawnsWithEnergy();
+        }
+
+        if (creep.fillTowersWithEnergy()) return;
+
+        if (creep.room.storage) {
+            creep.transferTo(creep.room.storage);
+            return;
+        }
+
+        creep.idle();
     }
 
     private mineSources(creep: Creep) {

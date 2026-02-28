@@ -154,8 +154,7 @@ class ExtendedCreep extends Creep {
                 const secondClosestStructure = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: structure =>
                         (structure.structureType === STRUCTURE_EXTENSION ||
-                            structure.structureType === STRUCTURE_SPAWN ||
-                            structure.structureType === STRUCTURE_TOWER) &&
+                            structure.structureType === STRUCTURE_SPAWN) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
                         structure.id != closestStructure.id
                 });
@@ -163,6 +162,21 @@ class ExtendedCreep extends Creep {
                 if (secondClosestStructure) this.travelTo(secondClosestStructure);
             }
         }
+    }
+
+    @AddToPrototype
+    fillTowersWithEnergy() {
+        const closestStructure = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+            filter: structure =>
+                structure.structureType === STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 50
+        });
+
+        if (closestStructure) {
+            this.transferTo(closestStructure);
+            return true;
+        }
+
+        return false;
     }
 
     @AddToPrototype

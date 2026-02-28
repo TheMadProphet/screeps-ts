@@ -61,7 +61,11 @@ class HaulerBehavior implements RoleBehavior {
                     }
                 }
             } else {
-                creep.fillSpawnsWithEnergy();
+                if (creep.room.energyCapacityAvailable !== creep.room.energyAvailable) {
+                    creep.fillSpawnsWithEnergy();
+                } else {
+                    creep.fillTowersWithEnergy();
+                }
 
                 // Transfer to worker creeps along the way
                 if (!creep.room.spawn.memory.hasEnoughEnergy) return;
