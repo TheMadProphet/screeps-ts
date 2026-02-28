@@ -3,37 +3,23 @@ import {CreepRole} from "../constants";
 declare global {
     interface Creep {
         runRole(): void;
-
         idle(): void;
-
         withdrawEnergy(includeSpawn?: boolean): void;
-
         findEnergyRepository(includeSpawn?: boolean): Structure | null;
-
         harvestFrom(target: Source): ReturnType<typeof Creep.prototype.harvest>;
-
         withdrawFrom(
             target: Structure,
             resource?: ResourceConstant,
             amount?: number
         ): ReturnType<typeof Creep.prototype.withdraw>;
-
         pickupResource(resource: Resource): ReturnType<typeof Creep.prototype.pickup>;
-
         transferTo(target: Structure | AnyCreep, resource?: ResourceConstant): void;
-
         fillSpawnsWithEnergy(): void;
-
         fillTowersWithEnergy(): boolean;
-
         isHome(): boolean;
-
         isInAssignedRoom(): boolean;
-
         movedLastTick(): boolean;
-
         travelToHome(): void;
-
         travelToAssignedRoom(): void;
     }
 
