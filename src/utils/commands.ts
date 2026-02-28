@@ -39,7 +39,7 @@ class Commands {
         const defenseHits = room.memory.targetDefenseHits ?? "not set";
         const workerLimit = room.memory.limitWorker ?? "not set";
 
-        return `Commands for room ${roomName}:\n- Target Defense Hits: ${defenseHits}\n- Worker Limit: ${workerLimit}`;
+        return `Commands for room ${roomName}:\n- setDefenseHits: ${defenseHits}\n- setWorkerLimit: ${workerLimit}`;
     }
 }
 
