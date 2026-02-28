@@ -143,6 +143,9 @@ class FillerBehavior implements RoleBehavior {
         // Take from terminal if it has a lot of energy
         if (this.shouldTakeFromTerminal(creep, storage)) return true;
 
+        // Empty storage link if it needed
+        if (linkManager.shouldEmptyStorageLink(creep.room)) return true;
+
         return false;
     }
 
