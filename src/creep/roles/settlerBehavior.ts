@@ -1,4 +1,5 @@
 import kingdom from "../../kingdom/kingdom";
+import {Traveler} from "../../utils/traveler/traveler";
 
 export const settlerTasks = {
     HAUL: "haul",
@@ -11,6 +12,11 @@ export type SettlerTask = (typeof settlerTasks)[keyof typeof settlerTasks];
 declare global {
     interface CreepMemory {
         settlerTask?: SettlerTask;
+        checkedForSuicide?: boolean;
+    }
+
+    interface FlagMemory {
+        travelCost?: number;
     }
 }
 
@@ -100,7 +106,10 @@ class SettlerBehavior implements RoleBehavior {
     }
 
     private runHaulTask(creep: Creep) {
-        if (creep.store.getUsedCapacity() === 0) return creep.withdrawEnergy();
+        if (creep.store.getUsedCapacity() === 0) {
+            if (creep.memory.checkedForSuicide) return creep.withdrawEnergy();
+            return this.checkForSuicide(creep);
+        }
         if (!creep.isInAssignedRoom()) return this.travelToTargetRoom(creep);
 
         if (creep.room.energyCapacityAvailable !== creep.room.energyAvailable) {
@@ -142,6 +151,29 @@ class SettlerBehavior implements RoleBehavior {
             kingdom.onRoomClaimed(creep.room, this.getSettleFlag(creep).pos);
         } else if (status === ERR_NOT_IN_RANGE) {
             creep.travelTo(controller);
+        }
+    }
+
+    private checkForSuicide(creep: Creep) {
+        const flag = this.getSettleFlag(creep);
+        if (!flag) {
+            creep.suicide();
+            return;
+        }
+
+        if (!flag.memory.travelCost) {
+            const room = Game.rooms[creep.memory.home]!;
+            flag.memory.travelCost = Traveler.findTravelPath(
+                room.getPositionAt(room.memory.gridCenter.x, room.memory.gridCenter.y)!,
+                flag.pos,
+                {ignoreRoads: true}
+            ).cost;
+        }
+
+        if (creep.ticksToLive && creep.ticksToLive < flag.memory.travelCost * 2.15) {
+            creep.suicide();
+        } else {
+            creep.memory.checkedForSuicide = true;
         }
     }
 
